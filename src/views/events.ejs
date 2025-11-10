@@ -16,41 +16,61 @@
                             <h3>
                                 <%= event.title %>
                             </h3>
-                            <div class="date">
-                                <%= event.date ? new Date(event.date).toLocaleDateString('pt-BR', {timeZone: 'UTC' })
-                                    : 'Data a definir' %>
-                            </div>
-                            <%# ADICIONAR ESTES CAMPOS %>
-                                <div class="location-time"
-                                    style="color: var(--text-secondary); margin-bottom: 0.75rem;">
-                                    <% if (event.location) { %>
-                                        <span>📍 <%= event.location %></span>
-                                        <% } %>
-                                            <% if (event.time) { %>
-                                                <span style="margin-left: 10px;">🕒 <%= event.time %></span>
-                                                <% } %>
-                                </div>
-                                <p>
-                                    <%= event.description || 'Este evento não possui descrição.' %>
-                                </p>
-
-                                <% if (user) { %>
-                                    <% if (user.role==='admin' ) { %>
-                                        <div class="event-card-actions">
-                                            <a href="/site/eventos/<%= event.id %>/editar" class="btn">Editar</a>
-                                            <a href="/site/eventos/<%= event.id %>/excluir"
-                                                class="btn btn-danger">Excluir</a>
+                            <%# --- INÍCIO DO NOVO BLOCO DE DETALHES --- %>
+                                <div class="event-details">
+                                    <% if (event.schedule) { %>
+                                        <div class="detail-item">
+                                            🗓️ <strong>Início:</strong>
+                                            <%= event.schedule.date_start ? new
+                                                Date(event.schedule.date_start).toLocaleDateString('pt-BR',
+                                                {timeZone: 'UTC' }) : 'Data' %>
+                                                <%= event.schedule.time_start ? ` às ${event.schedule.time_start}` : ''
+                                                    %>
                                         </div>
-                                        <% } else { %>
-                                            <form action="/subscribe" method="POST">
-                                                <input type="hidden" name="eventId" value="<%= event.id %>">
-                                                <input type="hidden" name="userId" value="<%= user.id %>">
-                                                <button type="submit" class="btn">Inscrever-se</button>
-                                            </form>
+                                        <% if (event.schedule.date_end) { %>
+                                            <div class="detail-item">
+                                                🗓️ <strong>Fim:</strong>
+                                                <%= new Date(event.schedule.date_end).toLocaleDateString('pt-BR',
+                                                    {timeZone: 'UTC' }) %>
+                                                    <%= event.schedule.time_end ? ` às ${event.schedule.time_end}` : ''
+                                                        %>
+                                            </div>
                                             <% } %>
-                                                <% } else { %>
-                                                    <a href="/site/login" class="btn">Login para se inscrever</a>
-                                                    <% } %>
+                                                <% } %>
+
+                                                    <% if (event.pricing && event.pricing.isFree==='false' ) { %>
+                                                        <div class="detail-item">
+                                                            💰 <strong>Preço:</strong>
+                                                            <%= event.pricing.price || 'Consultar valor' %>
+                                                        </div>
+                                                        <% } else if (event.pricing) { %>
+                                                            <div class="detail-item">
+                                                                💰 <strong>Preço:</strong> Gratuito
+                                                            </div>
+                                                            <% } %>
+                                </div>
+                                <%# --- FIM DO NOVO BLOCO DE DETALHES --- %>
+                                    <p>
+                                        <%= event.description || 'Este evento não possui descrição.' %>
+                                    </p>
+
+                                    <% if (user) { %>
+                                        <% if (user.role==='admin' ) { %>
+                                            <div class="event-card-actions">
+                                                <a href="/site/eventos/<%= event.id %>/editar" class="btn">Editar</a>
+                                                <a href="/site/eventos/<%= event.id %>/excluir"
+                                                    class="btn btn-danger">Excluir</a>
+                                            </div>
+                                            <% } else { %>
+                                                <form action="/subscribe" method="POST">
+                                                    <input type="hidden" name="eventId" value="<%= event.id %>">
+                                                    <input type="hidden" name="userId" value="<%= user.id %>">
+                                                    <button type="submit" class="btn">Inscrever-se</button>
+                                                </form>
+                                                <% } %>
+                                                    <% } else { %>
+                                                        <a href="/site/login" class="btn">Login para se inscrever</a>
+                                                        <% } %>
                         </div>
                         <% }) %>
 

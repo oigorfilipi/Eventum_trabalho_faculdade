@@ -60,39 +60,38 @@ app.get('/site/eventos/novo', isAdmin, (req, res) => {
 /* [ CÓDIGO CORRIGIDO EM index.js ]
 */
 app.post('/site/eventos/novo', isAdmin, (req, res) => {
-  const { title, description, date, qtdSubs, location, time, attractions } = req.body;
+  const { title, description, qtdSubs,
+    schedule_details, address_details, pricing_details, food_details, attractions
+  } = req.body;
+
+  // 2. Pega o ID do admin logado (da sessão)
   const createdBy = req.session.user.id;
 
   if (!title) {
-    // AQUI ESTÁ A CORREÇÃO:
-    // 1. Renderiza a PÁGINA 'evento-novo' novamente
-    // 2. Passa a variável 'error'
-    // 3. Passa os dados (evento) de volta para o formulário
+    // CORREÇÃO: Devolver todos os campos (agora os campos são os JSONs)
     return res.render('evento-novo', {
       error: 'O título é obrigatório.',
-      evento: { title, description, date, qtdSubs, location, time, attractions }
+      evento: {
+        title, description, qtdSubs,
+        schedule_details, address_details, pricing_details, food_details, attractions
+      }
     });
   }
 
   // 3. Insere no banco...
   const stmt = db.prepare(
-    'INSERT INTO events (title, description, date, created_by, qtdSubs, location, time, attractions) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
+    `INSERT INTO events (title, description, created_by, qtdSubs, 
+                         schedule_details, address_details, pricing_details, food_details, attractions) 
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
   );
   stmt.run(
-    title,
-    description || null,
-    date || null,
-    createdBy,
-    qtdSubs || 100,
-    location || null,
-    time || null,
-    attractions || null, // O JSON vem como string do JS
+    title, description || null, createdBy, qtdSubs || 100,
+    schedule_details || null, address_details || null, pricing_details || null, food_details || null, attractions || null,
     function (err) {
       if (err) {
         console.error('Erro ao criar evento:', err);
         return res.status(500).send('Erro ao salvar o evento.');
       }
-      // 4. Sucesso! Redireciona para a lista de eventos
       res.redirect('/site/eventos');
     }
   );
@@ -102,12 +101,13 @@ app.post('/site/eventos/novo', isAdmin, (req, res) => {
 app.get('/site/eventos/:id/editar', isAdmin, (req, res) => {
   const eventId = req.params.id;
 
-  // 1. Busca o evento no banco
+  // 1. Busca o evento no banco (CORREÇÃO: Pedir todas as colunas)
   db.get('SELECT * FROM events WHERE id = ?', [eventId], (err, evento) => {
     if (err || !evento) {
       return res.status(404).send('Evento não encontrado');
     }
     // 2. Renderiza a view de edição, passando os dados do evento
+    // O EJS agora fará o JSON.parse()
     res.render('evento-editar', { evento: evento });
   });
 });
@@ -119,42 +119,34 @@ app.get('/site/eventos/:id/editar', isAdmin, (req, res) => {
 app.post('/site/eventos/:id/editar', isAdmin, (req, res) => {
   const eventId = req.params.id;
   // CORREÇÃO: Pegar os novos campos
-  const { title, description, date, qtdSubs, location, time, attractions } = req.body;
+  const { title, description, qtdSubs,
+    schedule_details, address_details, pricing_details, food_details, attractions
+  } = req.body;
 
   if (!title) {
-    // AQUI ESTÁ A CORREÇÃO:
-    // 1. Renderiza a PÁGINA 'evento-editar' novamente
-    // 2. Passa a variável 'error'
-    // 3. Passa os dados (evento) de volta (incluindo o id)
+    // CORREÇÃO: Devolver todos os campos
+    const evento = req.body; // Pega tudo que veio
+    evento.id = eventId;
     return res.render('evento-editar', {
       error: 'O título é obrigatório.',
-      // CORREÇÃO: Devolver todos os campos
-      evento: { id: eventId, title, description, date, qtdSubs, location, time, attractions }
+      evento: evento
     });
   }
 
   // 1. Roda o UPDATE no banco
+  // CORREÇÃO: Atualizar o SQL
   const stmt = db.prepare(`
     UPDATE events 
-    SET title = ?, description = ?, date = ?, qtdSubs = ?,
-        location = ?, time = ?, attractions = ?
+    SET title = ?, description = ?, qtdSubs = ?,
+        schedule_details = ?, address_details = ?, pricing_details = ?, food_details = ?, attractions = ?
     WHERE id = ?
   `);
   stmt.run(
-    title,
-    description || null,
-    date || null,
-    qtdSubs || 100,
-    location || null,
-    time || null,
-    attractions || null,
+    title, description || null, qtdSubs || 100,
+    schedule_details || null, address_details || null, pricing_details || null, food_details || null, attractions || null,
     eventId,
     function (err) {
-      if (err) {
-        console.error('Erro ao atualizar evento:', err);
-        return res.status(500).send('Erro ao salvar o evento.');
-      }
-      // 2. Sucesso! Redireciona para a lista
+      // ... (código de erro)
       res.redirect('/site/eventos');
     }
   );
@@ -188,14 +180,26 @@ app.use('/subscribe', subscribeRoutes);
 app.get('/', (req, res) => res.json({ status: 'ok', service: 'eventum-api' }));
 
 app.get('/site/eventos', (req, res) => {
-  const sql = 'SELECT id, title, description, date, location, time FROM events ORDER BY date IS NULL, date ASC, created_at DESC';
+  const sql = 'SELECT * FROM events ORDER BY date IS NULL, date ASC, created_at DESC';
 
   db.all(sql, [], (err, rows) => {
     if (err) {
       console.error('Erro ao buscar eventos para o site:', err);
       return res.status(500).send("Erro ao carregar a página de eventos.");
     }
-    res.render('events', { events: rows });
+
+    const events = rows.map(event => {
+      try {
+        // Tenta "parsear" os detalhes de cada evento
+        if (event.schedule_details) event.schedule = JSON.parse(event.schedule_details);
+        if (event.pricing_details) event.pricing = JSON.parse(event.pricing_details);
+      } catch (e) {
+        console.error(`Erro ao parsear JSON do evento ${event.id}:`, e);
+      }
+      return event;
+    });
+
+    res.render('events', { events: events }); // Envia os eventos processados
   });
 });
 

@@ -88,6 +88,42 @@ db.serialize(() => {
   });
   // --- FIM DAS NOVAS COLUNAS ---
 
+  db.run(`
+    ALTER TABLE events
+    ADD COLUMN schedule_details TEXT
+  `, (err) => {
+    if (err && !err.message.includes('duplicate column name')) {
+      console.error('Erro ao adicionar coluna schedule_details:', err.message);
+    }
+  });
+
+  db.run(`
+    ALTER TABLE events
+    ADD COLUMN address_details TEXT
+  `, (err) => {
+    if (err && !err.message.includes('duplicate column name')) {
+      console.error('Erro ao adicionar coluna address_details:', err.message);
+    }
+  });
+
+  db.run(`
+    ALTER TABLE events
+    ADD COLUMN pricing_details TEXT
+  `, (err) => {
+    if (err && !err.message.includes('duplicate column name')) {
+      console.error('Erro ao adicionar coluna pricing_details:', err.message);
+    }
+  });
+
+  db.run(`
+    ALTER TABLE events
+    ADD COLUMN food_details TEXT
+  `, (err) => {
+    if (err && !err.message.includes('duplicate column name')) {
+      console.error('Erro ao adicionar coluna food_details:', err.message);
+    }
+  });
+
 });
 
 module.exports = db;
