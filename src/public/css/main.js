@@ -321,6 +321,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     /* --- FIM: Lógica do Chat Flutuante --- */
 
+    /* --- INÍCIO: Lógica de Edição de Nome (Minha Conta) --- */
+    const toggleBtn = document.getElementById('toggle-name-edit');
+    const infoForm = document.getElementById('info-edit-form');
+    const infoDisplay = document.getElementById('info-display');
+
+    if (toggleBtn && infoForm && infoDisplay) {
+        toggleBtn.addEventListener('click', () => {
+            infoForm.classList.remove('hidden'); // Mostra o formulário
+            infoDisplay.classList.add('hidden'); // Esconde o texto
+        });
+    }
+    /* --- FIM: Lógica de Edição de Nome --- */
 
     // Função que faz a mágica de auto-crescimento
     function autoGrow(element) {
