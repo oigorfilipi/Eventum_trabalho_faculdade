@@ -2,29 +2,10 @@
 
 /* 1. VARIÁVEIS DE COR E GERAL
 --------------------------------------------- */
+/* 1. VARIÁVEIS DE COR E GERAL
+--------------------------------------------- */
 :root {
-    --bg-color: #121212;
-    /* Cinza bem escuro (fundo) */
-    --card-color: #1E1E1E;
-    /* Cinza para cards/navbar */
-    --border-color: #333;
-    /* Borda sutil */
-    --text-primary: #E0E0E0;
-    /* Texto principal (quase branco) */
-    --text-secondary: #AAAAAA;
-    /* Texto secundário (cinza claro) */
-
-    --accent-color: #007BFF;
-    /* Azul para botões e links */
-    --accent-hover: #0056b3;
-    /* Azul mais escuro (hover) */
-    --success-color: #4CAF50;
-    /* Verde para botões de admin */
-    --danger-color: #E53935;
-    /* Vermelho para excluir */
-}
-
-html.light-theme {
+    /* AGORA O PADRÃO É CLARO */
     --bg-color: #F0F2F5;
     /* Fundo claro (cinza-azulado) */
     --card-color: #FFFFFF;
@@ -36,11 +17,24 @@ html.light-theme {
     --text-secondary: #555555;
     /* Texto secundário (cinza escuro) */
 
-    /* Cores de acento (azul, verde, vermelho) podem ser as mesmas */
     --accent-color: #007BFF;
     --accent-hover: #0056b3;
     --success-color: #4CAF50;
     --danger-color: #E53935;
+}
+
+/* AGORA A EXCEÇÃO É O TEMA ESCURO */
+html.dark-theme {
+    --bg-color: #121212;
+    /* Cinza bem escuro (fundo) */
+    --card-color: #1E1E1E;
+    /* Cinza para cards/navbar */
+    --border-color: #333;
+    /* Borda sutil */
+    --text-primary: #E0E0E0;
+    /* Texto principal (quase branco) */
+    --text-secondary: #AAAAAA;
+    /* Texto secundário (cinza claro) */
 }
 
 /* Reset básico e fonte */
@@ -547,7 +541,8 @@ textarea.form-control {
 }
 
 .form-container-wide {
-    max-width: 900px; /* Dobra a largura, mas mantém um limite */
+    max-width: 900px;
+    /* Dobra a largura, mas mantém um limite */
 }
 
 .form-actions {
@@ -1062,8 +1057,10 @@ a.event-title-link:hover h3 {
 
 @media (max-width: 768px) {
     .form-row {
-        flex-direction: column; /* Faz os campos empilharem */
-        gap: 0; /* Remove o 'gap' da coluna */
+        flex-direction: column;
+        /* Faz os campos empilharem */
+        gap: 0;
+        /* Remove o 'gap' da coluna */
     }
 }
 
@@ -1305,11 +1302,13 @@ th {
     padding: 0.25rem 0.75rem;
     background-color: var(--accent-color);
     color: #ffffff;
-    border-radius: 15px; /* Formato de pílula */
+    border-radius: 15px;
+    /* Formato de pílula */
     font-size: 0.8rem;
     font-weight: 600;
     margin-bottom: 0.75rem;
-    align-self: flex-start; /* Alinha a tag à esquerda */
+    align-self: flex-start;
+    /* Alinha a tag à esquerda */
 }
 
 /* [ COLE ISTO NO FINAL DE styles.css ]
@@ -1326,4 +1325,47 @@ th {
     font-weight: 600;
     margin-bottom: 0.75rem;
     align-self: flex-start;
+}
+
+/* [ COLE ISTO NO FINAL DE styles.css ]
+*/
+
+/* 12. BARRA DE FILTRO (PÁGINA DE EVENTOS)
+--------------------------------------------- */
+.filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    /* Permite quebrar a linha em telas pequenas */
+    gap: 1rem;
+    padding: 1.5rem;
+    background-color: var(--card-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    margin-bottom: 2rem;
+}
+
+.filter-bar .form-group {
+    margin-bottom: 0;
+    /* Remove a margem padrão do form-group */
+}
+
+/* Campo de busca (ocupa mais espaço) */
+.filter-bar .filter-search {
+    flex-grow: 2;
+    /* Ocupa 2x o espaço da categoria */
+    flex-basis: 250px;
+    /* Tamanho base */
+}
+
+/* Campo de categoria */
+.filter-bar .filter-category {
+    flex-grow: 1;
+    flex-basis: 200px;
+}
+
+/* Botão de filtrar */
+.filter-bar button {
+    flex-grow: 1;
+    flex-basis: 100px;
+    /* Tamanho base do botão */
 }

@@ -14,20 +14,19 @@
     <link rel="stylesheet" href="/css/styles.css">
     <link rel="shortcut icon" href="/img/Logo-Eventum.png" type="image/x-icon">
 
+    /* [ SUBSTITUA O SCRIPT EM header.ejs ]
+*/
     <script>
         (function () {
             // Pega o tema salvo no localStorage
             const theme = localStorage.getItem('theme');
 
-            // LÓGICA INVERTIDA:
+            // LÓGICA CORRIGIDA:
             if (theme === 'dark') {
-                // Se for 'dark', remove a classe (ficando escuro)
-                document.documentElement.classList.remove('light-theme');
-            } else {
-                // Em QUALQUER outro caso (se for 'light' ou 'null'/novo usuário)
-                // ADICIONA a classe (ficando claro)
-                document.documentElement.classList.add('light-theme');
+                // Se for 'dark', ADICIONA a classe escura
+                document.documentElement.classList.add('dark-theme');
             }
+            // Se for 'light' ou 'null', não faz nada (o padrão já é claro)
         })();
     </script>
 

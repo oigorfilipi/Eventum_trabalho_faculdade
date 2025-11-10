@@ -250,19 +250,47 @@ app.use('/subscribe', subscribeRoutes);
 // Health
 app.get('/', (req, res) => res.json({ status: 'ok', service: 'eventum-api' }));
 
+/* [ SUBSTITUA A ROTA (Linhas 182-208) POR ISTO ]
+*/
+//
+// NOVA ROTA: A PÁGINA COM O GRID DE *TODOS* OS CARDS (AGORA COM FILTRO)
+//
 app.get('/site/eventos/todos', (req, res) => {
+  // 1. Pega os filtros da URL (query parameters)
+  const { search, category } = req.query;
 
-  // CORREÇÃO: Lógica de SQL condicional
+  // 2. Prepara a construção dinâmica do SQL
   let sql = 'SELECT * FROM events';
+  let whereConditions = [];
+  let params = [];
 
-  // Se o usuário NÃO for admin, adiciona o filtro
+  // 3. CONDIÇÃO 1: Lógica de Admin (Ver eventos ocultos)
   if (!req.session.user || req.session.user.role !== 'admin') {
-    sql += ' WHERE (is_hidden = 0 OR is_hidden IS NULL)';
+    whereConditions.push('(is_hidden = 0 OR is_hidden IS NULL)');
   }
 
+  // 4. CONDIÇÃO 2: Filtro de Busca (por nome)
+  if (search) {
+    whereConditions.push('title LIKE ?');
+    params.push(`%${search}%`); // Usa o LIKE com % para buscar "contém"
+  }
+
+  // 5. CONDIÇÃO 3: Filtro de Categoria
+  if (category && category !== 'Todos' && category !== 'Indefinido') {
+    whereConditions.push('category = ?');
+    params.push(category);
+  }
+
+  // 6. Junta todas as condições
+  if (whereConditions.length > 0) {
+    sql += ' WHERE ' + whereConditions.join(' AND ');
+  }
+
+  // 7. Adiciona a ordenação
   sql += ' ORDER BY date IS NULL, date ASC, created_at DESC';
 
-  db.all(sql, [], (err, rows) => {
+  // 8. Executa a consulta dinâmica
+  db.all(sql, params, (err, rows) => {
     if (err) {
       console.error('Erro ao buscar eventos para o site:', err);
       return res.status(500).send("Erro ao carregar a página de eventos.");
@@ -279,8 +307,12 @@ app.get('/site/eventos/todos', (req, res) => {
       return event;
     });
 
-    // Renderiza a PÁGINA ANTIGA (events.ejs) com todos os eventos
-    res.render('events', { events: events });
+    // 9. Renderiza a página, devolvendo os valores da busca
+    res.render('events', {
+      events: events,
+      searchQuery: search || '',
+      categoryQuery: category || 'Todos'
+    });
   });
 });
 

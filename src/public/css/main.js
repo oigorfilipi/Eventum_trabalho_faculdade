@@ -7,10 +7,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Função para atualizar o ícone do botão
     function updateIcon() {
-        if (htmlElement.classList.contains('light-theme')) {
-            themeToggleBtn.innerHTML = '🌙'; // Tema claro, mostra lua (próximo clique = escuro)
+        if (htmlElement.classList.contains('dark-theme')) {
+            // Se o tema é escuro, mostra o sol
+            themeToggleBtn.innerHTML = '☀️';
         } else {
-            themeToggleBtn.innerHTML = '☀️'; // Tema escuro, mostra sol (próximo clique = claro)
+            // Se o tema é claro, mostra a lua
+            themeToggleBtn.innerHTML = '🌙';
         }
     }
 
@@ -19,14 +21,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // "Ouvinte" do clique no botão
     themeToggleBtn.addEventListener('click', () => {
-        // 1. Inverte a classe na tag <html>
-        htmlElement.classList.toggle('light-theme');
+        // 1. Inverte a classe .dark-theme
+        htmlElement.classList.toggle('dark-theme');
 
         // 2. Salva a escolha no localStorage
-        if (htmlElement.classList.contains('light-theme')) {
-            localStorage.setItem('theme', 'light');
-        } else {
+        if (htmlElement.classList.contains('dark-theme')) {
             localStorage.setItem('theme', 'dark');
+        } else {
+            localStorage.setItem('theme', 'light');
         }
 
         // 3. Atualiza o ícone
