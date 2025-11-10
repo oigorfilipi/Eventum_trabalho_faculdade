@@ -12,6 +12,13 @@ db.serialize(() => {
       name TEXT NOT NULL,
       email TEXT NOT NULL UNIQUE,
       password TEXT NOT NULL,
+      nome_completo TEXT,
+      phone TEXT,
+      cpf TEXT,
+      data_nascimento TEXT,
+      sexo TEXT,
+      genero TEXT,
+      cor TEXT,
       role TEXT NOT NULL DEFAULT 'user',
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )

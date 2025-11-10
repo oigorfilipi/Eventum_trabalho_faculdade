@@ -1497,3 +1497,30 @@ th {
     padding-top: 1.5rem;
     border-top: 1px solid var(--border-color);
 }
+
+/* [ COLE ISTO NO FINAL DE styles.css ]
+*/
+/* 16. SIMULAÇÃO RECAPTCHA (CADASTRO)
+--------------------------------------------- */
+.recaptcha-simulated-box-large {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.5rem; /* Mais "gordinho" */
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background-color: var(--bg-color);
+}
+.recaptcha-simulated-box-large input[type="checkbox"] {
+    width: 24px; /* Maior */
+    height: 24px;
+}
+.recaptcha-simulated-box-large label {
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin: 0;
+    flex-grow: 1; /* Empurra a logo para a direita */
+}
+.recaptcha-simulated-box-large img {
+    opacity: 0.7;
+}

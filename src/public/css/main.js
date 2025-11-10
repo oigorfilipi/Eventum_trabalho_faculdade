@@ -321,6 +321,41 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     /* --- FIM: Lógica do Chat Flutuante --- */
 
+    /* --- INÍCIO: Máscara de CPF --- */
+    const cpfInput = document.getElementById('cpf-mask');
+    if (cpfInput) {
+        cpfInput.addEventListener('input', (e) => {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 11) value = value.substring(0, 11);
+
+            let formatted = '';
+            if (value.length > 0) formatted += value.substring(0, 3);
+            if (value.length >= 4) formatted += '.' + value.substring(3, 6);
+            if (value.length >= 7) formatted += '.' + value.substring(6, 9);
+            if (value.length >= 10) formatted += '-' + value.substring(9, 11);
+
+            e.target.value = formatted;
+        });
+    }
+    /* --- FIM: Máscara de CPF --- */
+
+
+    /* --- INÍCIO: Validação reCAPTCHA Simulado --- */
+    const registerForm = document.getElementById('register-form');
+    const recaptchaCheck = document.getElementById('recaptcha-check');
+    const registerSubmitBtn = document.getElementById('register-submit-btn');
+
+    if (registerForm && recaptchaCheck && registerSubmitBtn) {
+        // Desabilita o botão no início
+        registerSubmitBtn.disabled = true;
+
+        recaptchaCheck.addEventListener('change', () => {
+            // Habilita/desabilita o botão baseado no checkbox
+            registerSubmitBtn.disabled = !recaptchaCheck.checked;
+        });
+    }
+    /* --- FIM: Validação reCAPTCHA --- */
+
     /* --- INÍCIO: Lógica de Edição de Nome (Minha Conta) --- */
     const toggleBtn = document.getElementById('toggle-name-edit');
     const infoForm = document.getElementById('info-edit-form');
