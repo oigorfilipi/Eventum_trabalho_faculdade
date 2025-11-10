@@ -195,7 +195,7 @@ app.get('/site/eventos/todos', (req, res) => {
 });
 
 app.get('/site/eventos', (req, res) => {
-  
+
   // CORREÇÃO: Nova consulta SQL
   // Busca os 3 mais recentes (created_at DESC) que TENHAM uma imagem de capa
   const sql = `
@@ -223,7 +223,7 @@ app.get('/site/eventos', (req, res) => {
     });
 
     // CORREÇÃO: Renderiza a NOVA PÁGINA (home.ejs)
-    res.render('home', { carouselEvents: carouselEvents }); 
+    res.render('home', { carouselEvents: carouselEvents });
   });
 });
 

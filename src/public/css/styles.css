@@ -556,3 +556,133 @@ textarea.form-control {
     object-fit: cover;
     /* Faz a imagem cobrir o espaço, estilo Notion */
 }
+
+/* 7. SEÇÃO "SOBRE NÓS" (HOME PAGE)
+--------------------------------------------- */
+.about-section {
+    /* 1. Cria as colunas */
+    display: flex;
+    align-items: center; /* Alinha o texto e a imagem pelo meio */
+    gap: 3rem;           /* Espaço entre a imagem e o texto */
+
+    /* 2. Dá um respiro na página */
+    margin-top: 4rem;
+    margin-bottom: 4rem;
+}
+
+.about-image {
+    flex: 1; /* Faz a coluna da imagem ocupar 1/3 do espaço */
+    display: flex;           /* Adicionado para centralizar a imagem */
+    justify-content: center; /* Adicionado para centralizar a imagem */
+    align-items: center;     /* Adicionado para centralizar a imagem */
+}
+
+.about-image img {
+    /* MANTENHA estas propriedades */
+    width: 80%; /* Ajustado para 80% para a logo não ser muito grande */
+    height: auto; /* Mantém proporção */
+    max-width: 300px; /* Limite máximo para a logo */
+    border-radius: 0; /* <-- REMOVIDO: Borda arredondada */
+    border: none; /* <-- REMOVIDO: Borda cinza */
+
+    /* --- A MÁGICA PARA MUDAR A COR --- */
+    filter: none; /* Padrão: sem filtro (preto no modo claro) */
+    transition: filter 0.3s ease; /* Anima a mudança de cor */
+}
+
+/* Aplica o filtro QUANDO o tema for escuro */
+html:not(.light-theme) .about-image img {
+    filter: invert(1) brightness(2); /* Inverte o preto para branco e aumenta o brilho */
+}
+
+.about-text {
+    flex: 2; /* Faz a coluna do texto ocupar 2/3 do espaço */
+}
+
+.about-text h2 {
+    font-size: 2rem;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+
+.about-text p {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+}
+
+/* 8. SEÇÃO FAQ (HOME PAGE)
+--------------------------------------------- */
+.faq-section {
+    max-width: 800px; /* Limita a largura do FAQ */
+    margin: 4rem auto; /* Centraliza (auto) e dá espaço (4rem) */
+}
+
+.faq-section h2 {
+    text-align: center; /* Centraliza o título "Perguntas Frequentes" */
+    font-size: 2rem;
+    color: var(--text-primary);
+    margin-bottom: 2rem;
+}
+
+/* O item "fechado" */
+.faq-item {
+    background-color: var(--card-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    overflow: hidden; /* Garante a animação suave */
+}
+
+/* A pergunta (o título clicável) */
+.faq-item summary {
+    padding: 1.5rem;
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: var(--text-primary);
+    cursor: pointer;
+    list-style: none; /* Remove o triângulo padrão */
+    position: relative;
+    padding-right: 3.5rem; /* Espaço para o ícone '+' */
+}
+
+/* Remove o marcador padrão (Firefox) */
+.faq-item summary::marker {
+    display: none;
+}
+/* Remove o marcador padrão (Chrome/Safari) */
+.faq-item summary::-webkit-details-marker {
+    display: none;
+}
+
+/* O ícone de '+' (nosso marcador customizado) */
+.faq-item summary::after {
+    content: '+';
+    font-family: monospace;
+    font-size: 2rem;
+    line-height: 1;
+    color: var(--accent-color);
+    position: absolute;
+    right: 1.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: transform 0.2s ease;
+}
+
+/* Quando o item está aberto, gira o '+' para 'x' */
+.faq-item[open] summary::after {
+    transform: translateY(-50%) rotate(45deg);
+}
+
+/* A resposta (o conteúdo) */
+.faq-answer {
+    padding: 0 1.5rem 1.5rem 1.5rem;
+    color: var(--text-secondary);
+    border-top: 1px solid var(--border-color);
+    line-height: 1.7;
+}
+
+/* Para o <p> dentro da resposta não ter margem extra */
+.faq-answer p {
+    margin: 0;
+}

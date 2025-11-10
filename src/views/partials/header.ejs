@@ -17,17 +17,16 @@
         (function () {
             // Pega o tema salvo no localStorage
             const theme = localStorage.getItem('theme');
-            if (theme === 'light') {
-                // Se for 'light', aplica a classe ANTES da página renderizar
-                document.documentElement.classList.add('light-theme');
-            } else {
-                // Se for 'dark' ou nulo, remove (garante o padrão)
-                document.documentElement.classList.remove('light-theme');
-            }
 
-            // OBS: Usamos 'document.documentElement' (o <html>)
-            // mas a regra CSS é 'body.light-theme'. Vamos ajustar o CSS
-            // para 'html.light-theme' que é mais rápido.
+            // LÓGICA INVERTIDA:
+            if (theme === 'dark') {
+                // Se for 'dark', remove a classe (ficando escuro)
+                document.documentElement.classList.remove('light-theme');
+            } else {
+                // Em QUALQUER outro caso (se for 'light' ou 'null'/novo usuário)
+                // ADICIONA a classe (ficando claro)
+                document.documentElement.classList.add('light-theme');
+            }
         })();
     </script>
 
@@ -69,4 +68,4 @@
         </div>
     </nav>
 
-            <main class="main-content">
+    <main class="main-content">
