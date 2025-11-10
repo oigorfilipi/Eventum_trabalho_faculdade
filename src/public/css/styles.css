@@ -1436,25 +1436,64 @@ th {
 
 /* MENSAGEM DE CONTATO */
 
-    .message-header {
-        font-size: 1.1rem;
-    }
-    .message-subheader {
-        font-size: 1rem;
-        color: var(--text-secondary);
-        margin-top: 0.25rem;
-    }
-    .message-body p {
-        color: var(--text-primary);
-        font-size: 1.1rem;
-        line-height: 1.7;
-        white-space: pre-wrap; /* Preserva as quebras de linha da mensagem */
-    }
-    .message-footer {
-        margin-top: 1.5rem;
-        font-size: 0.9rem;
-        color: var(--text-secondary);
-        text-align: right;
-        border-top: 1px dashed var(--border-color);
-        padding-top: 0.5rem;
-    }
+.message-header {
+    font-size: 1.1rem;
+}
+
+.message-subheader {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    margin-top: 0.25rem;
+}
+
+.message-body p {
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    /* Preserva as quebras de linha da mensagem */
+}
+
+.message-footer {
+    margin-top: 1.5rem;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    text-align: right;
+    border-top: 1px dashed var(--border-color);
+    padding-top: 0.5rem;
+}
+
+/* [ COLE ISTO NO FINAL DE styles.css ]
+*/
+
+/* 14. FORM STEPPER (Formulário de Evento)
+--------------------------------------------- */
+
+/* Esconde todas as etapas por padrão */
+.form-step {
+    display: none;
+}
+
+/* Mostra apenas a etapa ativa */
+.form-step.active {
+    display: block;
+}
+
+/* O indicador de etapas (ex: "Passo 1 de 5") */
+.form-step-indicator {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+/* A barra de navegação (Próximo/Anterior) */
+.form-step-navigation {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+}

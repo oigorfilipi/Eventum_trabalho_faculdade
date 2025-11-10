@@ -1,135 +1,137 @@
-<%# Arquivo: src/views/partials/event-form.ejs VERSÃO 3.0 - Formulário de Evento Completo %>
+<%# Arquivo: src/views/partials/event-form.ejs VERSÃO 4.0 - Formulário em Etapas (Stepper) %>
 
-    <%# Trazendo os dados para a Edição. Cada "try/catch" é para um JSON, garantindo que a página de edição funcione. %>
+    <%# Trazendo os dados para a Edição. %>
         <% const ev=(typeof evento !=='undefined' ) ? evento : {}; %>
             <% let schedule={ date_start: '' , time_start: '' , date_end: '' , time_end: '' }; if (ev.schedule_details)
-                { try { schedule=JSON.parse(ev.schedule_details); } catch(e){} } let address={ street: '' , number: '' ,
-                neighborhood: '' , cep: '' }; if (ev.address_details) { try { address=JSON.parse(ev.address_details); }
-                catch(e){} } let pricing={ isFree: 'true' , price: '' }; if (ev.pricing_details) { try {
-                pricing=JSON.parse(ev.pricing_details); } catch(e){} } let food={ hasFood: 'false' , isFree: 'true' ,
-                price: '' }; if (ev.food_details) { try { food=JSON.parse(ev.food_details); } catch(e){} } let
-                attractions={ palestras: [], artistas: [], palestras_simultaneas: false, artistas_simultaneos: false };
-                if (ev.attractions) { try { attractions=JSON.parse(ev.attractions); } catch(e){} if
-                (!attractions.palestras) attractions.palestras=[]; if (!attractions.artistas) attractions.artistas=[]; }
-                %>
+                { try { schedule=JSON.parse(ev.schedule_details); } catch(e){} } %>
+                <% let address={ street: '' , number: '' , neighborhood: '' , cep: '' }; if (ev.address_details) { try {
+                    address=JSON.parse(ev.address_details); } catch(e){} } %>
+                    <% let pricing={ isFree: 'true' , price: '' }; if (ev.pricing_details) { try {
+                        pricing=JSON.parse(ev.pricing_details); } catch(e){} } %>
+                        <% let food={ hasFood: 'false' , isFree: 'true' , price: '' }; if (ev.food_details) { try {
+                            food=JSON.parse(ev.food_details); } catch(e){} } %>
+                            <% let attractions={ palestras: [], artistas: [], palestras_simultaneas: false,
+                                artistas_simultaneos: false }; if (ev.attractions) { try {
+                                attractions=JSON.parse(ev.attractions); } catch(e){} if (!attractions.palestras)
+                                attractions.palestras=[]; if (!attractions.artistas) attractions.artistas=[]; } %>
 
-                <form action="<%= actionUrl %>" method="POST" id="event-form" enctype="multipart/form-data">
+                                <form action="<%= actionUrl %>" method="POST" id="event-form"
+                                    enctype="multipart/form-data">
 
-                    <%# Inputs "hidden" que nosso JS vai preencher com os JSONs %>
-                        <input type="hidden" name="schedule_details" id="schedule-json">
-                        <input type="hidden" name="address_details" id="address-json">
-                        <input type="hidden" name="pricing_details" id="pricing-json">
-                        <input type="hidden" name="food_details" id="food-json">
-                        <input type="hidden" name="attractions" id="attractions-json">
+                                    <%# Inputs "hidden" que nosso JS vai preencher com os JSONs %>
+                                        <input type="hidden" name="schedule_details" id="schedule-json">
+                                        <input type="hidden" name="address_details" id="address-json">
+                                        <input type="hidden" name="pricing_details" id="pricing-json">
+                                        <input type="hidden" name="food_details" id="food-json">
+                                        <input type="hidden" name="attractions" id="attractions-json">
 
 
-                        <%# --- SEÇÃO GERAL --- %>
-                            <h3>Informações Gerais</h3>
-                            <div class="form-group">
-                                <label for="title">Título do Evento:</label>
-                                <input type="text" id="title" name="title" class="form-control"
-                                    value="<%= ev.title || '' %>" required>
-                                <div class="form-group">
-                                    <label for="description">Descrição:</label>
+                                        <%# --- INDICADOR DE ETAPAS --- %>
+                                            <div class="form-step-indicator" id="form-step-indicator">Passo 1 de 5</div>
 
-                                    <textarea id="description" name="description" rows="5"
-                                        class="form-control auto-grow"><%= ev.description || '' %></textarea>
-                                </div>
 
-                                <%# --- NOVO CAMPO DE UPLOAD --- %>
+                                            <%# --- ETAPA 1: Informações Gerais --- %>
+                                                <div class="form-step active" data-step="1">
+                                                    <h3>Etapa 1: Informações Gerais</h3>
 
-                                    <%# --- INÍCIO DA NOVA SEÇÃO DE CAPA --- %>
-                                        <div class="form-group">
-                                            <label>Método da Imagem de Capa:</label>
-                                            <div class="radio-group" style="margin-bottom: 1rem;">
-                                                <%# Verifica se o evento JÁ TEM uma URL. Se for /uploads/, é um upload.
-                                                    Senão, é uma URL. %>
-                                                    <% let isUpload=ev.cover_image_url &&
-                                                        ev.cover_image_url.startsWith('/uploads/'); %>
-                                                        <% let isUrl=ev.cover_image_url && !isUpload; %>
-
-                                                            <input type="radio" id="capa-upload" name="capa-tipo"
-                                                                value="upload" data-target="#upload-section"
-                                                                <%=(isUpload || !ev.cover_image_url) ? 'checked' : ''
-                                                                %>>
-                                                            <label for="capa-upload">Fazer Upload</label>
-
-                                                            <input type="radio" id="capa-url" name="capa-tipo"
-                                                                value="url" data-target="#url-section" <%=isUrl
-                                                                ? 'checked' : '' %>>
-                                                            <label for="capa-url">Colar URL</label>
-                                            </div>
-                                        </div>
-
-                                        <%# O campo de Upload (escondido ou não) %>
-                                            <div id="upload-section"
-                                                class="hidden-section-soft <%= (isUpload || !ev.cover_image_url) ? '' : 'hidden' %>">
-
-                                                <div class="form-group">
-                                                    <label for="cover_image_upload">Arquivo da Capa:</label>
-                                                    <input type="file" id="cover_image_upload" name="cover_image_upload"
-                                                        class="form-control">
-                                                </div>
-                                            </div>
-
-                                            <%# O campo de URL (escondido ou não) %>
-                                                <div id="url-section"
-                                                    class="hidden-section-soft <%= isUrl ? '' : 'hidden' %>">
                                                     <div class="form-group">
-                                                        <label for="cover_image_url">URL da Imagem:</label>
-                                                        <input type="text" id="cover_image_url" name="cover_image_url"
-                                                            class="form-control"
-                                                            placeholder="Cole um link de imagem aqui (ex: https://.../imagem.jpg)"
-                                                            value="<%= isUrl ? ev.cover_image_url : '' %>">
+                                                        <label for="title">Título do Evento:</label>
+                                                        <input type="text" id="title" name="title" class="form-control"
+                                                            value="<%= ev.title || '' %>" required>
                                                     </div>
-                                                </div>
-                                                <%# --- FIM DA NOVA SEÇÃO DE CAPA --- %>
-                                                    <%# --- CAMPO ADICIONADO --- %>
-                                                        <div class="form-group">
-                                                            <label for="organizer">Organizado por (Opcional):</label>
-                                                            <input type="text" id="organizer" name="organizer"
-                                                                class="form-control"
-                                                                placeholder="Ex: Departamento de TI, Centro Acadêmico"
-                                                                value="<%= ev.organizer || '' %>">
+                                                    <div class="form-group">
+                                                        <label for="description">Descrição:</label>
+                                                        <textarea id="description" name="description" rows="5"
+                                                            class="form-control auto-grow"><%= ev.description || '' %></textarea>,
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="category">Categoria:</label>
+                                                        <select id="category" name="category" class="form-control">
+                                                            <option value="Indefinido" <%=(ev.category==='Indefinido' ||
+                                                                !ev.category) ? 'selected' : '' %>>-- Selecione --
+                                                            </option>
+                                                            <option value="Palestra" <%=ev.category==='Palestra'
+                                                                ? 'selected' : '' %>>Palestra</option>
+                                                            <option value="Workshop" <%=ev.category==='Workshop'
+                                                                ? 'selected' : '' %>>Workshop</option>
+                                                            <option value="Conferência" <%=ev.category==='Conferência'
+                                                                ? 'selected' : '' %>>Conferência</option>
+                                                            <option value="Networking" <%=ev.category==='Networking'
+                                                                ? 'selected' : '' %>>Networking</option>
+                                                            <option value="Cultural" <%=ev.category==='Cultural'
+                                                                ? 'selected' : '' %>>Cultural / Artístico</option>
+                                                            <option value="Outro" <%=ev.category==='Outro' ? 'selected'
+                                                                : '' %>>Outro</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="organizer">Organizado por (Opcional):</label>
+                                                        <input type="text" id="organizer" name="organizer"
+                                                            class="form-control"
+                                                            placeholder="Ex: Departamento de TI, Centro Acadêmico"
+                                                            value="<%= ev.organizer || '' %>">
+                                                    </div>
+
+                                                    <%# Navegação da Etapa 1 %>
+                                                        <div class="form-step-navigation">
+                                                            <span></span>
+                                                            <%# Placeholder para alinhar o botão à direita %>
+                                                                <button type="button" class="btn-secondary"
+                                                                    data-nav="next">Próximo</button>
                                                         </div>
+                                                </div>
 
-                                                        <%# --- CAMPO ADICIONADO --- %>
+
+                                                <%# --- ETAPA 2: Mídia e Local --- %>
+                                                    <div class="form-step" data-step="2">
+                                                        <h3>Etapa 2: Capa e Endereço</h3>
+
+                                                        <%# Seção da Capa %>
                                                             <div class="form-group">
-                                                                <label for="category">Categoria:</label>
-                                                                <select id="category" name="category"
-                                                                    class="form-control">
-                                                                    <option value="Indefinido"
-                                                                        <%=(ev.category==='Indefinido' || !ev.category)
-                                                                        ? 'selected' : '' %>>-- Selecione --</option>
-                                                                    <option value="Palestra" <%=ev.category==='Palestra'
-                                                                        ? 'selected' : '' %>>Palestra</option>
-                                                                    <option value="Workshop" <%=ev.category==='Workshop'
-                                                                        ? 'selected' : '' %>>Workshop</option>
-                                                                    <option value="Conferência"
-                                                                        <%=ev.category==='Conferência' ? 'selected' : ''
-                                                                        %>>Conferência</option>
-                                                                    <option value="Networking"
-                                                                        <%=ev.category==='Networking' ? 'selected' : ''
-                                                                        %>>Networking</option>
-                                                                    <option value="Cultural" <%=ev.category==='Cultural'
-                                                                        ? 'selected' : '' %>>Cultural / Artístico
-                                                                    </option>
-                                                                    <option value="Outro" <%=ev.category==='Outro'
-                                                                        ? 'selected' : '' %>
-                                                                        >Outro</option>
-                                                                </select>
+                                                                <label>Método da Imagem de Capa:</label>
+                                                                <div class="radio-group" style="margin-bottom: 1rem;">
+                                                                    <% let isUpload=ev.cover_image_url &&
+                                                                        ev.cover_image_url.startsWith('/uploads/'); %>
+                                                                        <% let isUrl=ev.cover_image_url && !isUpload; %>
+
+                                                                            <input type="radio" id="capa-upload"
+                                                                                name="capa-tipo" value="upload"
+                                                                                data-target="#upload-section"
+                                                                                <%=(isUpload || !ev.cover_image_url)
+                                                                                ? 'checked' : '' %>>
+                                                                            <label for="capa-upload">Fazer
+                                                                                Upload</label>
+
+                                                                            <input type="radio" id="capa-url"
+                                                                                name="capa-tipo" value="url"
+                                                                                data-target="#url-section" <%=isUrl
+                                                                                ? 'checked' : '' %>>
+                                                                            <label for="capa-url">Colar URL</label>
+                                                                </div>
                                                             </div>
-
-                                                            <div class="form-group">
-                                                                <label for="qtdSubs">Limite de Inscrições:</label>
-                                                                <input type="number" id="qtdSubs" name="qtdSubs"
-                                                                    class="form-control"
-                                                                    value="<%= ev.qtdSubs || 100 %>" min="1" required>
+                                                            <div id="upload-section"
+                                                                class="hidden-section-soft <%= (isUpload || !ev.cover_image_url) ? '' : 'hidden' %>">
+                                                                <div class="form-group">
+                                                                    <label for="cover_image_upload">Arquivo da
+                                                                        Capa:</label>
+                                                                    <input type="file" id="cover_image_upload"
+                                                                        name="cover_image_upload" class="form-control">
+                                                                </div>
+                                                            </div>
+                                                            <div id="url-section"
+                                                                class="hidden-section-soft <%= isUrl ? '' : 'hidden' %>">
+                                                                <div class="form-group">
+                                                                    <label for="cover_image_url">URL da Imagem:</label>
+                                                                    <input type="text" id="cover_image_url"
+                                                                        name="cover_image_url" class="form-control"
+                                                                        placeholder="Cole um link de imagem aqui (ex: https://.../imagem.jpg)"
+                                                                        value="<%= isUrl ? ev.cover_image_url : '' %>">
+                                                                </div>
                                                             </div>
 
                                                             <hr class="form-divider">
 
-                                                            <%# --- SEÇÃO DE ENDEREÇO --- %>
+                                                            <%# Seção de Endereço %>
                                                                 <h3>Endereço do Evento</h3>
                                                                 <div class="form-group">
                                                                     <label for="address_street">Logradouro /
@@ -159,332 +161,325 @@
                                                                         value="<%= address.neighborhood %>">
                                                                 </div>
 
+                                                                <%# Navegação da Etapa 2 %>
+                                                                    <div class="form-step-navigation">
+                                                                        <button type="button" class="btn-secondary"
+                                                                            data-nav="prev">Anterior</button>
+                                                                        <button type="button" class="btn-secondary"
+                                                                            data-nav="next">Próximo</button>
+                                                                    </div>
+                                                    </div>
+
+
+                                                    <%# --- ETAPA 3: Cronograma e Vagas --- %>
+                                                        <div class="form-step" data-step="3">
+                                                            <h3>Etapa 3: Cronograma e Vagas</h3>
+
+                                                            <%# Seção de Horários %>
+                                                                <h3>Data e Hora</h3>
+                                                                <div class="form-row">
+                                                                    <div class="form-group">
+                                                                        <label for="date_start">Data de Início:</label>
+                                                                        <input type="date" id="date_start"
+                                                                            class="form-control"
+                                                                            value="<%= schedule.date_start %>">
+                                                                    </div>
+                                                                    <div class="form-group">
+                                                                        <label for="time_start">Hora de Início:</label>
+                                                                        <input type="time" id="time_start"
+                                                                            class="form-control"
+                                                                            value="<%= schedule.time_start %>">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-row">
+                                                                    <div class="form-group">
+                                                                        <label for="date_end">Data de Término:</label>
+                                                                        <input type="date" id="date_end"
+                                                                            class="form-control"
+                                                                            value="<%= schedule.date_end %>">
+                                                                    </div>
+                                                                    <div class="form-group">
+                                                                        <label for="time_end">Hora de Término:</label>
+                                                                        <input type="time" id="time_end"
+                                                                            class="form-control"
+                                                                            value="<%= schedule.time_end %>">
+                                                                    </div>
+                                                                </div>
+
                                                                 <hr class="form-divider">
 
-                                                                <%# --- SEÇÃO DE HORÁRIOS --- %>
-                                                                    <h3>Data e Hora</h3>
-                                                                    <div class="form-row">
-                                                                        <div class="form-group">
-                                                                            <label for="date_start">Data de
-                                                                                Início:</label>
-                                                                            <input type="date" id="date_start"
-                                                                                class="form-control"
-                                                                                value="<%= schedule.date_start %>">
+                                                                <%# Seção de Vagas %>
+                                                                    <div class="form-group">
+                                                                        <label for="qtdSubs">Limite de
+                                                                            Inscrições:</label>
+                                                                        <input type="number" id="qtdSubs" name="qtdSubs"
+                                                                            class="form-control"
+                                                                            value="<%= ev.qtdSubs || 100 %>" min="1"
+                                                                            required>
+                                                                    </div>
+
+                                                                    <%# Navegação da Etapa 3 %>
+                                                                        <div class="form-step-navigation">
+                                                                            <button type="button" class="btn-secondary"
+                                                                                data-nav="prev">Anterior</button>
+                                                                            <button type="button" class="btn-secondary"
+                                                                                data-nav="next">Próximo</button>
                                                                         </div>
-                                                                        <div class="form-group">
-                                                                            <label for="time_start">Hora de
-                                                                                Início:</label>
-                                                                            <input type="time" id="time_start"
-                                                                                class="form-control"
-                                                                                value="<%= schedule.time_start %>">
+                                                        </div>
+
+
+                                                        <%# --- ETAPA 4: Detalhes e Preço --- %>
+                                                            <div class="form-step" data-step="4">
+                                                                <h3>Etapa 4: Detalhes e Preço</h3>
+
+                                                                <%# Seção de Preço %>
+                                                                    <h3>Preço do Evento</h3>
+                                                                    <div class="form-group">
+                                                                        <label>O evento é gratuito?</label>
+                                                                        <div class="radio-group">
+                                                                            <input type="radio" id="price_free_yes"
+                                                                                name="isFree" value="true"
+                                                                                data-target="#section-price"
+                                                                                <%=(pricing.isFree==='true' )
+                                                                                ? 'checked' : '' %>>
+                                                                            <label for="price_free_yes">Sim,
+                                                                                gratuito</label>
+                                                                            <input type="radio" id="price_free_no"
+                                                                                name="isFree" value="false"
+                                                                                data-target="#section-price"
+                                                                                <%=(pricing.isFree==='false' )
+                                                                                ? 'checked' : '' %>>
+                                                                            <label for="price_free_no">Não, é
+                                                                                pago</label>
                                                                         </div>
                                                                     </div>
-                                                                    <div class="form-row">
+                                                                    <div id="section-price"
+                                                                        class="hidden-section <%= (pricing.isFree === 'false') ? '' : 'hidden' %>">
                                                                         <div class="form-group">
-                                                                            <label for="date_end">Data de
-                                                                                Término:</label>
-                                                                            <input type="date" id="date_end"
+                                                                            <label for="event_price">Valor do Ingresso
+                                                                                (em R$):</label>
+                                                                            <input type="number" id="event_price"
                                                                                 class="form-control"
-                                                                                value="<%= schedule.date_end %>">
-                                                                        </div>
-                                                                        <div class="form-group">
-                                                                            <label for="time_end">Hora de
-                                                                                Término:</label>
-                                                                            <input type="time" id="time_end"
-                                                                                class="form-control"
-                                                                                value="<%= schedule.time_end %>">
+                                                                                placeholder="Ex: 50" min="0" step="0.01"
+                                                                                value="<%= pricing.price %>">
                                                                         </div>
                                                                     </div>
 
                                                                     <hr class="form-divider">
 
-                                                                    <%# --- SEÇÃO DE PREÇO --- %>
-                                                                        <h3>Preço do Evento</h3>
+                                                                    <%# Seção de Comida %>
+                                                                        <h3>Comida e Bebida</h3>
                                                                         <div class="form-group">
-                                                                            <label>O evento é gratuito?</label>
+                                                                            <label>Haverá comida/bebida?</label>
                                                                             <div class="radio-group">
-                                                                                <input type="radio" id="price_free_yes"
-                                                                                    name="isFree" value="true"
-                                                                                    data-target="#section-price"
-                                                                                    <%=(pricing.isFree==='true' )
+                                                                                <input type="radio" id="food_yes"
+                                                                                    name="hasFood" value="true"
+                                                                                    data-target="#section-food-details"
+                                                                                    <%=(food.hasFood==='true' )
                                                                                     ? 'checked' : '' %>>
-                                                                                <label for="price_free_yes">Sim,
-                                                                                    gratuito</label>
-                                                                                <input type="radio" id="price_free_no"
-                                                                                    name="isFree" value="false"
-                                                                                    data-target="#section-price"
-                                                                                    <%=(pricing.isFree==='false' )
+                                                                                <label for="food_yes">Sim</label>
+                                                                                <input type="radio" id="food_no"
+                                                                                    name="hasFood" value="false"
+                                                                                    data-target="#section-food-details"
+                                                                                    <%=(food.hasFood==='false' )
                                                                                     ? 'checked' : '' %>>
-                                                                                <label for="price_free_no">Não, é
-                                                                                    pago</label>
+                                                                                <label for="food_no">Não</label>
                                                                             </div>
                                                                         </div>
-                                                                        <div id="section-price"
-                                                                            class="hidden-section <%= (pricing.isFree === 'false') ? '' : 'hidden' %>">
+                                                                        <div id="section-food-details"
+                                                                            class="hidden-section <%= (food.hasFood === 'true') ? '' : 'hidden' %>">
                                                                             <div class="form-group">
-                                                                                <label for="event_price">Valor do
-                                                                                    Ingresso (em
-                                                                                    R$):</label>
-                                                                                <input type="number" id="event_price"
-                                                                                    class="form-control"
-                                                                                    placeholder="Ex: 50" min="0"
-                                                                                    step="0.01"
-                                                                                    value="<%= pricing.price %>">
+                                                                                <label>Será gratuito?</label>
+                                                                                <div class="radio-group">
+                                                                                    <input type="radio"
+                                                                                        id="food_free_yes"
+                                                                                        name="isFoodFree" value="true"
+                                                                                        data-target="#section-food-price"
+                                                                                        <%=(food.isFree==='true' )
+                                                                                        ? 'checked' : '' %>>
+                                                                                    <label for="food_free_yes">Sim,
+                                                                                        gratuito</label>
+                                                                                    <input type="radio"
+                                                                                        id="food_free_no"
+                                                                                        name="isFoodFree" value="false"
+                                                                                        data-target="#section-food-price"
+                                                                                        <%=(food.isFree==='false' )
+                                                                                        ? 'checked' : '' %>>
+                                                                                    <label for="food_free_no">Não, será
+                                                                                        pago</label>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div id="section-food-price"
+                                                                                class="hidden-section <%= (food.isFree === 'false') ? '' : 'hidden' %>">
+                                                                                <div class="form-group">
+                                                                                    <label for="food_price">Preço (ou
+                                                                                        faixa, ex: "R$ 10-30"):</label>
+                                                                                    <input type="text" id="food_price"
+                                                                                        class="form-control"
+                                                                                        value="<%= food.price %>">
+                                                                                </div>
                                                                             </div>
                                                                         </div>
 
                                                                         <hr class="form-divider">
 
-                                                                        <%# --- SEÇÃO DE COMIDA --- %>
-                                                                            <h3>Comida e Bebida</h3>
-                                                                            <div class="form-group">
-                                                                                <label>Haverá comida/bebida?</label>
-                                                                                <div class="radio-group">
-                                                                                    <input type="radio" id="food_yes"
-                                                                                        name="hasFood" value="true"
-                                                                                        data-target="#section-food-details"
-                                                                                        <%=(food.hasFood==='true' )
-                                                                                        ? 'checked' : '' %>>
-                                                                                    <label for="food_yes">Sim</label>
-                                                                                    <input type="radio" id="food_no"
-                                                                                        name="hasFood" value="false"
-                                                                                        data-target="#section-food-details"
-                                                                                        <%=(food.hasFood==='false' )
-                                                                                        ? 'checked' : '' %>>
-                                                                                    <label for="food_no">Não</label>
-                                                                                </div>
-                                                                            </div>
-                                                                            <div id="section-food-details"
-                                                                                class="hidden-section <%= (food.hasFood === 'true') ? '' : 'hidden' %>">
-                                                                                <div class="form-group">
-                                                                                    <label>Será gratuito?</label>
-                                                                                    <div class="radio-group">
-                                                                                        <input type="radio"
-                                                                                            id="food_free_yes"
-                                                                                            name="isFoodFree"
-                                                                                            value="true"
-                                                                                            data-target="#section-food-price"
-                                                                                            <%=(food.isFree==='true' )
-                                                                                            ? 'checked' : '' %>>
-                                                                                        <label for="food_free_yes">Sim,
-                                                                                            gratuito</label>
-                                                                                        <input type="radio"
-                                                                                            id="food_free_no"
-                                                                                            name="isFoodFree"
-                                                                                            value="false"
-                                                                                            data-target="#section-food-price"
-                                                                                            <%=(food.isFree==='false' )
-                                                                                            ? 'checked' : '' %>>
-                                                                                        <label for="food_free_no">Não,
-                                                                                            será pago</label>
-                                                                                    </div>
-                                                                                </div>
-                                                                                <div id="section-food-price"
-                                                                                    class="hidden-section <%= (food.isFree === 'false') ? '' : 'hidden' %>">
-                                                                                    <div class="form-group">
-                                                                                        <label for="food_price">Preço
-                                                                                            (ou faixa, ex: "R$
-                                                                                            10-30"):</label>
-                                                                                        <input type="text"
-                                                                                            id="food_price"
-                                                                                            class="form-control"
-                                                                                            value="<%= food.price %>">
-                                                                                    </div>
-                                                                                </div>
+                                                                        <%# Seção de Visibilidade %>
+                                                                            <div class="form-group checkbox-group"
+                                                                                style="background-color: var(--bg-color); padding: 1rem; border-radius: 8px;">
+                                                                                <input type="checkbox" id="is_hidden"
+                                                                                    name="is_hidden"
+                                                                                    <%=(ev.is_hidden===1) ? 'checked'
+                                                                                    : '' %>>
+                                                                                <label for="is_hidden">Ocultar este
+                                                                                    evento? (Não aparecerá na lista
+                                                                                    pública)</label>
                                                                             </div>
 
-                                                                            <hr class="form-divider">
+                                                                            <%# Navegação da Etapa 4 %>
+                                                                                <div class="form-step-navigation">
+                                                                                    <button type="button"
+                                                                                        class="btn-secondary"
+                                                                                        data-nav="prev">Anterior</button>
+                                                                                    <button type="button"
+                                                                                        class="btn-secondary"
+                                                                                        data-nav="next">Próximo</button>
+                                                                                </div>
+                                                            </div>
 
-                                                                            <%# --- CAMPO ADICIONADO --- %>
-                                                                                <div class="form-group checkbox-group"
-                                                                                    style="background-color: var(--bg-color); padding: 1rem; border-radius: 8px;">
+
+                                                            <%# --- ETAPA 5: Atrações e Salvar --- %>
+                                                                <div class="form-step" data-step="5">
+                                                                    <h3>Etapa 5: Atrações do Evento</h3>
+
+                                                                    <%# Checkbox de Palestras %>
+                                                                        <div class="form-group checkbox-group">
+                                                                            <input type="checkbox" id="chk-palestras"
+                                                                                data-target="#section-palestras"
+                                                                                <%=(attractions.palestras.length> 0) ?
+                                                                            'checked' : '' %>>
+                                                                            <label for="chk-palestras">Terá
+                                                                                Palestras?</label>
+                                                                        </div>
+
+                                                                        <%# Seção Escondida de Palestras %>
+                                                                            <div id="section-palestras"
+                                                                                class="hidden-section <%= (attractions.palestras.length > 0) ? '' : 'hidden' %>">
+                                                                                <h4>Palestrantes</h4>
+                                                                                <div class="form-group checkbox-group">
                                                                                     <input type="checkbox"
-                                                                                        id="is_hidden" name="is_hidden"
-                                                                                        <%=(ev.is_hidden===1)
+                                                                                        id="chk-palestras-simultaneas"
+                                                                                        <%=(attractions.palestras_simultaneas)
                                                                                         ? 'checked' : '' %>>
-                                                                                    <label for="is_hidden">Ocultar este
-                                                                                        evento? (Não
-                                                                                        aparecerá na lista
-                                                                                        pública)</label>
+                                                                                    <label
+                                                                                        for="chk-palestras-simultaneas">Palestras
+                                                                                        simultâneas? (Oculta
+                                                                                        horários)</label>
+                                                                                    <span
+                                                                                        class="warning-text <%= (attractions.palestras_simultaneas) ? '' : 'hidden' %>">
+                                                                                        "Perguntar sobre as palestras no
+                                                                                        local"
+                                                                                    </span>
+                                                                                </div>
+                                                                                <div id="speakers-list">
+                                                                                    <% attractions.palestras.forEach(p=>
+                                                                                        { %>
+                                                                                        <div class="dynamic-item">
+                                                                                            <input type="text"
+                                                                                                placeholder="Nome do Palestrante"
+                                                                                                class="form-control speaker-name"
+                                                                                                value="<%= p.nome %>">
+                                                                                            <input type="text"
+                                                                                                placeholder="Profissão/Tópico"
+                                                                                                class="form-control speaker-job"
+                                                                                                value="<%= p.profissao %>">
+                                                                                            <input type="time"
+                                                                                                placeholder="Horário"
+                                                                                                class="form-control speaker-time"
+                                                                                                value="<%= p.horario %>">
+                                                                                        </div>
+                                                                                        <% }) %>
+                                                                                </div>
+                                                                                <button type="button"
+                                                                                    class="btn-secondary"
+                                                                                    id="add-speaker">+ Adicionar
+                                                                                    Palestrante</button>
+                                                                            </div>
+
+                                                                            <%# Checkbox de Artistas %>
+                                                                                <div class="form-group checkbox-group"
+                                                                                    style="margin-top: 1.5rem;">
+                                                                                    <input type="checkbox"
+                                                                                        id="chk-artistas"
+                                                                                        data-target="#section-artistas"
+                                                                                        <%=(attractions.artistas.length>
+                                                                                    0) ? 'checked' : '' %>>
+                                                                                    <label for="chk-artistas">Terá
+                                                                                        Atrações Artísticas?</label>
                                                                                 </div>
 
-
-                                                                                <hr class="form-divider">
-
-
-                                                                                <%# --- SEÇÃO DE ATRAÇÕES --- %>
-                                                                                    <h3>Atrações do Evento</h3>
-
-                                                                                    <%# Checkbox de Palestras %>
+                                                                                <%# Seção Escondida de Artistas %>
+                                                                                    <div id="section-artistas"
+                                                                                        class="hidden-section <%= (attractions.artistas.length > 0) ? '' : 'hidden' %>">
+                                                                                        <h4>Artistas</h4>
                                                                                         <div
                                                                                             class="form-group checkbox-group">
                                                                                             <input type="checkbox"
-                                                                                                id="chk-palestras"
-                                                                                                data-target="#section-palestras"
-                                                                                                <%=(attractions.palestras.length>
-                                                                                            0) ?
-                                                                                            'checked'
-                                                                                            :
-                                                                                            ''
-                                                                                            %>>
+                                                                                                id="chk-artistas-simultaneos"
+                                                                                                <%=(attractions.artistas_simultaneos)
+                                                                                                ? 'checked' : '' %>>
                                                                                             <label
-                                                                                                for="chk-palestras">Terá
-                                                                                                Palestras?</label>
+                                                                                                for="chk-artistas-simultaneos">Atrações
+                                                                                                simultâneas? (Oculta
+                                                                                                horários)</label>
+                                                                                            <span
+                                                                                                class="warning-text <%= (attractions.artistas_simultaneos) ? '' : 'hidden' %>">
+                                                                                                "Perguntar sobre as
+                                                                                                atrações no local"
+                                                                                            </span>
                                                                                         </div>
-
-                                                                                        <%# Seção Escondida de Palestras
-                                                                                            %>
-                                                                                            <div id="section-palestras"
-                                                                                                class="hidden-section <%= (attractions.palestras.length > 0) ? '' : 'hidden' %>">
-                                                                                                <h4>Palestrantes</h4>
+                                                                                        <div id="artists-list">
+                                                                                            <%
+                                                                                                attractions.artistas.forEach(a=>
+                                                                                                { %>
                                                                                                 <div
-                                                                                                    class="form-group checkbox-group">
-                                                                                                    <input
-                                                                                                        type="checkbox"
-                                                                                                        id="chk-palestras-simultaneas"
-                                                                                                        <%=(attractions.palestras_simultaneas)
-                                                                                                        ? 'checked' : ''
-                                                                                                        %>>
-                                                                                                    <label
-                                                                                                        for="chk-palestras-simultaneas">Palestras
-                                                                                                        simultâneas?</label>
-                                                                                                    <span
-                                                                                                        class="warning-text <%= (attractions.palestras_simultaneas) ? '' : 'hidden' %>">
-                                                                                                        "Perguntar sobre
-                                                                                                        as palestras no
-                                                                                                        local"
-                                                                                                    </span>
+                                                                                                    class="dynamic-item">
+                                                                                                    <input type="text"
+                                                                                                        placeholder="Nome do Artista/Grupo"
+                                                                                                        class="form-control artist-name"
+                                                                                                        value="<%= a.nome %>">
+                                                                                                    <input type="text"
+                                                                                                        placeholder="O que faz (ex: Banda, Teatro)"
+                                                                                                        class="form-control artist-desc"
+                                                                                                        value="<%= a.descricao %>">
+                                                                                                    <input type="time"
+                                                                                                        placeholder="Horário"
+                                                                                                        class="form-control artist-time"
+                                                                                                        value="<%= a.horario %>">
                                                                                                 </div>
-                                                                                                <div id="speakers-list">
-                                                                                                    <%
-                                                                                                        attractions.palestras.forEach(p=>
-                                                                                                        {
-                                                                                                        %>
-                                                                                                        <div
-                                                                                                            class="dynamic-item">
-                                                                                                            <input
-                                                                                                                type="text"
-                                                                                                                placeholder="Nome do Palestrante"
-                                                                                                                class="form-control speaker-name"
-                                                                                                                value="<%= p.nome %>">
-                                                                                                            <input
-                                                                                                                type="text"
-                                                                                                                placeholder="Profissão/Tópico"
-                                                                                                                class="form-control speaker-job"
-                                                                                                                value="<%= p.profissao %>">
-                                                                                                            <input
-                                                                                                                type="time"
-                                                                                                                placeholder="Horário"
-                                                                                                                class="form-control speaker-time"
-                                                                                                                value="<%= p.horario %>">
-                                                                                                        </div>
-                                                                                                        <% }) %>
-                                                                                                </div>
-                                                                                                <button type="button"
-                                                                                                    class="btn-secondary"
-                                                                                                    id="add-speaker">+
-                                                                                                    Adicionar
-                                                                                                    Palestrante</button>
+                                                                                                <% }) %>
+                                                                                        </div>
+                                                                                        <button type="button"
+                                                                                            class="btn-secondary"
+                                                                                            id="add-artist">+ Adicionar
+                                                                                            Artista</button>
+                                                                                    </div>
+
+                                                                                    <%# Botões Finais de Ação %>
+                                                                                        <div
+                                                                                            class="form-step-navigation">
+                                                                                            <button type="button"
+                                                                                                class="btn-secondary"
+                                                                                                data-nav="prev">Anterior</button>
+
+                                                                                            <div class="form-actions"
+                                                                                                style="margin: 0; padding: 0;">
+                                                                                                <button type="submit"
+                                                                                                    class="btn btn-success">Salvar
+                                                                                                    Evento</button>
+                                                                                                <a href="/site/eventos/todos"
+                                                                                                    class="btn-secondary">Cancelar</a>
                                                                                             </div>
+                                                                                        </div>
+                                                                </div>
 
-                                                                                            <%# Checkbox de Artistas %>
-                                                                                                <div class="form-group checkbox-group"
-                                                                                                    style="margin-top: 1.5rem;">
-                                                                                                    <input
-                                                                                                        type="checkbox"
-                                                                                                        id="chk-artistas"
-                                                                                                        data-target="#section-artistas"
-                                                                                                        <%=(attractions.artistas.length>
-                                                                                                    0)
-                                                                                                    ?
-                                                                                                    'checked'
-                                                                                                    : ''
-                                                                                                    %>>
-                                                                                                    <label
-                                                                                                        for="chk-artistas">Terá
-                                                                                                        Atrações
-                                                                                                        Artísticas?</label>
-                                                                                                </div>
-
-                                                                                                <%# Seção Escondida de
-                                                                                                    Artistas %>
-                                                                                                    <div id="section-artistas"
-                                                                                                        class="hidden-section <%= (attractions.artistas.length > 0) ? '' : 'hidden' %>">
-                                                                                                        <h4>Artistas
-                                                                                                        </h4>
-                                                                                                        <div
-                                                                                                            class="form-group checkbox-group">
-                                                                                                            <input
-                                                                                                                type="checkbox"
-                                                                                                                id="chk-artistas-simultaneos"
-                                                                                                                <%=(attractions.artistas_simultaneos)
-                                                                                                                ? 'checked'
-                                                                                                                : '' %>>
-                                                                                                            <label
-                                                                                                                for="chk-artistas-simultaneos">Atrações
-                                                                                                                simultâneas?</label>
-                                                                                                            <span
-                                                                                                                class="warning-text <%= (attractions.artistas_simultaneos) ? '' : 'hidden' %>">
-                                                                                                                "Perguntar
-                                                                                                                sobre as
-                                                                                                                atrações
-                                                                                                                no
-                                                                                                                local"
-                                                                                                            </span>
-                                                                                                        </div>
-                                                                                                        <div
-                                                                                                            id="artists-list">
-                                                                                                            <%
-                                                                                                                attractions.artistas.forEach(a=>
-                                                                                                                { %>
-                                                                                                                <div
-                                                                                                                    class="dynamic-item">
-                                                                                                                    <input
-                                                                                                                        type="text"
-                                                                                                                        placeholder="Nome do Artista/Grupo"
-                                                                                                                        class="form-control artist-name"
-                                                                                                                        value="<%= a.nome %>">
-                                                                                                                    <input
-                                                                                                                        type="text"
-                                                                                                                        placeholder="O que faz (ex: Banda, Teatro)"
-                                                                                                                        class="form-control artist-desc"
-                                                                                                                        value="<%= a.descricao %>">
-                                                                                                                    <input
-                                                                                                                        type="time"
-                                                                                                                        placeholder="Horário"
-                                                                                                                        class="form-control artist-time"
-                                                                                                                        value="<%= a.horario %>">
-                                                                                                                </div>
-                                                                                                                <% }) %>
-                                                                                                        </div>
-                                                                                                        <button
-                                                                                                            type="button"
-                                                                                                            class="btn-secondary"
-                                                                                                            id="add-artist">+
-                                                                                                            Adicionar
-                                                                                                            Artista</button>
-                                                                                                    </div>
-
-                                                                                                    <hr
-                                                                                                        class="form-divider">
-
-                                                                                                    <%# --- Wrapper
-                                                                                                        Flexbox
-                                                                                                        Adicionado ---
-                                                                                                        %>
-                                                                                                        <div
-                                                                                                            class="form-actions">
-                                                                                                            <button
-                                                                                                                type="submit"
-                                                                                                                class="btn btn-success">Salvar
-
-                                                                                                                Evento</button>
-                                                                                                            <%# O
-                                                                                                                style="margin-left"
-                                                                                                                foi
-                                                                                                                removido
-                                                                                                                %>
-                                                                                                                <a href="/site/eventos/todos"
-                                                                                                                    class="btn-secondary">Cancelar</a>
-                                                                                                        </div>
-                </form>
+                                </form>

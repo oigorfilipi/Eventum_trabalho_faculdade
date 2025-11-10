@@ -145,6 +145,44 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         // --- FIM DA NOVA LÓGICA ---
 
+        // --- NOVA LÓGICA DO STEPPER ---
+        const steps = document.querySelectorAll('.form-step');
+        const nextButtons = document.querySelectorAll('button[data-nav="next"]');
+        const prevButtons = document.querySelectorAll('button[data-nav="prev"]');
+        const indicator = document.getElementById('form-step-indicator');
+        let currentStep = 1;
+
+        const showStep = (stepNumber) => {
+            // Esconde todas as etapas
+            steps.forEach(step => step.classList.remove('active'));
+            // Mostra a etapa correta
+            const activeStep = document.querySelector(`.form-step[data-step="${stepNumber}"]`);
+            if (activeStep) {
+                activeStep.classList.add('active');
+                indicator.textContent = `Passo ${stepNumber} de ${steps.length}`;
+                currentStep = stepNumber;
+            }
+        };
+
+        nextButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                if (currentStep < steps.length) {
+                    showStep(currentStep + 1);
+                }
+            });
+        });
+
+        prevButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                if (currentStep > 1) {
+                    showStep(currentStep - 1);
+                }
+            });
+        });
+
+        // Inicia na etapa 1 (já está no HTML, mas para garantir)
+        showStep(1);
+        // --- FIM DA LÓGICA DO STEPPER ---
 
         // --- 2. Lógica de Adicionar Campos Dinâmicos (Palestrantes) ---
         const addSpeakerBtn = document.getElementById('add-speaker');
