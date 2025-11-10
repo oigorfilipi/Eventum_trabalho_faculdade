@@ -67,40 +67,71 @@
 
                                         </div>
 
-                                        <%# --------------------------------------------------- %>
-                                            <%# 2. VISÃO DO USUÁRIO COMUM %>
-                                                <%# --------------------------------------------------- %>
-                                                    <% } else { %>
-                                                        <h1>Minha Conta</h1>
+                                        <%# --- NOVO PAINEL DE CERTIFICADOS --- %>
+                                            <div class="form-container" style="margin-top: 2rem;">
+                                                <h2>Gerar Certificados</h2>
+                                                <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                                                    Selecione um evento para gerar um certificado para todos os usuários
+                                                    inscritos.
+                                                </p>
 
-                                                        <%# CORREÇÃO: Envolvido em um <form> e campo "Nome" ativado %>
-                                                            <form action="/site/atualizar-perfil" method="POST"
-                                                                class="form-container" style="margin-top: 2rem;">
-                                                                <h2>Minhas Informações</h2>
-
-                                                                <div class="form-group">
-                                                                    <label for="name">Nome:</label>
-                                                                    <input type="text" id="name" name="name"
-                                                                        class="form-control" value="<%= user.name %>"
-                                                                        required>
-                                                                </div>
-
-                                                                <div class="form-group">
-                                                                    <label>Email (Não pode ser alterado):</label>
-                                                                    <input type="email" class="form-control"
-                                                                        value="<%= user.email %>" disabled>
-                                                                </div>
-
-                                                                <button type="submit" class="btn btn-secondary">Salvar
-                                                                    Alterações</button>
-                                                            </form>
-
-
-                                                            <div class="form-group">
-                                                                <label>Email:</label>
-                                                                <input type="email" class="form-control"
-                                                                    value="<%= user.email %>" disabled>
+                                                <div class="certificate-list">
+                                                    <% if (events && events.length> 0) { %>
+                                                        <% events.forEach(event=> { %>
+                                                            <div class="certificate-item">
+                                                                <span>
+                                                                    <%= event.title %>
+                                                                </span>
+                                                                <a href="/site/certificados/<%= event.id %>"
+                                                                    class="btn-secondary" target="_blank">Gerar</a>
                                                             </div>
+                                                            <% }) %>
+                                                                <% } else { %>
+                                                                    <p>Nenhum evento criado ainda.</p>
+                                                                    <% } %>
+                                                </div>
+                                            </div>
+
+                                            <%# --------------------------------------------------- %>
+
+                                                <%# --------------------------------------------------- %>
+                                                    <%# 2. VISÃO DO USUÁRIO COMUM %>
+                                                        <%# --------------------------------------------------- %>
+                                                            <% } else { %>
+                                                                <h1>Minha Conta</h1>
+
+                                                                <%# CORREÇÃO: Envolvido em um <form> e campo "Nome"
+                                                                    ativado %>
+                                                                    <form action="/site/atualizar-perfil" method="POST"
+                                                                        class="form-container"
+                                                                        style="margin-top: 2rem;">
+                                                                        <h2>Minhas Informações</h2>
+
+                                                                        <div class="form-group">
+                                                                            <label for="name">Nome:</label>
+                                                                            <input type="text" id="name" name="name"
+                                                                                class="form-control"
+                                                                                value="<%= user.name %>" required>
+                                                                        </div>
+
+                                                                        <div class="form-group">
+                                                                            <label>Email (Não pode ser
+                                                                                alterado):</label>
+                                                                            <input type="email" class="form-control"
+                                                                                value="<%= user.email %>" disabled>
+                                                                        </div>
+
+                                                                        <button type="submit"
+                                                                            class="btn btn-secondary">Salvar
+                                                                            Alterações</button>
+                                                                    </form>
+
+
+                                                                    <div class="form-group">
+                                                                        <label>Email:</label>
+                                                                        <input type="email" class="form-control"
+                                                                            value="<%= user.email %>" disabled>
+                                                                    </div>
         </div>
 
         <div class="form-container" style="margin-top: 2rem;">

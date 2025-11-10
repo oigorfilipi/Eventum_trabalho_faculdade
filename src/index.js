@@ -6,6 +6,7 @@ const userRoutes = require('./routes/users');
 const eventRoutes = require('./routes/events');
 const subscribeRoutes = require('./routes/subscribe');
 const bcrypt = require('bcryptjs');
+const PDFDocument = require('pdfkit'); // <-- ADICIONE ESTA LINHA
 
 const app = express();
 app.use(express.urlencoded({ extended: true }));
@@ -448,10 +449,18 @@ app.get('/site/minha-conta', isLoggedIn, (req, res) => {
             JOIN events e ON s.event_id = e.id
           `;
           db.get(sqlActive, [], (err, row) => {
-            if (row) stats.activeSubscriptions = row.count; // <-- MUDANÇA AQUI
+            if (row) stats.activeSubscriptions = row.count;
 
-            // Renderiza a view passando as estatísticas
-            res.render('minha-conta', { stats: stats });
+            const eventsSql = "SELECT id, title FROM events ORDER BY created_at DESC";
+            db.all(eventsSql, [], (err, events) => {
+
+              // Renderiza a view passando as estatísticas E os eventos
+              res.render('minha-conta', {
+                stats: stats,
+                events: events, // <-- ADICIONADO
+                myEvents: null // Garante que a variável do usuário não exista
+              });
+            });
           });
         });
       });
@@ -641,6 +650,120 @@ app.get('/site/pagamento/:id', isLoggedIn, (req, res) => {
     res.render('pagamento', { event, price, user: req.session.user });
   });
 });
+
+// --- ROTA "CAÓTICA" PARA GERAR CERTIFICADOS ---
+app.get('/site/certificados/:id', isAdmin, (req, res) => {
+  const eventId = req.params.id;
+
+  // 1. Busca os detalhes do evento (precisamos do título)
+  db.get('SELECT title FROM events WHERE id = ?', [eventId], (err, event) => {
+    if (err || !event) {
+      return res.status(404).send('Evento não encontrado');
+    }
+
+    // 2. Busca TODOS os usuários inscritos nesse evento
+    const sql = `
+            SELECT u.name, u.email 
+            FROM users u
+            JOIN subscriptions s ON u.id = s.user_id
+            WHERE s.event_id = ?
+            ORDER BY u.name
+        `;
+
+    db.all(sql, [eventId], (err, users) => {
+      if (err) {
+        return res.status(500).send('Erro ao buscar inscritos');
+      }
+
+      if (users.length === 0) {
+        return res.status(404).send('Nenhum inscrito neste evento para gerar certificados.');
+      }
+
+      // 3. --- MÁGICA DO PDFKIT COMEÇA AQUI ---
+
+      // Cria um novo documento PDF na memória
+      const doc = new PDFDocument({
+        layout: 'landscape', // Formato paisagem (deitado)
+        size: 'A4',
+        margin: 50
+      });
+
+      // Configura o cabeçalho da resposta para o navegador
+      // Isso diz ao navegador: "Abra isso como um PDF"
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `inline; filename="certificados_${event.title.replace(/\s/g, '_')}.pdf"`);
+
+      // "Canaliza" o PDF sendo criado DIRETAMENTE para a resposta
+      doc.pipe(res);
+
+      // 4. Loop: Cria uma página para cada usuário
+      users.forEach((user, index) => {
+
+        // Desenha o certificado
+        doc.fontSize(28)
+          .font('Helvetica-Bold')
+          .text('CERTIFICADO DE PARTICIPAÇÃO', { align: 'center' });
+
+        doc.moveDown(2);
+
+        doc.fontSize(18)
+          .font('Helvetica')
+          .text('Certificamos que', { align: 'center' });
+
+        doc.moveDown(1);
+
+        doc.fontSize(26)
+          .font('Helvetica-Bold')
+          .fillColor('blue') // Cor de destaque (pode ser var(--accent-color) em CSS, mas aqui é string)
+          .text(user.name.toUpperCase(), { align: 'center' });
+
+        doc.moveDown(1);
+
+        doc.fontSize(18)
+          .font('Helvetica')
+          .fillColor('black')
+          .text('participou do evento:', { align: 'center' });
+
+        doc.moveDown(0.5);
+
+        doc.fontSize(22)
+          .font('Helvetica-Bold')
+          .text(`"${event.title}"`, { align: 'center' });
+
+        doc.moveDown(2);
+
+        doc.fontSize(12)
+          .font('Helvetica')
+          .text(`Gerado em: ${new Date().toLocaleDateString('pt-BR')}`, { align: 'center' });
+
+        // Assinatura (simulada)
+        doc.strokeColor('black')
+          .lineWidth(1)
+          .moveTo(doc.page.width / 2 - 150, doc.page.height - 100)
+          .lineTo(doc.page.width / 2 + 150, doc.page.height - 100)
+          .stroke();
+
+        doc.fontSize(12)
+          .font('Helvetica-Bold')
+          .text('Eventum Admin', {
+            align: 'center',
+            width: 300,
+            x: doc.page.width / 2 - 150
+          });
+
+        // Adiciona uma nova página (exceto para o último usuário)
+        if (index < users.length - 1) {
+          doc.addPage();
+        }
+      });
+
+      // 5. Finaliza o PDF
+      doc.end();
+    });
+  });
+});
+// --- FIM DA ROTA CAÓTICA ---
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

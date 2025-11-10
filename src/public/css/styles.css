@@ -259,6 +259,7 @@ a:hover {
     transform: translateY(-2px);
     /* Efeito "pular" */
     text-decoration: none;
+    cursor: pointer;
 }
 
 /* O "Botão Principal" (Sólido, Azul - para Call-to-Action) */
@@ -272,6 +273,7 @@ a:hover {
     background-color: var(--accent-hover);
     border-color: var(--accent-hover);
     color: #ffffff;
+    cursor: pointer;
 }
 
 /* O "Botão Secundário" (Vazado, Azul - o que você gostou) */
@@ -284,6 +286,7 @@ a:hover {
 .btn-secondary:hover {
     background-color: var(--accent-color);
     color: #ffffff;
+    cursor: pointer;
 }
 
 /* O "Botão de Sucesso" (Sólido, Verde - Admin) */
@@ -298,6 +301,7 @@ a:hover {
     /* Verde mais escuro */
     border-color: #3e8e41;
     color: #ffffff;
+    cursor: pointer;
 }
 
 /* O "Botão de Perigo" (Ex: Excluir) */
@@ -312,6 +316,7 @@ a:hover {
     /* Vermelho mais escuro */
     border-color: #c0312d;
     color: #ffffff;
+    cursor: pointer;
 }
 
 /* Variação Verde (Admin) */
@@ -321,6 +326,7 @@ a:hover {
 
 .btn.btn-success:hover {
     background-color: #3e8e41;
+    cursor: pointer;
 }
 
 /* Botão Secundário (Cancelar) */
@@ -351,6 +357,7 @@ a:hover {
     transform: translateY(-2px);
     /* Efeito "pular" (do passo anterior) */
     text-decoration: none;
+    cursor: pointer;
 }
 
 .theme-toggle {
@@ -892,6 +899,7 @@ html.light-theme .about-image img {
     background-color: var(--accent-hover);
     border-color: var(--accent-hover);
     text-decoration: none;
+    cursor: pointer;
 }
 
 /* 5. Setas de Navegação (permanecem iguais) */
@@ -1372,4 +1380,36 @@ th {
     flex-grow: 1;
     flex-basis: 100px;
     /* Tamanho base do botão */
+}
+
+/* [ COLE ISTO NO FINAL DE styles.css ]
+*/
+
+/* 13. LISTA DE CERTIFICADOS (MINHA CONTA)
+--------------------------------------------- */
+.certificate-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.certificate-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background-color: var(--bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+}
+
+.certificate-item span {
+    font-weight: 500;
+}
+
+.certificate-item .btn-secondary {
+    padding: 0.5rem 1rem;
+    /* Botão menor */
+    flex-shrink: 0;
+    /* Impede que o botão encolha */
 }
