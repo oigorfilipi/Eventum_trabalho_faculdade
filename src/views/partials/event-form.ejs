@@ -36,6 +36,12 @@
                                     class="form-control"><%= ev.description || '' %></textarea>
                             </div>
                             <div class="form-group">
+                                <label for="cover_image_url">URL da Imagem da Capa (Opcional):</label>
+                                <input type="text" id="cover_image_url" name="cover_image_url" class="form-control"
+                                    placeholder="Cole um link de imagem aqui (ex: https://.../imagem.jpg)"
+                                    value="<%= ev.cover_image_url || '' %>">
+                            </div>
+                            <div class="form-group">
                                 <label for="qtdSubs">Limite de Inscrições:</label>
                                 <input type="number" id="qtdSubs" name="qtdSubs" class="form-control"
                                     value="<%= ev.qtdSubs || 100 %>" min="1" required>

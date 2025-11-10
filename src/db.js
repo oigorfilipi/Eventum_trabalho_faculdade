@@ -124,6 +124,23 @@ db.serialize(() => {
     }
   });
 
+  db.run(`
+    ALTER TABLE events
+    ADD COLUMN food_details TEXT
+  `, (err) => {
+    // ...
+  });
+
+  // --- NOVA COLUNA DA CAPA ---
+  db.run(`
+    ALTER TABLE events
+    ADD COLUMN cover_image_url TEXT
+  `, (err) => {
+    if (err && !err.message.includes('duplicate column name')) {
+      console.error('Erro ao adicionar coluna cover_image_url:', err.message);
+    }
+  });
+
 });
 
 module.exports = db;

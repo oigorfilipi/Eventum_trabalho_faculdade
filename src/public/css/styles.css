@@ -476,3 +476,20 @@ textarea.form-control {
 .detail-item {
     margin-bottom: 5px;
 }
+
+/* Adicione este estilo ao <style> em evento-detalhe.ejs */
+
+.event-cover-image {
+    width: 100%;
+    height: 300px; /* Altura fixa para a capa */
+    margin-bottom: 1.5rem;
+    border-radius: 8px;
+    overflow: hidden; /* Garante que a imagem não vaze do radius */
+    background-color: var(--card-color); /* Fundo enquanto a imagem carrega */
+}
+
+.event-cover-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Faz a imagem cobrir o espaço, estilo Notion */
+}

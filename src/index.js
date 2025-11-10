@@ -61,32 +61,30 @@ app.get('/site/eventos/novo', isAdmin, (req, res) => {
 */
 app.post('/site/eventos/novo', isAdmin, (req, res) => {
   const { title, description, qtdSubs,
-    schedule_details, address_details, pricing_details, food_details, attractions
+    schedule_details, address_details, pricing_details, food_details, attractions,
+    cover_image_url
   } = req.body;
 
-  // 2. Pega o ID do admin logado (da sessão)
   const createdBy = req.session.user.id;
 
   if (!title) {
-    // CORREÇÃO: Devolver todos os campos (agora os campos são os JSONs)
     return res.render('evento-novo', {
       error: 'O título é obrigatório.',
-      evento: {
-        title, description, qtdSubs,
-        schedule_details, address_details, pricing_details, food_details, attractions
-      }
+      evento: req.body // Envia todos os dados de volta
     });
   }
 
   // 3. Insere no banco...
   const stmt = db.prepare(
     `INSERT INTO events (title, description, created_by, qtdSubs, 
-                         schedule_details, address_details, pricing_details, food_details, attractions) 
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
+                         schedule_details, address_details, pricing_details, food_details, attractions, 
+                         cover_image_url)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
   );
   stmt.run(
     title, description || null, createdBy, qtdSubs || 100,
     schedule_details || null, address_details || null, pricing_details || null, food_details || null, attractions || null,
+    cover_image_url || null,
     function (err) {
       if (err) {
         console.error('Erro ao criar evento:', err);
@@ -96,36 +94,29 @@ app.post('/site/eventos/novo', isAdmin, (req, res) => {
     }
   );
   stmt.finalize();
-});
+}); // <-- FECHAMENTO CORRETO DA ROTA "NOVO"
 
 app.get('/site/eventos/:id/editar', isAdmin, (req, res) => {
   const eventId = req.params.id;
 
-  // 1. Busca o evento no banco (CORREÇÃO: Pedir todas as colunas)
   db.get('SELECT * FROM events WHERE id = ?', [eventId], (err, evento) => {
     if (err || !evento) {
       return res.status(404).send('Evento não encontrado');
     }
-    // 2. Renderiza a view de edição, passando os dados do evento
-    // O EJS agora fará o JSON.parse()
     res.render('evento-editar', { evento: evento });
   });
 });
 
-// Rota POST para ATUALIZAR o evento no banco
-/* [ CÓDIGO CORRIGIDO EM index.js ]
-*/
-// Rota POST para ATUALIZAR o evento no banco
+
 app.post('/site/eventos/:id/editar', isAdmin, (req, res) => {
   const eventId = req.params.id;
-  // CORREÇÃO: Pegar os novos campos
   const { title, description, qtdSubs,
-    schedule_details, address_details, pricing_details, food_details, attractions
+    schedule_details, address_details, pricing_details, food_details, attractions,
+    cover_image_url
   } = req.body;
 
   if (!title) {
-    // CORREÇÃO: Devolver todos os campos
-    const evento = req.body; // Pega tudo que veio
+    const evento = req.body;
     evento.id = eventId;
     return res.render('evento-editar', {
       error: 'O título é obrigatório.',
@@ -133,42 +124,41 @@ app.post('/site/eventos/:id/editar', isAdmin, (req, res) => {
     });
   }
 
-  // 1. Roda o UPDATE no banco
-  // CORREÇÃO: Atualizar o SQL
   const stmt = db.prepare(`
-    UPDATE events 
+    UPDATE events
     SET title = ?, description = ?, qtdSubs = ?,
-        schedule_details = ?, address_details = ?, pricing_details = ?, food_details = ?, attractions = ?
+        schedule_details = ?, address_details = ?, pricing_details = ?, food_details = ?, attractions = ?,
+        cover_image_url = ?
     WHERE id = ?
   `);
   stmt.run(
     title, description || null, qtdSubs || 100,
     schedule_details || null, address_details || null, pricing_details || null, food_details || null, attractions || null,
+    cover_image_url || null,
     eventId,
     function (err) {
-      // ... (código de erro)
+      if (err) {
+        console.error('Erro ao atualizar evento:', err);
+        return res.status(500).send('Erro ao salvar o evento.');
+      }
       res.redirect('/site/eventos');
     }
   );
   stmt.finalize();
-});
+}); // <-- FECHAMENTO CORRETO DA ROTA "EDITAR"
 
-// Rota GET para EXCLUIR um evento
+
 app.get('/site/eventos/:id/excluir', isAdmin, (req, res) => {
   const eventId = req.params.id;
-
-  // Cuidado: Em uma app real, você também deveria excluir as INSCRIÇÕES
-  // db.run('DELETE FROM subscriptions WHERE event_id = ?', [eventId], (err) => { ... });
 
   db.run('DELETE FROM events WHERE id = ?', [eventId], (err) => {
     if (err) {
       console.error('Erro ao excluir evento:', err);
       return res.status(500).send('Erro ao excluir o evento.');
     }
-    // Sucesso! Redireciona para a lista
     res.redirect('/site/eventos');
   });
-});
+}); // <-- FECHAMENTO CORRETO DA ROTA "EXCLUIR"
 
 
 // Rotas
