@@ -3,26 +3,6 @@
 /* 1. VARIÁVEIS DE COR E GERAL
 --------------------------------------------- */
 :root {
-    /* AGORA O PADRÃO É CLARO */
-    --bg-color: #F0F2F5;
-    /* Fundo claro (cinza-azulado) */
-    --card-color: #FFFFFF;
-    /* Cards brancos */
-    --border-color: #DDDDDD;
-    /* Borda cinza clara */
-    --text-primary: #3b3333;
-    /* Texto principal (quase preto) */
-    --text-secondary: #555555;
-    /* Texto secundário (cinza escuro) */
-
-    --accent-color: #007BFF;
-    --accent-hover: #0056b3;
-    --success-color: #4CAF50;
-    --danger-color: #E53935;
-}
-
-/* AGORA A EXCEÇÃO É O TEMA ESCURO */
-html.dark-theme {
     --bg-color: #121212;
     /* Cinza bem escuro (fundo) */
     --card-color: #1E1E1E;
@@ -33,6 +13,34 @@ html.dark-theme {
     /* Texto principal (quase branco) */
     --text-secondary: #AAAAAA;
     /* Texto secundário (cinza claro) */
+
+    --accent-color: #007BFF;
+    /* Azul para botões e links */
+    --accent-hover: #0056b3;
+    /* Azul mais escuro (hover) */
+    --success-color: #4CAF50;
+    /* Verde para botões de admin */
+    --danger-color: #E53935;
+    /* Vermelho para excluir */
+}
+
+html.light-theme {
+    --bg-color: #F0F2F5;
+    /* Fundo claro (cinza-azulado) */
+    --card-color: #FFFFFF;
+    /* Cards brancos */
+    --border-color: #DDDDDD;
+    /* Borda cinza clara */
+    --text-primary: #1C1E21;
+    /* Texto principal (quase preto) */
+    --text-secondary: #555555;
+    /* Texto secundário (cinza escuro) */
+
+    /* Cores de acento (azul, verde, vermelho) podem ser as mesmas */
+    --accent-color: #007BFF;
+    --accent-hover: #0056b3;
+    --success-color: #4CAF50;
+    --danger-color: #E53935;
 }
 
 /* Reset básico e fonte */
@@ -54,7 +62,6 @@ body {
 
 .main-content {
     flex: 1;
-    padding-top: 50px;
     /* Faz o conteúdo principal crescer */
 }
 
@@ -62,10 +69,6 @@ body {
     max-width: 1100px;
     margin: 2rem auto;
     padding: 0 1.5rem;
-}
-
-.container p {
-    color: var(--text-primary);
 }
 
 h1,
@@ -89,8 +92,6 @@ a:hover {
 --------------------------------------------- */
 
 /* --- Navbar --- */
-/* [ CÓDIGO ATUAL EM styles.css ]
-*/
 .navbar {
     display: flex;
     justify-content: space-between;
@@ -122,33 +123,12 @@ a:hover {
     font-weight: bold;
 }
 
-.nav-left a.admin-link:hover {
-    color: #2d6b2f;
-}
-
-/* [ CÓDIGO ATUAL EM styles.css ]
-*/
 .nav-center {
     flex: 1;
     text-align: center;
     font-size: 1.75rem;
     font-weight: bold;
     color: var(--text-primary);
-    text-decoration: none;
-    /* Garante que não tenha sublinhado */
-
-    /* CORREÇÃO: Prepara para animar a escala E a cor */
-    transition: transform 0.2s ease, color 0.2s ease;
-}
-
-.nav-center:hover {
-    transform: scale(1.05);
-    /* 1. Aumenta um tico */
-    color: rgb(94, 93, 93);
-    /* 2. Muda a cor para o azul */
-    cursor: pointer;
-    /* 3. Mostra o cursor de link */
-    text-decoration: none;
 }
 
 .nav-right {
@@ -239,74 +219,33 @@ a:hover {
 
 /* 3. BOTÕES (Estilo principal e variações)
 --------------------------------------------- */
-/* 3. BOTÕES (Estilo principal e variações)
---------------------------------------------- */
-
-/* A "FORMA" BASE DO BOTÃO (Tamanho, Borda, Fonte, CURSOR) */
 .btn {
     display: inline-block;
+    background-color: var(--accent-color);
+    color: #ffffff;
     padding: 0.75rem 1.25rem;
+    border: none;
     border-radius: 5px;
     text-decoration: none;
     font-weight: 600;
-    font-size: 1rem;
-    border: 1px solid transparent;
-    /* Borda base */
-    transition: all 0.2s ease;
     cursor: pointer;
-    /* <-- CURSOR CORRIGIDO */
-    text-align: center;
+    transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
 .btn:hover {
-    transform: translateY(-2px);
-    /* Efeito "pular" */
-    text-decoration: none;
-    cursor: pointer;
-}
-
-/* O "Botão Principal" (Sólido, Azul - para Call-to-Action) */
-.btn-primary {
-    background-color: var(--accent-color);
-    border-color: var(--accent-color);
-    color: #ffffff;
-}
-
-.btn-primary:hover {
     background-color: var(--accent-hover);
-    border-color: var(--accent-hover);
-    color: #ffffff;
-    cursor: pointer;
+    transform: translateY(-2px);
+    color: #fff;
+    text-decoration: none;
 }
 
-/* O "Botão de Sucesso" (Sólido, Verde - Admin) */
-.btn-success {
-    background-color: var(--success-color);
-    border-color: var(--success-color);
-    color: #ffffff;
-}
-
-.btn-success:hover {
-    background-color: #3e8e41;
-    /* Verde mais escuro */
-    border-color: #3e8e41;
-    color: #ffffff;
-    cursor: pointer;
-}
-
-/* O "Botão de Perigo" (Ex: Excluir) */
-.btn-danger {
+/* Variação Vermelha (Excluir) */
+.btn.btn-danger {
     background-color: var(--danger-color);
-    border-color: var(--danger-color);
-    color: #ffffff;
 }
 
-.btn-danger:hover {
+.btn.btn-danger:hover {
     background-color: #c0312d;
-    /* Vermelho mais escuro */
-    border-color: #c0312d;
-    color: #ffffff;
-    cursor: pointer;
 }
 
 /* Variação Verde (Admin) */
@@ -316,50 +255,29 @@ a:hover {
 
 .btn.btn-success:hover {
     background-color: #3e8e41;
-    cursor: pointer;
 }
 
 /* Botão Secundário (Cancelar) */
 .btn-secondary {
-    display: inline-block;
-    /* Garante o padding correto como no .btn */
     background-color: transparent;
-    color: var(--accent-color);
-    /* CORRIGIDO: Usa a cor de destaque */
-    border: 1px solid var(--accent-color);
-    /* CORRIGIDO: Borda no tom azul */
-    padding: 0.75rem 1.25rem;
-    /* Pega o padding do .btn principal */
-    border-radius: 5px;
-    /* Pega o radius do .btn principal */
-    text-decoration: none;
-    font-weight: 600;
-    /* Pega o peso do .btn principal */
-    transition: all 0.2s ease;
-    /* Anima tudo */
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
 }
 
 .btn-secondary:hover {
-    background-color: var(--accent-color);
-    /* CORRIGIDO: Fica azul no hover */
-    color: #ffffff;
-    /* CORRIGIDO: Texto fica branco (igual ao .btn) */
-    transform: translateY(-2px);
-    /* Efeito "pular" (do passo anterior) */
-    text-decoration: none;
-    cursor: pointer;
+    background-color: var(--card-color);
+    color: var(--text-primary);
+    transform: none;
 }
 
 .theme-toggle {
     background: none;
     border: none;
-    font-size: 1.5rem;
-    /* Tamanho do emoji */
+    font-size: 1.5rem; /* Tamanho do emoji */
     cursor: pointer;
     color: var(--text-primary);
     padding: 0 0.5rem;
 }
-
 .theme-toggle:hover {
     opacity: 0.8;
 }
@@ -385,41 +303,6 @@ a:hover {
     flex-direction: column;
 }
 
-/* [ ADICIONE ESTE CÓDIGO NO FINAL de styles.css ]
-*/
-
-/* * CSS da Imagem de Capa no Card (Método 2: Margem Negativa) 
- */
-.event-card-image-link {
-    display: block;
-    line-height: 0;
-}
-
-.event-card-image-novo {
-    /* 1. O Truque da Margem */
-    /* O padding do .event-card é 1.5rem, então... */
-    margin-top: -1.5rem;
-    /* Puxa para cima */
-    margin-left: -1.5rem;
-    /* Puxa para a esquerda */
-    margin-right: -1.5rem;
-    /* Puxa para a direita */
-
-    /* 2. O Espaçamento */
-    margin-bottom: 1.5rem;
-    /* Cria espaço entre a imagem e o título */
-
-    /* 3. A Dimensão (baseado no .event-card) */
-    width: calc(100% + 3rem);
-    /* 100% + 1.5rem (esq) + 1.5rem (dir) */
-    height: 150px;
-    object-fit: cover;
-
-    /* 4. Arredonda os cantos de CIMA para bater com o card */
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
-}
-
 .event-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
@@ -440,7 +323,7 @@ a:hover {
 
 .event-card p {
     font-size: 1rem;
-    color: var(--text-primary);
+    color: var(--text-secondary);
     margin-bottom: 1.5rem;
     flex-grow: 1;
     /* Faz a descrição ocupar o espaço */
@@ -537,21 +420,6 @@ textarea.form-control {
     font-weight: 600;
 }
 
-.form-container-wide {
-    max-width: 900px;
-    /* Dobra a largura, mas mantém um limite */
-}
-
-.form-actions {
-    display: flex;
-    align-items: center;
-    /* Alinha verticalmente */
-    gap: 1rem;
-    /* Espaço de 1rem entre os botões (substitui o margin-left) */
-    flex-wrap: wrap;
-    /* Permite quebrar a linha em telas pequenas */
-}
-
 
 /* 6. MENSAGENS FLASH (Sucesso/Erro)
 --------------------------------------------- */
@@ -573,1096 +441,4 @@ textarea.form-control {
     background-color: #3a1a1a;
     color: #d7a7a7;
     border-color: #5a2a2a;
-}
-
-/* No final de styles.css */
-.event-details {
-    margin-bottom: 1rem;
-    font-size: 0.9em;
-    color: var(--text-secondary);
-}
-
-.detail-item {
-    margin-bottom: 5px;
-}
-
-/* Adicione este estilo ao <style> em evento-detalhe.ejs */
-
-.event-cover-image {
-    width: 100%;
-    height: 300px;
-    /* Altura fixa para a capa */
-    margin-bottom: 1.5rem;
-    border-radius: 8px;
-    overflow: hidden;
-    /* Garante que a imagem não vaze do radius */
-    background-color: var(--card-color);
-    /* Fundo enquanto a imagem carrega */
-}
-
-.event-cover-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    /* Faz a imagem cobrir o espaço, estilo Notion */
-}
-
-/* 7. SEÇÃO "SOBRE NÓS" (HOME PAGE)
---------------------------------------------- */
-.about-section {
-    /* 1. Cria as colunas */
-    display: flex;
-    align-items: center;
-    /* Alinha o texto e a imagem pelo meio */
-    gap: 3rem;
-    /* Espaço entre a imagem e o texto */
-
-    /* 2. Dá um respiro na página */
-    margin-top: 4rem;
-    margin-bottom: 4rem;
-}
-
-.about-image {
-    flex: 1;
-    /* Faz a coluna da imagem ocupar 1/3 do espaço */
-    display: flex;
-    /* Adicionado para centralizar a imagem */
-    justify-content: center;
-    /* Adicionado para centralizar a imagem */
-    align-items: center;
-    /* Adicionado para centralizar a imagem */
-}
-
-.about-image img {
-    /* MANTENHA estas propriedades */
-    width: 80%;
-    /* Ajustado para 80% para a logo não ser muito grande */
-    height: auto;
-    /* Mantém proporção */
-    max-width: 300px;
-    /* Limite máximo para a logo */
-    border-radius: 0;
-    /* <-- REMOVIDO: Borda arredondada */
-    border: none;
-    /* <-- REMOVIDO: Borda cinza */
-
-    /* --- A MÁGICA PARA MUDAR A COR --- */
-    filter: none;
-    /* Padrão: sem filtro (preto no modo claro) */
-    transition: filter 0.3s ease;
-    /* Anima a mudança de cor */
-}
-
-/* Aplica o filtro QUANDO o tema for escuro */
-html.dark-theme .about-image img {
-    filter: invert(1) brightness(2);
-    /* Inverte o preto para branco e aumenta o brilho */
-}
-
-html.light-theme .about-image img {
-    filter: invert(1) brightness(2);
-    /* Inverte o preto para branco e aumenta o brilho */
-}
-
-.about-text {
-    flex: 2;
-    /* Faz a coluna do texto ocupar 2/3 do espaço */
-}
-
-.about-text h2 {
-    font-size: 2rem;
-    color: var(--text-primary);
-    margin-bottom: 1rem;
-}
-
-.about-text p {
-    font-size: 1.1rem;
-    color: var(--text-primary);
-    margin-bottom: 1rem;
-}
-
-/* 8. SEÇÃO FAQ (HOME PAGE)
---------------------------------------------- */
-.faq-section {
-    max-width: 800px;
-    /* Limita a largura do FAQ */
-    margin: 4rem auto;
-    /* Centraliza (auto) e dá espaço (4rem) */
-}
-
-.faq-section h2 {
-    text-align: center;
-    /* Centraliza o título "Perguntas Frequentes" */
-    font-size: 2rem;
-    color: var(--text-primary);
-    margin-bottom: 2rem;
-}
-
-/* O item "fechado" */
-.faq-item {
-    background-color: var(--card-color);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    margin-bottom: 1rem;
-    overflow: hidden;
-    /* Garante a animação suave */
-}
-
-/* A pergunta (o título clicável) */
-.faq-item summary {
-    padding: 1.5rem;
-    font-weight: 600;
-    font-size: 1.1rem;
-    color: var(--text-primary);
-    cursor: pointer;
-    list-style: none;
-    /* Remove o triângulo padrão */
-    position: relative;
-    padding-right: 3.5rem;
-    /* Espaço para o ícone '+' */
-}
-
-/* Remove o marcador padrão (Firefox) */
-.faq-item summary::marker {
-    display: none;
-}
-
-/* Remove o marcador padrão (Chrome/Safari) */
-.faq-item summary::-webkit-details-marker {
-    display: none;
-}
-
-/* O ícone de '+' (nosso marcador customizado) */
-.faq-item summary::after {
-    content: '+';
-    font-family: monospace;
-    font-size: 2rem;
-    line-height: 1;
-    color: var(--accent-color);
-    position: absolute;
-    right: 1.5rem;
-    top: 50%;
-    transform: translateY(-50%);
-    transition: transform 0.2s ease;
-}
-
-/* Quando o item está aberto, gira o '+' para 'x' */
-.faq-item[open] summary::after {
-    transform: translateY(-50%) rotate(45deg);
-}
-
-/* A resposta (o conteúdo) */
-.faq-answer {
-    padding: 0 1.5rem 1.5rem 1.5rem;
-    color: var(--text-primary);
-    border-top: 1px solid var(--border-color);
-    line-height: 1.7;
-}
-
-/* Para o <p> dentro da resposta não ter margem extra */
-.faq-answer p {
-    padding-top: 10px;
-    margin: 0;
-}
-
-/*home..ejs*/
-
-.carousel-container {
-    /* O container "contido" que você gostou */
-    max-width: 1100px;
-    margin: 2rem auto;
-    height: 600px;
-    /* A altura maior */
-    position: relative;
-    overflow: hidden;
-    background-color: var(--card-color);
-    border-radius: 10px;
-    border: 1px solid var(--border-color);
-}
-
-.carousel-track {
-    display: flex;
-    height: 100%;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-}
-
-.carousel-track::-webkit-scrollbar {
-    display: none;
-}
-
-.carousel-slide {
-    flex: 0 0 100%;
-    width: 100%;
-    height: 100%;
-    scroll-snap-align: start;
-    position: relative;
-    /* Base para o conteúdo */
-    overflow: hidden;
-}
-
-/* 1. A Imagem (Fundo total) */
-.slide-image {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-}
-
-.slide-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    /* Zoom sem distorcer */
-}
-
-/* 2. O "FADE" (A opacidade diminuída no fundo) */
-.slide-overlay-gradient {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 70%;
-    /* Cobre 70% da altura a partir de baixo */
-    /* O Gradiente: começa transparente em cima e fica escuro embaixo */
-    background: linear-gradient(to top,
-            rgba(0, 0, 0, 0.85) 20%,
-            /* Mais escuro na base */
-            rgba(0, 0, 0, 0) 100%
-            /* Transparente no topo */
-        );
-    z-index: 1;
-}
-
-/* 3. O Conteúdo (Na base, em cima do fade) */
-.slide-content-bottom {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    z-index: 2;
-    /* Fica na frente do gradiente */
-    padding: 2rem 3rem;
-    /* Espaçamento do texto */
-    color: #ffffff;
-    text-align: left;
-    /* Alinha o texto à esquerda */
-}
-
-.slide-content-bottom h1 {
-    color: #ffffff;
-    font-size: 2.5rem;
-}
-
-.slide-content-bottom p {
-    font-size: 1.1rem;
-    margin-bottom: 1rem;
-    color: #E0E0E0;
-    /* Cor de texto mais clara */
-    max-width: 700px;
-    /* Limita a largura do texto */
-}
-
-.slide-details {
-    font-weight: 500;
-    margin-bottom: 1.5rem;
-    color: #E0E0E0;
-}
-
-/* 4. Botão do Carrossel */
-.btn-primary-carousel {
-    display: inline-block;
-    padding: 0.75rem 1.5rem;
-    background-color: var(--accent-color);
-    color: #ffffff;
-    border: 2px solid var(--accent-color);
-    border-radius: 5px;
-    text-decoration: none;
-    font-weight: 600;
-    transition: all 0.2s ease;
-}
-
-.btn-primary-carousel:hover {
-    background-color: var(--accent-hover);
-    border-color: var(--accent-hover);
-    text-decoration: none;
-    cursor: pointer;
-}
-
-/* 5. Setas de Navegação (permanecem iguais) */
-.carousel-button {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 3;
-    background-color: rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: white;
-    font-size: 2rem;
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-}
-
-.carousel-button:hover {
-    background-color: rgba(0, 0, 0, 0.5);
-}
-
-.carousel-button.prev {
-    left: 20px;
-}
-
-.carousel-button.next {
-    right: 20px;
-}
-
-/*Events.ejs*/
-
-a.event-title-link {
-    text-decoration: none;
-    color: var(--text-primary);
-}
-
-a.event-title-link:hover h3 {
-    text-decoration: underline;
-    color: var(--accent-color);
-}
-
-/*Evento-detalhe.ejs*/
-
-.event-detail-card {
-    background-color: var(--card-color);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    padding: 1.5rem 2rem;
-    margin-bottom: 1.5rem;
-}
-
-.event-detail-card h2 {
-    margin-bottom: 1rem;
-}
-
-.detail-item {
-    color: var(--text-primary);
-    margin-bottom: 0.5rem;
-    font-size: 1.1em;
-}
-
-.action-card {
-    background-color: var(--bg-color);
-}
-
-.action-card .btn,
-.action-card .btn-disabled {
-    width: 100%;
-    text-align: center;
-    font-size: 1.2rem;
-}
-
-.btn-disabled {
-    display: block;
-    background-color: var(--success-color);
-    color: #ffffff;
-    padding: 0.75rem 1.25rem;
-    border-radius: 5px;
-    font-weight: 600;
-    opacity: 0.7;
-    cursor: not-allowed;
-}
-
-.attraction-list {
-    list-style-type: none;
-    padding-left: 10px;
-}
-
-.attraction-list li {
-    padding: 8px;
-    border-bottom: 1px solid var(--border-color);
-}
-
-.attraction-list li:last-child {
-    border-bottom: none;
-}
-
-/*Minha-conta.ejs*/
-
-.admin-stats {
-    display: flex;
-    justify-content: space-between;
-    gap: 1rem;
-    flex-wrap: wrap;
-}
-
-.stat-card {
-    /* CORREÇÃO: Define que o card ocupa 50% (menos o espaço do 'gap') */
-    flex-basis: calc(50% - 0.5rem);
-    flex-grow: 1;
-    /* Permite que ele cresça se só houver 1 ou 2 */
-
-    background-color: var(--bg-color);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    padding: 1.5rem;
-    text-align: center;
-}
-
-.stat-card h3 {
-    font-size: 2.5rem;
-    color: var(--accent-color);
-}
-
-.stat-card p {
-    color: var(--text-secondary);
-}
-
-/*event-form.ejs*/
-
-.hidden {
-    display: none !important;
-}
-
-.hidden-section {
-    background-color: var(--bg-color);
-    border: 1px dashed var(--border-color);
-    border-radius: 8px;
-    padding: 1rem;
-    margin-top: 0.5rem;
-}
-
-.dynamic-item {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 10px;
-}
-
-.dynamic-item input {
-    flex: 1;
-}
-
-.form-divider {
-    border: 1px solid var(--border-color);
-    margin: 2rem 0;
-}
-
-.form-row {
-    display: flex;
-    gap: 1rem;
-}
-
-.form-row .form-group {
-    flex: 1;
-}
-
-@media (max-width: 768px) {
-    .form-row {
-        flex-direction: column;
-        /* Faz os campos empilharem */
-        gap: 0;
-        /* Remove o 'gap' da coluna */
-    }
-}
-
-.radio-group {
-    display: flex;
-    gap: 1.5rem;
-    align-items: center;
-}
-
-.radio-group label,
-.checkbox-group label {
-    margin: 0;
-    font-weight: normal;
-}
-
-.checkbox-group {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.warning-text {
-    font-style: italic;
-    color: var(--text-secondary);
-    font-size: 0.9em;
-}
-
-.admin-event-stats {
-    background-color: var(--card-color);
-    border: 1px solid var(--border-color);
-    padding: 1rem;
-    border-radius: 8px;
-    margin-bottom: 1rem;
-    text-align: center;
-    font-size: 1.2rem;
-}
-
-.admin-event-stats span {
-    font-weight: bold;
-    color: var(--accent-color);
-}
-
-.admin-event-stats strong {
-    color: var(--accent-color);
-}
-
-/* [ COLE ISTO NO FINAL DE styles.css ]
-*/
-
-/* 9. BOTÃO FLUTUANTE (FAB) E CHAT POPUP
---------------------------------------------- */
-.fab-container {
-    position: fixed;
-    bottom: 2rem;
-    right: 2rem;
-    z-index: 1000;
-
-    width: 60px;
-    height: 60px;
-    background-color: var(--accent-color);
-    border: none;
-    border-radius: 50%;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    font-size: 2rem;
-    color: white;
-    cursor: pointer;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-    transition: transform 0.2s ease;
-}
-
-.fab-container:hover {
-    transform: scale(1.1);
-    background-color: var(--accent-hover);
-}
-
-/* A caixa de chat (escondida por padrão) */
-.chat-popup {
-    display: none;
-    /* Escondido por padrão */
-    position: fixed;
-    bottom: 6.5rem;
-    /* 2rem (do botão) + 60px (altura) + 0.5rem (espaço) */
-    right: 2rem;
-    z-index: 1001;
-
-    width: 320px;
-    background-color: var(--card-color);
-    border: 1px solid var(--border-color);
-    border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    overflow: hidden;
-    /* Para o header arredondado */
-
-    /* Configuração flex para o .show */
-    flex-direction: column;
-}
-
-/* Classe que o JS vai adicionar */
-.chat-popup.show {
-    display: flex;
-}
-
-.chat-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.75rem 1rem;
-    background-color: var(--bg-color);
-    border-bottom: 1px solid var(--border-color);
-}
-
-.chat-header h3 {
-    margin: 0;
-    font-size: 1.1rem;
-}
-
-.chat-close {
-    background: none;
-    border: none;
-    color: var(--text-secondary);
-    font-size: 1.75rem;
-    font-weight: bold;
-    cursor: pointer;
-    line-height: 1;
-    padding: 0;
-}
-
-.chat-close:hover {
-    color: var(--text-primary);
-}
-
-.chat-body {
-    padding: 1.5rem 1rem;
-    color: var(--text-primary);
-}
-
-/* Relatório */
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    color: #333;
-}
-
-.page {
-    width: 21cm;
-    /* A4 */
-    min-height: 29.7cm;
-    padding: 2cm;
-    margin: 1cm auto;
-    background: white;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
-}
-
-h1 {
-    text-align: center;
-    border-bottom: 2px solid #333;
-    padding-bottom: 10px;
-}
-
-h2 {
-    border-bottom: 1px solid #eee;
-    padding-bottom: 5px;
-    margin-top: 2rem;
-}
-
-.summary-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-}
-
-.summary-card {
-    background: #f9f9f9;
-    border: 1px solid #ddd;
-    padding: 1rem;
-    border-radius: 5px;
-}
-
-.summary-card strong {
-    display: block;
-    font-size: 1.1rem;
-    color: #555;
-}
-
-.summary-card span {
-    font-size: 2rem;
-    font-weight: bold;
-    color: #007BFF;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 1rem;
-}
-
-th,
-td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
-}
-
-th {
-    background-color: #f2f2f2;
-}
-
-.currency {
-    text-align: right;
-}
-
-/* Estilos de Impressão */
-@media print {
-    body {
-        background-color: white;
-        color: black;
-    }
-
-    .page {
-        box-shadow: none;
-        margin: 0;
-        padding: 0;
-        width: 100%;
-    }
-
-    .summary-card {
-        background: #eee;
-    }
-}
-
-/* [ COLE ISTO NO FINAL DE styles.css ]
-*/
-/* 10. TAG DE CATEGORIA (EVENT CARD)
---------------------------------------------- */
-.event-card-category {
-    display: inline-block;
-    padding: 0.25rem 0.75rem;
-    background-color: var(--accent-color);
-    color: #ffffff;
-    border-radius: 15px;
-    /* Formato de pílula */
-    font-size: 0.8rem;
-    font-weight: 600;
-    margin-bottom: 0.75rem;
-    align-self: flex-start;
-    /* Alinha a tag à esquerda */
-}
-
-/* [ COLE ISTO NO FINAL DE styles.css ]
-*/
-/* 11. TAG DE EVENTO OCULTO (EVENT CARD)
---------------------------------------------- */
-.event-card-hidden {
-    display: inline-block;
-    padding: 0.25rem 0.75rem;
-    background-color: var(--danger-color);
-    color: #ffffff;
-    border-radius: 15px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    margin-bottom: 0.75rem;
-    align-self: flex-start;
-}
-
-/* [ COLE ISTO NO FINAL DE styles.css ]
-*/
-
-/* 12. BARRA DE FILTRO (PÁGINA DE EVENTOS)
---------------------------------------------- */
-.filter-bar {
-    display: flex;
-    flex-wrap: wrap;
-    /* Permite quebrar a linha em telas pequenas */
-    gap: 1rem;
-    padding: 1.5rem;
-    background-color: var(--card-color);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    margin-bottom: 2rem;
-}
-
-.filter-bar .form-group {
-    margin-bottom: 0;
-    /* Remove a margem padrão do form-group */
-}
-
-/* Campo de busca (ocupa mais espaço) */
-.filter-bar .filter-search {
-    flex-grow: 2;
-    /* Ocupa 2x o espaço da categoria */
-    flex-basis: 250px;
-    /* Tamanho base */
-}
-
-/* Campo de categoria */
-.filter-bar .filter-category {
-    flex-grow: 1;
-    flex-basis: 200px;
-}
-
-/* Botão de filtrar */
-.filter-bar button {
-    flex-grow: 1;
-    flex-basis: 100px;
-    /* Tamanho base do botão */
-}
-
-/* [ COLE ISTO NO FINAL DE styles.css ]
-*/
-
-/* 13. LISTA DE CERTIFICADOS (MINHA CONTA)
---------------------------------------------- */
-.certificate-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-}
-
-.certificate-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem;
-    background-color: var(--bg-color);
-    border: 1px solid var(--border-color);
-    border-radius: 5px;
-}
-
-.certificate-item span {
-    font-weight: 500;
-    color: var(--text-primary);
-}
-
-.certificate-item .btn-secondary {
-    padding: 0.5rem 1rem;
-    /* Botão menor */
-    flex-shrink: 0;
-    /* Impede que o botão encolha */
-}
-
-/* [ COLE ISTO NO FINAL DE styles.css ]
-*/
-.warning-text {
-    font-style: italic;
-    color: var(--text-secondary);
-    font-size: 0.9em;
-}
-
-/* Nova classe para os seletores de imagem */
-.hidden-section-soft {
-    background-color: var(--bg-color);
-    border-radius: 8px;
-    padding: 0.5rem;
-    margin-top: 0.5rem;
-}
-
-.hidden-section-soft.hidden {
-    display: none;
-}
-
-/* MENSAGEM DE CONTATO */
-
-.message-header {
-    font-size: 1.1rem;
-}
-
-.message-subheader {
-    font-size: 1rem;
-    color: var(--text-secondary);
-    margin-top: 0.25rem;
-}
-
-.message-body p {
-    color: var(--text-primary);
-    font-size: 1.1rem;
-    line-height: 1.7;
-    white-space: pre-wrap;
-    /* Preserva as quebras de linha da mensagem */
-}
-
-.message-footer {
-    margin-top: 1.5rem;
-    font-size: 0.9rem;
-    color: var(--text-secondary);
-    text-align: right;
-    border-top: 1px dashed var(--border-color);
-    padding-top: 0.5rem;
-}
-
-/* [ COLE ISTO NO FINAL DE styles.css ]
-*/
-
-/* 14. FORM STEPPER (Formulário de Evento)
---------------------------------------------- */
-
-/* Esconde todas as etapas por padrão */
-.form-step {
-    display: none;
-}
-
-/* Mostra apenas a etapa ativa */
-.form-step.active {
-    display: block;
-}
-
-/* O indicador de etapas (ex: "Passo 1 de 5") */
-.form-step-indicator {
-    font-size: 1rem;
-    font-weight: 600;
-    color: var(--text-secondary);
-    text-align: center;
-    margin-bottom: 2rem;
-}
-
-/* A barra de navegação (Próximo/Anterior) */
-.form-step-navigation {
-    display: flex;
-    justify-content: flex-end;
-    /* <--- MUDANÇA 1: Alinha tudo à direita */
-    gap: 1rem;
-    /* <--- MUDANÇA 2: Adiciona espaço */
-    align-items: center;
-    margin-top: 2rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid var(--border-color);
-}
-
-/* [ COLE ISTO NO FINAL DE styles.css ]
-*/
-/* 16. SIMULAÇÃO RECAPTCHA (CADASTRO)
---------------------------------------------- */
-.recaptcha-simulated-box-large {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 1.5rem;
-    /* Mais "gordinho" */
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    background-color: var(--bg-color);
-}
-
-.recaptcha-simulated-box-large input[type="checkbox"] {
-    width: 24px;
-    /* Maior */
-    height: 24px;
-}
-
-.recaptcha-simulated-box-large label {
-    font-size: 1.1rem;
-    font-weight: 500;
-    margin: 0;
-    flex-grow: 1;
-    /* Empurra a logo para a direita */
-}
-
-.recaptcha-simulated-box-large img {
-    opacity: 0.7;
-}
-
-/* [ COLE ISTO NO FINAL DE styles.css ]
-*/
-
-/* 15. LAYOUT DE ABAS (MINHA CONTA)
---------------------------------------------- */
-.tab-navigation {
-    display: flex;
-    flex-wrap: wrap;
-    /* Permite quebrar a linha em telas pequenas */
-    border-bottom: 2px solid var(--border-color);
-    margin-bottom: 2rem;
-}
-
-.tab-button {
-    padding: 1rem 1.5rem;
-    cursor: pointer;
-    background: none;
-    border: none;
-    font-size: 1.1rem;
-    font-weight: 500;
-    color: var(--text-secondary);
-    border-bottom: 3px solid transparent;
-    margin-bottom: -2px;
-    /* Puxa o botão para baixo */
-}
-
-.tab-button.active {
-    color: var(--accent-color);
-    border-bottom-color: var(--accent-color);
-}
-
-.tab-content {
-    display: none;
-    /* Escondido por padrão */
-}
-
-.tab-content.active {
-    display: block;
-    /* Mostra o conteúdo da aba ativa */
-}
-
-/* Caixa de simulação do 2FA */
-.two-factor-box {
-    padding: 1rem;
-    background-color: var(--bg-color);
-    border: 1px dashed var(--border-color);
-    border-radius: 8px;
-    opacity: 0.7;
-}
-
-.two-factor-box p {
-    color: var(--text-primary);
-}
-
-/* Caixa de Ações de Perigo (Deletar/Desativar) */
-.danger-zone {
-    border-top: 2px solid var(--danger-color);
-    margin-top: 3rem;
-    padding-top: 1.5rem;
-}
-
-.danger-zone .btn-danger {
-    background-color: transparent;
-    color: var(--danger-color);
-    border-color: var(--danger-color);
-}
-
-.danger-zone .btn-danger:hover {
-    background-color: var(--danger-color);
-    color: #ffffff;
-}
-
-/* [ COLE ISTO NO FINAL DE styles.css ]
-*/
-
-/* 17. MENSAGEM DE SUCESSO (FORMULÁRIO DE TERMOS)
---------------------------------------------- */
-.termos-success-msg {
-    padding: 0.75rem 1.25rem;
-    background-color: var(--success-color);
-    color: #ffffff;
-    border-radius: 5px;
-    font-weight: 600;
-    text-align: center;
-}
-
-/* 18. CAMPO DE SENHA COM "OLHO"
---------------------------------------------- */
-.password-wrapper {
-    position: relative;
-}
-
-.password-toggle {
-    position: absolute;
-    right: 1rem;
-    top: 50%;
-    transform: translateY(-50%);
-
-    /* Ajustes para o botão parecer texto */
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 1.25rem;
-    /* Tamanho do emoji */
-    color: var(--text-secondary);
-    padding: 0;
-}
-
-.password-toggle:hover {
-    color: var(--accent-color);
-}
-
-/* 19. ASTERISCO DE CAMPO OBRIGATÓRIO
---------------------------------------------- */
-.required-star {
-    color: var(--danger-color);
-    /* Vermelho */
-    font-weight: bold;
-    margin-left: 4px;
-}
-
-/* 20. ALINHAMENTO ESPECIAL (Formulário Etapa 5)
---------------------------------------------- */
-/* Isso força o "Anterior" para a esquerda eo grupo "Salvar/Cancelar" para a direita.
-*/
-#step-5-nav {
-    justify-content: space-between;
-}
-
-/* 21. BOTÃO DE EVENTO ENCERRADO
---------------------------------------------- */
-.btn-disabled.btn-encerrado {
-    background-color: var(--text-secondary);
-    opacity: 0.7;
-    color: #ffffff; /* Garante o texto branco */
 }

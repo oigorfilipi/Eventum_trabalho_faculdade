@@ -6,19 +6,18 @@ const router = express.Router();
 
 // POST /subscribe (rota que o formulário chama)
 router.post('/', (req, res) => {
-  const redirectUrl = req.headers.referer || '/site/eventos';
   const { eventId, userId } = req.body || {};
 
   // Validação de segurança básica
   if (!req.session.user || req.session.user.id.toString() !== userId) {
     // Impede que um usuário logado tente inscrever outro usuário
     req.session.message = { type: 'error', text: 'Erro de autenticação.' };
-    return res.redirect(redirectUrl);
+    return res.redirect('/site/eventos');
   }
 
   if (!eventId || !userId) {
     req.session.message = { type: 'error', text: 'Erro: Dados da inscrição incompletos.' };
-    return res.redirect(redirectUrl);
+    return res.redirect('/site/eventos');
   }
 
   // --- Lógica de Validação (que você já tinha) ---
@@ -26,69 +25,36 @@ router.post('/', (req, res) => {
 
   if (!event) {
     req.session.message = { type: 'error', text: 'Erro: Evento não existe.' };
-    return res.redirect(redirectUrl);
+    return res.redirect('/site/eventos');
   }
 
   const currentSubs = db.prepare('SELECT COUNT(*) as count FROM subscriptions WHERE event_id = ?').get(eventId).count;
 
-  // CORREÇÃO 1: Trata o NULL (se for nulo, usa 100)
-  const eventLimit = event.qtdSubs || 100;
-
-  // CORREÇÃO 2: Adicionado o IF/ELSE
-  if (currentSubs >= eventLimit) {
-
-    // SE ESTIVER LOTADO:
-    req.session.message = { type: 'error', text: 'Inscrição falhou: O evento está lotado.' };
-    return res.redirect(redirectUrl);
-
-  } else {
-
-    // SE TIVER VAGA: Tenta inserir no banco
-    const stmt = db.prepare('INSERT INTO subscriptions (event_id, user_id) VALUES (?, ?)');
-    stmt.run(eventId, userId, function (err) {
-      // ... (resto da sua lógica de sucesso/erro) ...
-    });
-  } // <-- Fim do ELSE
-
   if (currentSubs >= event.qtdSubs) {
     req.session.message = { type: 'error', text: 'Inscrição falhou: O evento está lotado.' };
-    return res.redirect(redirectUrl);
+    return res.redirect('/site/eventos');
   }
   // --- Fim da Validação ---
 
   // Tenta inserir no banco
   const stmt = db.prepare('INSERT INTO subscriptions (event_id, user_id) VALUES (?, ?)');
   stmt.run(eventId, userId, function (err) {
-
-    stmt.finalize();
-
-    // 1. LÓGICA DE ERRO
     if (err) {
       if (err.message.includes('UNIQUE')) {
+        // Usuário tentou se inscrever duas vezes
         req.session.message = { type: 'error', text: 'Você já está inscrito neste evento.' };
       } else {
+        // Erro genérico do banco
         req.session.message = { type: 'error', text: 'Erro interno ao processar inscrição.' };
       }
-      // Se deu erro, volta para a página anterior (ex: a de pagamento)
-      return res.redirect(redirectUrl);
-    }
-
-    // 2. LÓGICA DE SUCESSO
-
-    // Constrói a URL da página de DETALHES do evento
-    const detailsPageUrl = `/site/eventos/${eventId}`;
-
-    // Mensagem de sucesso personalizada (como você pediu)
-    // Se o usuário veio da página de pagamento, mostramos "Pagamento efetuado"
-    if (redirectUrl.includes('/pagamento/')) {
-      req.session.message = { type: 'success', text: 'Pagamento efetuado! Inscrição confirmada.' };
     } else {
-      // Se veio da inscrição gratuita
+      // SUCESSO!
       req.session.message = { type: 'success', text: 'Inscrição realizada com sucesso!' };
     }
 
+    stmt.finalize();
     // Em qualquer caso (sucesso ou erro), redireciona de volta
-    return res.redirect(detailsPageUrl);
+    return res.redirect('/site/eventos');
   });
 });
 

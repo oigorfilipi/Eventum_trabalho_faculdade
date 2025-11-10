@@ -1,25 +1,13 @@
 <%- include('partials/header', { title: 'Adicionar Novo Evento' }) %>
     <div class="container">
-        <div class="form-container form-container-wide">
+        <div class="form-container">
             <h1>Adicionar Novo Evento</h1>
-
-                    <form action="/site/eventos/criar-teste" method="POST"
-                        style="margin: 1rem 0 2rem 0; border-bottom: 1px solid var(--border-color); padding-bottom: 2rem;">
-                        <button type="submit" class="btn btn-secondary">⚡ Criar Evento de Teste Rápido</button>
-                    </form>
-                    <% if (typeof error !=='undefined' && error) { %>
-                        <div class="flash-message error" style="margin-bottom: 1rem;">
-                            <%= error %>
-                        </div>
-                        <% } %>
-
-                            <% if (typeof error !=='undefined' && error) { %>
-                                <div class="flash-message error" style="margin-bottom: 1rem;">
-                                    <%= error %>
-                                </div>
-                                <% } %>
-                                    <%- include('partials/event-form', { actionUrl: '/site/eventos/novo' , evento: {} })
-                                        %>
+            <% if (typeof error !=='undefined' && error) { %>
+                <div class="flash-message error" style="margin-bottom: 1rem;">
+                    <%= error %>
                 </div>
-            </div>
-            <%- include('partials/footer') %>
+                <% } %>
+                    <%- include('partials/event-form', { actionUrl: '/site/eventos/novo' , evento: {} }) %>
+        </div>
+    </div>
+    <%- include('partials/footer') %>
