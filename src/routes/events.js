@@ -11,7 +11,7 @@ router.post('/', (req, res) => {
   }
 
   const stmt = db.prepare('INSERT INTO events (title, description, date, created_by, qtdSubs) VALUES (?, ?, ?, ?, ?)');
-  stmt.run(title, description || null, date || null, createdBy || null, qtdSubs || 100, function (err) {
+  stmt.run(title, description || null, date || null, createdBy || null,qtdSubs || 100, function (err) {
     if (err) {
       return res.status(500).json({ error: 'Erro ao criar evento' });
     }
@@ -22,7 +22,7 @@ router.post('/', (req, res) => {
 
 // GET /events
 router.get('/', (req, res) => {
-  db.all('SELECT id, title, description, date, created_by as createdBy, created_at as createdAt, qtdSubs FROM events ORDER BY date IS NULL, date ASC, created_at DESC', [], (err, rows) => {
+  db.all('SELECT id, title, description, date, created_by as createdBy, created_at as createdAt FROM events ORDER BY date IS NULL, date ASC, created_at DESC', [], (err, rows) => {
     if (err) return res.status(500).json({ error: 'Erro ao listar eventos' });
     return res.json(rows);
   });

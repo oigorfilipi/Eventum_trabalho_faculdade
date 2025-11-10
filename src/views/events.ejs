@@ -16,21 +16,12 @@
                             <h3>
                                 <%= event.title %>
                             </h3>
-                            <div class="date">
-                                <%= event.date ? new Date(event.date).toLocaleDateString('pt-BR', {timeZone: 'UTC' })
-                                    : 'Data a definir' %>
-                            </div>
-                            <p>
-                                <%= event.description || 'Este evento não possui descrição.' %>
-                            </p>
-
                             <% if (user) { %>
                                 <% if (user.role==='admin' ) { %>
-                                    <div class="event-card-actions">
-                                        <a href="/site/eventos/<%= event.id %>/editar" class="btn">Editar</a>
-                                        <a href="/site/eventos/<%= event.id %>/excluir"
-                                            class="btn btn-danger">Excluir</a>
-                                    </div>
+                                    <a href="/site/eventos/<%= event.id %>/editar" class="btn">Editar</a>
+                                    <a href="/site/eventos/<%= event.id %>/excluir" class="btn"
+                                        style="background-color: #E53935;">Excluir</a>
+
                                     <% } else { %>
                                         <form action="/subscribe" method="POST">
                                             <input type="hidden" name="eventId" value="<%= event.id %>">
@@ -38,9 +29,11 @@
                                             <button type="submit" class="btn">Inscrever-se</button>
                                         </form>
                                         <% } %>
+
                                             <% } else { %>
                                                 <a href="/site/login" class="btn">Login para se inscrever</a>
                                                 <% } %>
+
                         </div>
                         <% }) %>
 
