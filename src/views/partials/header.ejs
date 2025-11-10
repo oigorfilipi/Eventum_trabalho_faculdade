@@ -154,3 +154,23 @@
         <% } %>
 
             <main class="main-content">
+
+                <nav class="navbar">
+                    <div class="nav-left">
+                        <a href="/site/eventos">Eventos</a>
+
+                        <% if (user) { %>
+                            <a href="#">Minha Conta</a>
+                            <% if (user.role==='admin' ) { %>
+                                <a href="/site/eventos/novo" style="color: #4CAF50;">+ Adicionar Evento</a>
+                                <% } %>
+                                    <% } %>
+                    </div>
+
+                    <div class="nav-center">
+                        Eventum
+                    </div>
+
+                    <div class="nav-right">
+                    </div>
+                </nav>

@@ -9,6 +9,7 @@ const subscribeRoutes = require('./routes/subscribe');
 
 const app = express();
 app.use(bodyParser());
+app.use(express.urlencoded({ extended: true }));
 
 app.use(session({
   secret: 'seu-segredo-muito-seguro-aqui', // Troque isso por uma string aleatória
@@ -67,8 +68,9 @@ app.post('/site/register', async (req, res) => {
 
   try {
     const hashed = await bcrypt.hash(password, 10);
-    const stmt = db.prepare('INSERT INTO users (name, email, password) VALUES (?, ?, ?)');
-    stmt.run(name, email, hashed, function (err) {
+    const userRole = (email.toLowerCase() === 'admin@eventum.com') ? 'admin' : 'user';
+    const stmt = db.prepare('INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)');
+    stmt.run(name, email, hashed, userRole, function (err) {
       if (err) {
         if (err.message.includes('UNIQUE')) {
           return res.render('register', { error: 'Email já cadastrado' });
@@ -77,7 +79,7 @@ app.post('/site/register', async (req, res) => {
       }
 
       // LOGA O USUÁRIO AUTOMATICAMENTE APÓS O REGISTRO
-      req.session.user = { id: this.lastID, name: name, email: email };
+      req.session.user = { id: this.lastID, name: name, email: email, role: userRole };
       res.redirect('/site/eventos'); // Redireciona para a home
     });
     stmt.finalize();
@@ -103,7 +105,7 @@ app.post('/site/login', (req, res) => {
     const match = await bcrypt.compare(password, user.password);
     if (match) {
       // 3. Salvar na sessão
-      req.session.user = { id: user.id, name: user.name, email: user.email };
+      req.session.user = { id: user.id, name: user.name, email: user.email, role: userRole };
       res.redirect('/site/eventos'); // Sucesso! Redireciona
     } else {
       // Senha incorreta

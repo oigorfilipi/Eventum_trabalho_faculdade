@@ -12,9 +12,20 @@ db.serialize(() => {
       name TEXT NOT NULL,
       email TEXT NOT NULL UNIQUE,
       password TEXT NOT NULL,
+      role TEXT NOT NULL DEFAULT 'user',
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )
   `);
+
+  db.run(`
+    ALTER TABLE users
+    ADD COLUMN role TEXT NOT NULL DEFAULT 'user'
+  `, (err) => {
+    // Ignora o erro se a coluna já existir (é o que queremos)
+    if (err && !err.message.includes('duplicate column name')) {
+      console.error('Erro ao adicionar coluna role:', err.message);
+    }
+  });
 
   db.run(`
     CREATE TABLE IF NOT EXISTS events (
