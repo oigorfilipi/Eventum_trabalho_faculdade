@@ -6,7 +6,25 @@ const userRoutes = require('./routes/users');
 const eventRoutes = require('./routes/events');
 const subscribeRoutes = require('./routes/subscribe');
 const bcrypt = require('bcryptjs');
-const PDFDocument = require('pdfkit'); // <-- ADICIONE ESTA LINHA
+const multer = require('multer'); // <-- 1. Importa o Multer
+
+
+// 2. Configura onde o Multer vai salvar os arquivos
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    // A pasta que você criou!
+    cb(null, path.join(__dirname, 'public/uploads/'));
+  },
+  filename: function (req, file, cb) {
+    // Cria um nome de arquivo único (data + nome original)
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, uniqueSuffix + path.extname(file.originalname));
+  }
+});
+
+// 3. Cria a "ferramenta" de upload que usaremos nas rotas
+const upload = multer({ storage: storage });
+
 
 const app = express();
 app.use(express.urlencoded({ extended: true }));
@@ -60,15 +78,28 @@ app.get('/site/eventos/novo', isAdmin, (req, res) => {
 
 /* [ CÓDIGO CORRIGIDO EM index.js ]
 */
-app.post('/site/eventos/novo', isAdmin, (req, res) => {
+app.post('/site/eventos/novo', isAdmin, upload.single('cover_image_upload'), (req, res) => {
+
+  // Os campos de texto vêm em 'req.body'
   const { title, description, qtdSubs,
     schedule_details, address_details, pricing_details, food_details, attractions,
-    cover_image_url,
+    cover_image_url, // O campo de URL
     organizer,
-    category// <-- ADICIONADO
+    category
   } = req.body;
 
-  const is_hidden = req.body.is_hidden ? 1 : 0; // "on" vira 1, undefined vira 0
+  // CORREÇÃO: Lógica da Imagem
+  let finalImageUrl = null;
+  if (req.file) {
+    // 1. Se o upload foi feito, ele ganha.
+    // Salvamos o CAMINHO PÚBLICO da imagem
+    finalImageUrl = '/uploads/' + req.file.filename;
+  } else if (cover_image_url) {
+    // 2. Se não, usamos a URL colada
+    finalImageUrl = cover_image_url;
+  }
+
+  const is_hidden = req.body.is_hidden ? 1 : 0;
   const createdBy = req.session.user.id;
 
   if (!title) {
@@ -83,15 +114,15 @@ app.post('/site/eventos/novo', isAdmin, (req, res) => {
     `INSERT INTO events (title, description, created_by, qtdSubs, 
                          schedule_details, address_details, pricing_details, food_details, attractions, 
                          cover_image_url, organizer, category, is_hidden)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)` // <-- Aumentado para 13
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
   );
   stmt.run(
     title, description || null, createdBy, qtdSubs || 100,
     schedule_details || null, address_details || null, pricing_details || null, food_details || null, attractions || null,
-    cover_image_url || null,
+    finalImageUrl, // <-- CORREÇÃO: Usa a URL final
     organizer || null,
     category || 'Indefinido',
-    is_hidden, // <-- ADICIONADO
+    is_hidden,
     function (err) {
       if (err) {
         console.error('Erro ao criar evento:', err);
@@ -115,8 +146,9 @@ app.get('/site/eventos/:id/editar', isAdmin, (req, res) => {
 });
 
 
-app.post('/site/eventos/:id/editar', isAdmin, (req, res) => {
+app.post('/site/eventos/:id/editar', isAdmin, upload.single('cover_image_upload'), (req, res) => {
   const eventId = req.params.id;
+
   const { title, description, qtdSubs,
     schedule_details, address_details, pricing_details, food_details, attractions,
     cover_image_url, organizer, category
@@ -133,31 +165,51 @@ app.post('/site/eventos/:id/editar', isAdmin, (req, res) => {
     });
   }
 
-  const stmt = db.prepare(`
+  // CORREÇÃO: Lógica complexa da imagem de edição
+  // 1. Vamos atualizar todos os campos de TEXTO primeiro
+  const stmtUpdateText = db.prepare(`
     UPDATE events
     SET title = ?, description = ?, qtdSubs = ?,
         schedule_details = ?, address_details = ?, pricing_details = ?, food_details = ?, attractions = ?,
-        cover_image_url = ?, organizer = ?, category = ?, is_hidden = ?
+        organizer = ?, category = ?, is_hidden = ?
     WHERE id = ?
   `);
-  stmt.run(
+  stmtUpdateText.run(
     title, description || null, qtdSubs || 100,
     schedule_details || null, address_details || null, pricing_details || null, food_details || null, attractions || null,
-    cover_image_url || null,
-    organizer || null,
-    category || 'Indefinido',
-    is_hidden, // <-- ADICIONADO
-    eventId,
+    organizer || null, category || 'Indefinido', is_hidden, eventId,
     function (err) {
       if (err) {
-        console.error('Erro ao atualizar evento:', err);
+        console.error('Erro ao atualizar (texto) evento:', err);
         return res.status(500).send('Erro ao salvar o evento.');
       }
-      res.redirect('/site/eventos');
+
+      // 2. AGORA, vamos checar a imagem
+      let finalImageUrl = null;
+      if (req.file) {
+        // 2a. Se um NOVO UPLOAD foi feito, ele ganha
+        finalImageUrl = '/uploads/' + req.file.filename;
+      } else if (cover_image_url) {
+        // 2b. Se não, usamos a URL (que pode ser a antiga ou uma nova colada)
+        finalImageUrl = cover_image_url;
+      }
+      // 2c. Se os dois (upload e url) estiverem vazios, finalImageUrl é NULL,
+      //    mas não vamos atualizar o campo (veja abaixo).
+
+      // 3. Atualiza a imagem APENAS se uma nova foi enviada (upload ou URL)
+      if (finalImageUrl) {
+        db.run('UPDATE events SET cover_image_url = ? WHERE id = ?', [finalImageUrl, eventId], (err) => {
+          if (err) console.error('Erro ao atualizar imagem do evento:', err);
+          res.redirect('/site/eventos/todos'); // Redireciona após o sucesso
+        });
+      } else {
+        // Se nenhuma imagem nova foi enviada, só redireciona
+        res.redirect('/site/eventos/todos');
+      }
     }
   );
-  stmt.finalize();
-}); // <-- FECHAMENTO CORRETO DA ROTA "EDITAR"
+  stmtUpdateText.finalize();
+});
 
 
 app.get('/site/eventos/:id/excluir', isAdmin, (req, res) => {

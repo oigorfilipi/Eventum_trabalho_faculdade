@@ -121,6 +121,30 @@ document.addEventListener('DOMContentLoaded', () => {
             if (chkArtistasSimult.checked) chkArtistasSimult.dispatchEvent(new Event('change'));
         }
 
+        // --- NOVA LÓGICA DO SELETOR DE IMAGEM ---
+        const capaRadios = document.querySelectorAll('input[name="capa-tipo"]');
+        const uploadSection = document.getElementById('upload-section');
+        const urlSection = document.getElementById('url-section');
+        const uploadInput = document.getElementById('cover_image_upload');
+        const urlInput = document.getElementById('cover_image_url');
+
+        if (uploadSection && urlSection) {
+            capaRadios.forEach(radio => {
+                radio.addEventListener('change', () => {
+                    if (radio.value === 'upload') {
+                        uploadSection.classList.remove('hidden');
+                        urlSection.classList.add('hidden');
+                        urlInput.value = ''; // Limpa o campo de URL
+                    } else {
+                        uploadSection.classList.add('hidden');
+                        urlSection.classList.remove('hidden');
+                        uploadInput.value = null; // Limpa o campo de Upload
+                    }
+                });
+            });
+        }
+        // --- FIM DA NOVA LÓGICA ---
+
 
         // --- 2. Lógica de Adicionar Campos Dinâmicos (Palestrantes) ---
         const addSpeakerBtn = document.getElementById('add-speaker');

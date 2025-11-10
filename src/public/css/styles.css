@@ -1413,3 +1413,23 @@ th {
     flex-shrink: 0;
     /* Impede que o botão encolha */
 }
+
+/* [ COLE ISTO NO FINAL DE styles.css ]
+*/
+.warning-text {
+    font-style: italic;
+    color: var(--text-secondary);
+    font-size: 0.9em;
+}
+
+/* Nova classe para os seletores de imagem */
+.hidden-section-soft {
+    background-color: var(--bg-color);
+    border-radius: 8px;
+    padding: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.hidden-section-soft.hidden {
+    display: none;
+}
