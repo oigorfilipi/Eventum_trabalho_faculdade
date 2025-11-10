@@ -73,92 +73,96 @@
                                                     <% } else { %>
                                                         <h1>Minha Conta</h1>
 
-                                                        <div class="form-container" style="margin-top: 2rem;">
-                                                            <h2>Minhas Informações</h2>
-                                                            <div class="form-group">
-                                                                <label>Nome:</label>
-                                                                <input type="text" class="form-control"
-                                                                    value="<%= user.name %>" disabled>
-                                                            </div>
+                                                        <%# CORREÇÃO: Envolvido em um <form> e campo "Nome" ativado %>
+                                                            <form action="/site/atualizar-perfil" method="POST"
+                                                                class="form-container" style="margin-top: 2rem;">
+                                                                <h2>Minhas Informações</h2>
+
+                                                                <div class="form-group">
+                                                                    <label for="name">Nome:</label>
+                                                                    <input type="text" id="name" name="name"
+                                                                        class="form-control" value="<%= user.name %>"
+                                                                        required>
+                                                                </div>
+
+                                                                <div class="form-group">
+                                                                    <label>Email (Não pode ser alterado):</label>
+                                                                    <input type="email" class="form-control"
+                                                                        value="<%= user.email %>" disabled>
+                                                                </div>
+
+                                                                <button type="submit" class="btn btn-secondary">Salvar
+                                                                    Alterações</button>
+                                                            </form>
+
+
                                                             <div class="form-group">
                                                                 <label>Email:</label>
                                                                 <input type="email" class="form-control"
                                                                     value="<%= user.email %>" disabled>
                                                             </div>
-                                                        </div>
-
-                                                        <div class="form-container" style="margin-top: 2rem;">
-                                                            <h2>Alterar Senha</h2>
-
-                                                            <%# O <p> de aviso foi REMOVIDO daqui %>
-
-                                                                <form action="/site/mudar-senha" method="POST">
-                                                                    <div class="form-group">
-                                                                        <label for="senha-atual">Senha Atual:</label>
-                                                                        <input type="password" id="senha-atual"
-                                                                            name="senhaAtual" class="form-control"
-                                                                            required>
-                                                                    </div>
-                                                                    <div class="form-group">
-                                                                        <label for="nova-senha">Nova Senha:</label>
-                                                                        <input type="password" id="nova-senha"
-                                                                            name="novaSenha" class="form-control"
-                                                                            required>
-                                                                    </div>
-                                                                    <%# O 'disabled' foi REMOVIDO do botão %>
-                                                                        <button type="submit"
-                                                                            class="btn btn-secondary">Salvar Nova
-                                                                            Senha</button>
-                                                                </form>
-                                                        </div>
-
-                                                        <div style="margin-top: 2rem;">
-                                                            <h2>Meus Eventos Inscritos</h2>
-
-                                                            <% if (myEvents && myEvents.length> 0) { %>
-                                                                <div class="event-list">
-                                                                    <% myEvents.forEach(event=> { %>
-
-                                                                        <div class="event-card">
-
-                                                                            <%# CORREÇÃO: Adicionado o link aqui %>
-                                                                                <a href="/site/eventos/<%= event.id %>"
-                                                                                    class="event-title-link">
-                                                                                    <h3>
-                                                                                        <%= event.title %>
-                                                                                    </h3>
-                                                                                </a>
-
-                                                                                <div class="date">
-                                                                                    <%= event.date ? new
-                                                                                        Date(event.date).toLocaleDateString('pt-BR',
-                                                                                        {timeZone: 'UTC' })
-                                                                                        : 'Data a definir' %>
-                                                                                </div>
-                                                                                <p>
-                                                                                    <%= event.description
-                                                                                        || 'Este evento não possui descrição.'
-                                                                                        %>
-                                                                                </p>
-                                                                                <p
-                                                                                    style="color: var(--success-color); font-weight: bold;">
-                                                                                    ✓ Inscrito</p>
-                                                                        </div>
-                                                                        <% }) %>
-                                                                </div>
-                                                                <% } else { %>
-                                                                    <div class="form-container">
-                                                                        <p>Você ainda não se inscreveu em nenhum evento.
-                                                                        </p>
-                                                                        <a href="/site/eventos"
-                                                                            class="btn btn-secondary"
-                                                                            style="margin-top: 1rem; text-align: center;">Ver
-                                                                            Eventos Disponíveis</a>
-                                                                    </div>
-                                                                    <% } %>
-                                                        </div>
-                                                        <% } %>
-
         </div>
 
-        <%- include('partials/footer') %>
+        <div class="form-container" style="margin-top: 2rem;">
+            <h2>Alterar Senha</h2>
+
+            <%# O <p> de aviso foi REMOVIDO daqui %>
+
+                <form action="/site/mudar-senha" method="POST">
+                    <div class="form-group">
+                        <label for="senha-atual">Senha Atual:</label>
+                        <input type="password" id="senha-atual" name="senhaAtual" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="nova-senha">Nova Senha:</label>
+                        <input type="password" id="nova-senha" name="novaSenha" class="form-control" required>
+                    </div>
+                    <%# O 'disabled' foi REMOVIDO do botão %>
+                        <button type="submit" class="btn btn-secondary">Salvar Nova
+                            Senha</button>
+                </form>
+        </div>
+
+        <div style="margin-top: 2rem;">
+            <h1>Meus Eventos Inscritos</h1>
+
+            <% if (myEvents && myEvents.length> 0) { %>
+                <div class="event-list">
+                    <% myEvents.forEach(event=> { %>
+
+                        <div class="event-card">
+
+                            <%# CORREÇÃO: Adicionado o link aqui %>
+                                <a href="/site/eventos/<%= event.id %>" class="event-title-link">
+                                    <h3>
+                                        <%= event.title %>
+                                    </h3>
+                                </a>
+
+                                <div class="date">
+                                    <%= event.date ? new Date(event.date).toLocaleDateString('pt-BR', {timeZone: 'UTC'
+                                        }) : 'Data a definir' %>
+                                </div>
+                                <p>
+                                    <%= event.description || 'Este evento não possui descrição.' %>
+                                </p>
+                                <p style="color: var(--success-color); font-weight: bold;">
+                                    ✓ Inscrito</p>
+                        </div>
+                        <% }) %>
+                </div>
+                <% } else { %>
+                    <div class="form-container">
+                        <p>Você ainda não se inscreveu em nenhum evento.
+                        </p>
+                        <a href="/site/eventos" class="btn btn-secondary"
+                            style="margin-top: 1rem; text-align: center;">Ver
+                            Eventos Disponíveis</a>
+                    </div>
+                    <% } %>
+        </div>
+        <% } %>
+
+            </div>
+
+            <%- include('partials/footer') %>
