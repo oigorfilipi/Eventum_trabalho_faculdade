@@ -157,6 +157,76 @@ app.get('/site/eventos/:id/excluir', isAdmin, (req, res) => {
   });
 }); // <-- FECHAMENTO CORRETO DA ROTA "EXCLUIR"
 
+app.get('/site/relatorio-admin', isAdmin, (req, res) => {
+
+  // 1. Buscar todos os dados (usuários, eventos, inscrições)
+  const sql = `
+        SELECT 
+            e.id, e.title, e.pricing_details, e.qtdSubs,
+            COUNT(s.id) as inscritos_count
+        FROM events e
+        LEFT JOIN subscriptions s ON e.id = s.event_id
+        GROUP BY e.id
+        ORDER BY e.title;
+    `;
+
+  db.all(sql, [], (err, eventsData) => {
+    if (err) return res.status(500).send('Erro ao gerar relatório');
+
+    let totalRevenue = 0;
+    let totalActiveSubscriptions = 0;
+
+    // 2. Processar os dados em JS (para calcular a receita)
+    const reportEvents = eventsData.map(event => {
+      let eventPrice = 0;
+      let isFree = true;
+
+      if (event.pricing_details) {
+        try {
+          const pricing = JSON.parse(event.pricing_details);
+          if (pricing.isFree === 'false' && pricing.price) {
+            eventPrice = parseFloat(pricing.price) || 0;
+            isFree = false;
+          }
+        } catch (e) { }
+      }
+
+      const eventRevenue = eventPrice * event.inscritos_count;
+      totalRevenue += eventRevenue;
+      totalActiveSubscriptions += event.inscritos_count;
+
+      return {
+        title: event.title,
+        status: isFree ? 'Gratuito' : 'Pago',
+        price: eventPrice,
+        vagas: event.qtdSubs || 100,
+        inscritos: event.inscritos_count,
+        receita: eventRevenue
+      };
+    });
+
+    // 3. Buscar estatísticas gerais
+    db.get("SELECT COUNT(*) as count FROM users", [], (err, userStats) => {
+      db.get("SELECT COUNT(*) as count FROM subscriptions", [], (err, totalSubsStats) => {
+
+        const reportData = {
+          geral: {
+            totalUsers: userStats.count,
+            totalEvents: eventsData.length,
+            totalActiveSubs: totalActiveSubscriptions,
+            totalHistoricalSubs: totalSubsStats.count,
+            totalRevenue: totalRevenue
+          },
+          eventos: reportEvents
+        };
+
+        // 4. Renderizar a nova página de relatório
+        res.render('relatorio', { reportData });
+      });
+    });
+  });
+});
+
 
 // Rotas
 app.use('/users', userRoutes);

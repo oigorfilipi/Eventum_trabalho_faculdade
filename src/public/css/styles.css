@@ -546,11 +546,18 @@ textarea.form-control {
     font-weight: 600;
 }
 
+.form-container-wide {
+    max-width: 900px; /* Dobra a largura, mas mantém um limite */
+}
+
 .form-actions {
     display: flex;
-    align-items: center; /* Alinha verticalmente */
-    gap: 1rem; /* Espaço de 1rem entre os botões (substitui o margin-left) */
-    flex-wrap: wrap; /* Permite quebrar a linha em telas pequenas */
+    align-items: center;
+    /* Alinha verticalmente */
+    gap: 1rem;
+    /* Espaço de 1rem entre os botões (substitui o margin-left) */
+    flex-wrap: wrap;
+    /* Permite quebrar a linha em telas pequenas */
 }
 
 
@@ -996,7 +1003,8 @@ a.event-title-link:hover h3 {
 .stat-card {
     /* CORREÇÃO: Define que o card ocupa 50% (menos o espaço do 'gap') */
     flex-basis: calc(50% - 0.5rem);
-    flex-grow: 1; /* Permite que ele cresça se só houver 1 ou 2 */
+    flex-grow: 1;
+    /* Permite que ele cresça se só houver 1 ou 2 */
 
     background-color: var(--bg-color);
     border: 1px solid var(--border-color);
@@ -1052,6 +1060,13 @@ a.event-title-link:hover h3 {
     flex: 1;
 }
 
+@media (max-width: 768px) {
+    .form-row {
+        flex-direction: column; /* Faz os campos empilharem */
+        gap: 0; /* Remove o 'gap' da coluna */
+    }
+}
+
 .radio-group {
     display: flex;
     gap: 1.5rem;
@@ -1089,4 +1104,194 @@ a.event-title-link:hover h3 {
 .admin-event-stats span {
     font-weight: bold;
     color: var(--accent-color);
+}
+
+/* [ COLE ISTO NO FINAL DE styles.css ]
+*/
+
+/* 9. BOTÃO FLUTUANTE (FAB) E CHAT POPUP
+--------------------------------------------- */
+.fab-container {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 1000;
+
+    width: 60px;
+    height: 60px;
+    background-color: var(--accent-color);
+    border: none;
+    border-radius: 50%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-size: 2rem;
+    color: white;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    transition: transform 0.2s ease;
+}
+
+.fab-container:hover {
+    transform: scale(1.1);
+    background-color: var(--accent-hover);
+}
+
+/* A caixa de chat (escondida por padrão) */
+.chat-popup {
+    display: none;
+    /* Escondido por padrão */
+    position: fixed;
+    bottom: 6.5rem;
+    /* 2rem (do botão) + 60px (altura) + 0.5rem (espaço) */
+    right: 2rem;
+    z-index: 1001;
+
+    width: 320px;
+    background-color: var(--card-color);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    /* Para o header arredondado */
+
+    /* Configuração flex para o .show */
+    flex-direction: column;
+}
+
+/* Classe que o JS vai adicionar */
+.chat-popup.show {
+    display: flex;
+}
+
+.chat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    background-color: var(--bg-color);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.chat-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+.chat-close {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 1.75rem;
+    font-weight: bold;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+}
+
+.chat-close:hover {
+    color: var(--text-primary);
+}
+
+.chat-body {
+    padding: 1.5rem 1rem;
+    color: var(--text-primary);
+}
+
+/* Relatório */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+.page {
+    width: 21cm;
+    /* A4 */
+    min-height: 29.7cm;
+    padding: 2cm;
+    margin: 1cm auto;
+    background: white;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    text-align: center;
+    border-bottom: 2px solid #333;
+    padding-bottom: 10px;
+}
+
+h2 {
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+    margin-top: 2rem;
+}
+
+.summary-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.summary-card {
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    padding: 1rem;
+    border-radius: 5px;
+}
+
+.summary-card strong {
+    display: block;
+    font-size: 1.1rem;
+    color: #555;
+}
+
+.summary-card span {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #007BFF;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+th,
+td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+    background-color: #f2f2f2;
+}
+
+.currency {
+    text-align: right;
+}
+
+/* Estilos de Impressão */
+@media print {
+    body {
+        background-color: white;
+        color: black;
+    }
+
+    .page {
+        box-shadow: none;
+        margin: 0;
+        padding: 0;
+        width: 100%;
+    }
+
+    .summary-card {
+        background: #eee;
+    }
 }

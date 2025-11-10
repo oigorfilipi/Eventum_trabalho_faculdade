@@ -238,6 +238,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
     /* --- FIM: Lógica do Formulário de Evento --- */
 
+    /* --- INÍCIO: Lógica do Chat Flutuante --- */
+    const fabButton = document.getElementById('fab-chat-button');
+    const chatPopup = document.getElementById('chat-popup');
+    const closeButton = document.getElementById('chat-close-btn');
+
+    if (fabButton && chatPopup && closeButton) {
+
+        // Clica no balão 💬 para abrir/fechar
+        fabButton.addEventListener('click', () => {
+            chatPopup.classList.toggle('show');
+        });
+
+        // Clica no 'X' para fechar
+        closeButton.addEventListener('click', () => {
+            chatPopup.classList.remove('show');
+        });
+    }
+    /* --- FIM: Lógica do Chat Flutuante --- */
+
+
     // Função que faz a mágica de auto-crescimento
     function autoGrow(element) {
         element.style.height = 'auto'; // Reseta a altura
