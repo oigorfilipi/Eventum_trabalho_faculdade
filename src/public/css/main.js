@@ -489,19 +489,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     /* --- FIM: Lógica de Edição "Meus Dados" --- */
 
-    /* --- INÍCIO: Lógica de Edição de Nome (Minha Conta) --- */
-    const toggleBtn = document.getElementById('toggle-name-edit');
-    const infoForm = document.getElementById('info-edit-form');
-    const infoDisplay = document.getElementById('info-display');
-
-    if (toggleBtn && infoForm && infoDisplay) {
-        toggleBtn.addEventListener('click', () => {
-            infoForm.classList.remove('hidden'); // Mostra o formulário
-            infoDisplay.classList.add('hidden'); // Esconde o texto
-        });
-    }
-    /* --- FIM: Lógica de Edição de Nome --- */
-
     // Função que faz a mágica de auto-crescimento
     function autoGrow(element) {
         element.style.height = 'auto'; // Reseta a altura
@@ -521,5 +508,27 @@ document.addEventListener('DOMContentLoaded', () => {
             autoGrow(textarea);
         });
     });
+
+    /* --- INÍCIO: Lógica do Carrossel (Home) --- */
+    const track = document.getElementById('carousel-track');
+    const prevBtn = document.getElementById('carousel-prev');
+    const nextBtn = document.getElementById('carousel-next');
+
+    if (track && prevBtn && nextBtn) {
+        // Tenta pegar a largura do slide
+        const slide = track.querySelector('.carousel-slide');
+
+        if (slide) { // Garante que o slide existe antes de tentar ler
+            const slideWidth = slide.clientWidth;
+
+            prevBtn.addEventListener('click', () => {
+                track.scrollBy({ left: -slideWidth, behavior: 'smooth' });
+            });
+            nextBtn.addEventListener('click', () => {
+                track.scrollBy({ left: slideWidth, behavior: 'smooth' });
+            });
+        }
+    }
+    /* --- FIM: Lógica do Carrossel --- */
 
 });

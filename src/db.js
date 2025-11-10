@@ -24,6 +24,30 @@ db.serialize(() => {
     )
   `);
 
+  // --- COLUNAS ADICIONAIS DO PERFIL (DO CADASTRO) ---
+  db.run(`ALTER TABLE users ADD COLUMN nome_completo TEXT`, (err) => {
+    if (err && !err.message.includes('duplicate column name')) { console.error('Erro ao adicionar coluna nome_completo:', err.message); }
+  });
+  db.run(`ALTER TABLE users ADD COLUMN phone TEXT`, (err) => {
+    if (err && !err.message.includes('duplicate column name')) { console.error('Erro ao adicionar coluna phone:', err.message); }
+  });
+  db.run(`ALTER TABLE users ADD COLUMN cpf TEXT`, (err) => {
+    if (err && !err.message.includes('duplicate column name')) { console.error('Erro ao adicionar coluna cpf:', err.message); }
+  });
+  db.run(`ALTER TABLE users ADD COLUMN data_nascimento TEXT`, (err) => {
+    if (err && !err.message.includes('duplicate column name')) { console.error('Erro ao adicionar coluna data_nascimento:', err.message); }
+  });
+  db.run(`ALTER TABLE users ADD COLUMN sexo TEXT`, (err) => {
+    if (err && !err.message.includes('duplicate column name')) { console.error('Erro ao adicionar coluna sexo:', err.message); }
+  });
+  db.run(`ALTER TABLE users ADD COLUMN genero TEXT`, (err) => {
+    if (err && !err.message.includes('duplicate column name')) { console.error('Erro ao adicionar coluna genero:', err.message); }
+  });
+  db.run(`ALTER TABLE users ADD COLUMN cor TEXT`, (err) => {
+    if (err && !err.message.includes('duplicate column name')) { console.error('Erro ao adicionar coluna cor:', err.message); }
+  });
+  // --- FIM DO NOVO BLOCO ---
+
   db.run(`
     CREATE TABLE IF NOT EXISTS events (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -55,35 +79,6 @@ db.serialize(() => {
       console.error('Erro ao adicionar coluna qtdSubs:', err.message);
     }
   });
-
-  // --- NOVAS COLUNAS ---
-  db.run(`
-    ALTER TABLE events
-    ADD COLUMN location TEXT
-  `, (err) => {
-    if (err && !err.message.includes('duplicate column name')) {
-      console.error('Erro ao adicionar coluna location:', err.message);
-    }
-  });
-
-  db.run(`
-    ALTER TABLE events
-    ADD COLUMN time TEXT
-  `, (err) => {
-    if (err && !err.message.includes('duplicate column name')) {
-      console.error('Erro ao adicionar coluna time:', err.message);
-    }
-  });
-
-  db.run(`
-    ALTER TABLE events
-    ADD COLUMN attractions TEXT
-  `, (err) => {
-    if (err && !err.message.includes('duplicate column name')) {
-      console.error('Erro ao adicionar coluna attractions:', err.message);
-    }
-  });
-  // --- FIM DAS NOVAS COLUNAS ---
 
   db.run(`
     ALTER TABLE events

@@ -2,8 +2,6 @@
 
 /* 1. VARIÁVEIS DE COR E GERAL
 --------------------------------------------- */
-/* 1. VARIÁVEIS DE COR E GERAL
---------------------------------------------- */
 :root {
     /* AGORA O PADRÃO É CLARO */
     --bg-color: #F0F2F5;
@@ -64,6 +62,10 @@ body {
     max-width: 1100px;
     margin: 2rem auto;
     padding: 0 1.5rem;
+}
+
+.container p {
+    color: var(--text-primary);
 }
 
 h1,
@@ -273,19 +275,6 @@ a:hover {
 .btn-primary:hover {
     background-color: var(--accent-hover);
     border-color: var(--accent-hover);
-    color: #ffffff;
-    cursor: pointer;
-}
-
-/* O "Botão Secundário" (Vazado, Azul - o que você gostou) */
-.btn-secondary {
-    background-color: transparent;
-    border-color: var(--accent-color);
-    color: var(--accent-color);
-}
-
-.btn-secondary:hover {
-    background-color: var(--accent-color);
     color: #ffffff;
     cursor: pointer;
 }
@@ -772,6 +761,7 @@ html.light-theme .about-image img {
 
 /* Para o <p> dentro da resposta não ter margem extra */
 .faq-answer p {
+    padding-top: 10px;
     margin: 0;
 }
 
@@ -1117,6 +1107,10 @@ a.event-title-link:hover h3 {
     color: var(--accent-color);
 }
 
+.admin-event-stats strong {
+    color: var(--accent-color);
+}
+
 /* [ COLE ISTO NO FINAL DE styles.css ]
 */
 
@@ -1406,6 +1400,7 @@ th {
 
 .certificate-item span {
     font-weight: 500;
+    color: var(--text-primary);
 }
 
 .certificate-item .btn-secondary {
@@ -1492,7 +1487,10 @@ th {
 /* A barra de navegação (Próximo/Anterior) */
 .form-step-navigation {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
+    /* <--- MUDANÇA 1: Alinha tudo à direita */
+    gap: 1rem;
+    /* <--- MUDANÇA 2: Adiciona espaço */
     align-items: center;
     margin-top: 2rem;
     padding-top: 1.5rem;
@@ -1507,21 +1505,27 @@ th {
     display: flex;
     align-items: center;
     gap: 1rem;
-    padding: 1.5rem; /* Mais "gordinho" */
+    padding: 1.5rem;
+    /* Mais "gordinho" */
     border: 1px solid var(--border-color);
     border-radius: 8px;
     background-color: var(--bg-color);
 }
+
 .recaptcha-simulated-box-large input[type="checkbox"] {
-    width: 24px; /* Maior */
+    width: 24px;
+    /* Maior */
     height: 24px;
 }
+
 .recaptcha-simulated-box-large label {
     font-size: 1.1rem;
     font-weight: 500;
     margin: 0;
-    flex-grow: 1; /* Empurra a logo para a direita */
+    flex-grow: 1;
+    /* Empurra a logo para a direita */
 }
+
 .recaptcha-simulated-box-large img {
     opacity: 0.7;
 }
@@ -1533,10 +1537,12 @@ th {
 --------------------------------------------- */
 .tab-navigation {
     display: flex;
-    flex-wrap: wrap; /* Permite quebrar a linha em telas pequenas */
+    flex-wrap: wrap;
+    /* Permite quebrar a linha em telas pequenas */
     border-bottom: 2px solid var(--border-color);
     margin-bottom: 2rem;
 }
+
 .tab-button {
     padding: 1rem 1.5rem;
     cursor: pointer;
@@ -1546,18 +1552,23 @@ th {
     font-weight: 500;
     color: var(--text-secondary);
     border-bottom: 3px solid transparent;
-    margin-bottom: -2px; /* Puxa o botão para baixo */
+    margin-bottom: -2px;
+    /* Puxa o botão para baixo */
 }
+
 .tab-button.active {
     color: var(--accent-color);
     border-bottom-color: var(--accent-color);
 }
 
 .tab-content {
-    display: none; /* Escondido por padrão */
+    display: none;
+    /* Escondido por padrão */
 }
+
 .tab-content.active {
-    display: block; /* Mostra o conteúdo da aba ativa */
+    display: block;
+    /* Mostra o conteúdo da aba ativa */
 }
 
 /* Caixa de simulação do 2FA */
@@ -1568,6 +1579,7 @@ th {
     border-radius: 8px;
     opacity: 0.7;
 }
+
 .two-factor-box p {
     color: var(--text-primary);
 }
@@ -1578,11 +1590,13 @@ th {
     margin-top: 3rem;
     padding-top: 1.5rem;
 }
+
 .danger-zone .btn-danger {
     background-color: transparent;
     color: var(--danger-color);
     border-color: var(--danger-color);
 }
+
 .danger-zone .btn-danger:hover {
     background-color: var(--danger-color);
     color: #ffffff;
@@ -1613,12 +1627,13 @@ th {
     right: 1rem;
     top: 50%;
     transform: translateY(-50%);
-    
+
     /* Ajustes para o botão parecer texto */
     background: none;
     border: none;
     cursor: pointer;
-    font-size: 1.25rem; /* Tamanho do emoji */
+    font-size: 1.25rem;
+    /* Tamanho do emoji */
     color: var(--text-secondary);
     padding: 0;
 }
@@ -1630,7 +1645,24 @@ th {
 /* 19. ASTERISCO DE CAMPO OBRIGATÓRIO
 --------------------------------------------- */
 .required-star {
-    color: var(--danger-color); /* Vermelho */
+    color: var(--danger-color);
+    /* Vermelho */
     font-weight: bold;
     margin-left: 4px;
+}
+
+/* 20. ALINHAMENTO ESPECIAL (Formulário Etapa 5)
+--------------------------------------------- */
+/* Isso força o "Anterior" para a esquerda eo grupo "Salvar/Cancelar" para a direita.
+*/
+#step-5-nav {
+    justify-content: space-between;
+}
+
+/* 21. BOTÃO DE EVENTO ENCERRADO
+--------------------------------------------- */
+.btn-disabled.btn-encerrado {
+    background-color: var(--text-secondary);
+    opacity: 0.7;
+    color: #ffffff; /* Garante o texto branco */
 }
