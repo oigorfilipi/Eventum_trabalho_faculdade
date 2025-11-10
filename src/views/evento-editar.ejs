@@ -1,11 +1,15 @@
 <%- include('partials/header', { title: 'Editar Evento' }) %>
-
     <div class="container">
-        <h1>Editar Evento: <%= evento.title %>
-        </h1>
-
-        <%- include('partials/event-form', { actionUrl: '/site/eventos/' + evento.id + '/editar' , evento: evento }) %>
-
+        <div class="form-container">
+            <h1>Editar Evento: <%= evento.title %>
+            </h1>
+            <% if (typeof error !=='undefined' && error) { %>
+                <div class="flash-message error" style="margin-bottom: 1rem;">
+                    <%= error %>
+                </div>
+                <% } %>
+                    <%- include('partials/event-form', { actionUrl: '/site/eventos/' + evento.id + '/editar' , evento:
+                        evento }) %>
+        </div>
     </div>
-
     <%- include('partials/footer') %>

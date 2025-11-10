@@ -1,37 +1,50 @@
 <%- include('partials/header', { title: 'Nossos Eventos' }) %>
 
     <div class="container">
-        <h1>Próximos Eventos</h1>
+        <% if (message) { %>
+            <div class="flash-message <%= message.type %>">
+                <%= message.text %>
+            </div>
+            <% } %>
 
-        <div class="event-list">
+                <h1>Próximos Eventos</h1>
 
-            <% events.forEach(event=> { %>
-                <div class="event-card">
-                    <h3>
-                        <%= event.title %>
-                    </h3>
-                    <% if (user) { %>
-                        <% if (user.role==='admin' ) { %>
-                            <a href="/site/eventos/<%= event.id %>/editar" class="btn">Editar</a>
-                            <a href="/site/eventos/<%= event.id %>/excluir" class="btn"
-                                style="background-color: #E53935;">Excluir</a>
+                <div class="event-list">
 
-                            <% } else { %>
-                                <form action="/subscribe" method="POST">
-                                    <input type="hidden" name="eventId" value="<%= event.id %>">
-                                    <input type="hidden" name="userId" value="<%= user.id %>">
-                                    <button type="submit" class="btn">Inscrever-se</button>
-                                </form>
-                                <% } %>
+                    <% events.forEach(event=> { %>
+                        <div class="event-card">
+                            <h3>
+                                <%= event.title %>
+                            </h3>
+                            <div class="date">
+                                <%= event.date ? new Date(event.date).toLocaleDateString('pt-BR', {timeZone: 'UTC' })
+                                    : 'Data a definir' %>
+                            </div>
+                            <p>
+                                <%= event.description || 'Este evento não possui descrição.' %>
+                            </p>
 
+                            <% if (user) { %>
+                                <% if (user.role==='admin' ) { %>
+                                    <div class="event-card-actions">
+                                        <a href="/site/eventos/<%= event.id %>/editar" class="btn">Editar</a>
+                                        <a href="/site/eventos/<%= event.id %>/excluir"
+                                            class="btn btn-danger">Excluir</a>
+                                    </div>
                                     <% } else { %>
-                                        <a href="/site/login" class="btn">Login para se inscrever</a>
+                                        <form action="/subscribe" method="POST">
+                                            <input type="hidden" name="eventId" value="<%= event.id %>">
+                                            <input type="hidden" name="userId" value="<%= user.id %>">
+                                            <button type="submit" class="btn">Inscrever-se</button>
+                                        </form>
                                         <% } %>
+                                            <% } else { %>
+                                                <a href="/site/login" class="btn">Login para se inscrever</a>
+                                                <% } %>
+                        </div>
+                        <% }) %>
 
                 </div>
-                <% }) %>
-
-        </div>
     </div>
 
     <%- include('partials/footer') %>
