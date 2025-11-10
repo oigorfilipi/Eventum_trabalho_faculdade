@@ -367,6 +367,66 @@ app.post('/site/mudar-senha', isLoggedIn, (req, res) => {
   });
 });
 
+// 1. ROTA PÁGINA DE DETALHES DO EVENTO
+//
+app.get('/site/eventos/:id', (req, res) => {
+  const eventId = req.params.id;
+  let userId = null;
+  if (req.session.user) {
+    userId = req.session.user.id;
+  }
+
+  // 1. Busca o evento específico
+  db.get('SELECT * FROM events WHERE id = ?', [eventId], (err, event) => {
+    if (err || !event) {
+      return res.status(404).send('Evento não encontrado');
+    }
+
+    // 2. Processa os JSONs deste evento
+    try {
+      if (event.schedule_details) event.schedule = JSON.parse(event.schedule_details);
+      if (event.address_details) event.address = JSON.parse(event.address_details);
+      if (event.pricing_details) event.pricing = JSON.parse(event.pricing_details);
+      if (event.food_details) event.food = JSON.parse(event.food_details);
+      if (event.attractions) event.attractionsData = JSON.parse(event.attractions);
+    } catch (e) {
+      console.error(`Erro ao parsear JSON do evento ${event.id}:`, e);
+    }
+
+    // 3. Verifica se o usuário JÁ está inscrito
+    db.get('SELECT id FROM subscriptions WHERE event_id = ? AND user_id = ?', [eventId, userId], (err, subscription) => {
+      const isSubscribed = !!subscription; // true se a inscrição existir
+
+      // 4. Renderiza a nova página de detalhes
+      res.render('evento-detalhe', { 
+        event: event, 
+        isSubscribed: isSubscribed 
+      });
+    });
+  });
+});
+
+//
+// 2. ROTA SIMULADA DE PAGAMENTO
+//
+app.get('/site/pagamento/:id', isLoggedIn, (req, res) => {
+  const eventId = req.params.id;
+  // CORREÇÃO: Adicionado 'id' ao SELECT
+  db.get('SELECT id, title, pricing_details FROM events WHERE id = ?', [eventId], (err, event) => {
+    if (err || !event) return res.status(404).send('Evento não encontrado');
+    
+    let price = "Valor não definido";
+    if (event.pricing_details) {
+      try {
+        const pricing = JSON.parse(event.pricing_details);
+        price = pricing.price || "Valor não definido";
+      } catch(e) {}
+    }
+
+    res.render('pagamento', { event, price, user: req.session.user });
+  });
+});
+
 
 // Rotas da API
 app.use('/users', userRoutes);

@@ -1,0 +1,224 @@
+<%# Arquivo: src/views/evento-detalhe.ejs A nova página com todos os detalhes do evento. %>
+
+    <%- include('partials/header', { title: event.title }) %>
+
+        <div class="container">
+
+            <%# Exibe mensagens de erro/sucesso (ex: da inscrição) %>
+                <% if (message) { %>
+                    <div class="flash-message <%= message.type %>">
+                        <%= message.text %>
+                    </div>
+                    <% } %>
+
+                        <div class.="event-detail-container">
+
+                            <h1>
+                                <%= event.title %>
+                            </h1>
+
+                            <div class="event-detail-card">
+                                <h2>Descrição</h2>
+                                <p>
+                                    <%= event.description || 'Este evento não possui descrição.' %>
+                                </p>
+                            </div>
+
+                            <%# --- O BOTÃO INTELIGENTE --- %>
+                                <div class="event-detail-card action-card">
+                                    <% if (!user) { %>
+                                        <a href="/site/login" class="btn">Login para se inscrever</a>
+
+                                        <% } else if (user.role==='admin' ) { %>
+                                            <a href="/site/eventos/<%= event.id %>/editar"
+                                                class="btn btn-success">Editar como Admin</a>
+
+                                            <% } else if (isSubscribed) { %>
+                                                <span class="btn-disabled">✓ Inscrito</span>
+
+                                                <% } else if (event.pricing && event.pricing.isFree==='false' ) { %>
+                                                    <%# Evento PAGO leva para a simulação %>
+                                                        <a href="/site/pagamento/<%= event.id %>"
+                                                            class="btn">Inscrever-se (Pagamento)</a>
+
+                                                        <% } else { %>
+                                                            <%# Evento GRATUITO usa o formulário de inscrição normal %>
+                                                                <form action="/subscribe" method="POST">
+                                                                    <input type="hidden" name="eventId"
+                                                                        value="<%= event.id %>">
+                                                                    <input type="hidden" name="userId"
+                                                                        value="<%= user.id %>">
+                                                                    <button type="submit" class="btn">Inscrever-se
+                                                                        (Gratuito)</button>
+                                                                </form>
+                                                                <% } %>
+                                </div>
+
+                                <%# --- Detalhes de Horário e Preço --- %>
+                                    <div class="event-detail-card">
+                                        <h2>Informações</h2>
+                                        <% if (event.schedule) { %>
+                                            <div class="detail-item"><strong>Início:</strong>
+                                                <%= new Date(event.schedule.date_start).toLocaleDateString('pt-BR',
+                                                    {timeZone: 'UTC' }) %> às <%= event.schedule.time_start %>
+                                            </div>
+                                            <div class="detail-item"><strong>Término:</strong>
+                                                <%= new Date(event.schedule.date_end).toLocaleDateString('pt-BR',
+                                                    {timeZone: 'UTC' }) %> às <%= event.schedule.time_end %>
+                                            </div>
+                                            <% } %>
+                                                <% if (event.pricing) { %>
+                                                    <div class="detail-item"><strong>Preço:</strong>
+                                                        <%= event.pricing.isFree==='true' ? 'Gratuito' :
+                                                            event.pricing.price %>
+                                                    </div>
+                                                    <% } %>
+                                                        <div class="detail-item"><strong>Vagas:</strong>
+                                                            <%= event.qtdSubs ? `Limitado a ${event.qtdSubs} pessoas`
+                                                                : 'Ilimitado' %>
+                                                        </div>
+                                    </div>
+
+                                    <%# --- Detalhes do Endereço --- %>
+                                        <% if (event.address && event.address.street) { %>
+                                            <div class="event-detail-card">
+                                                <h2>Localização</h2>
+                                                <div class="detail-item">
+                                                    <%= event.address.street %>, <%= event.address.number %>
+                                                </div>
+                                                <div class="detail-item">
+                                                    <%= event.address.neighborhood %>
+                                                </div>
+                                                <div class="detail-item">CEP: <%= event.address.cep %>
+                                                </div>
+                                            </div>
+                                            <% } %>
+
+                                                <%# --- Detalhes das Atrações (Palestras, Artistas) --- %>
+                                                    <% if (event.attractionsData &&
+                                                        (event.attractionsData.palestras.length> 0 ||
+                                                        event.attractionsData.artistas.length > 0)) { %>
+                                                        <div class="event-detail-card">
+                                                            <h2>Atrações</h2>
+
+                                                            <% if (event.attractionsData.palestras.length> 0) { %>
+                                                                <h4>Palestras</h4>
+                                                                <% if (event.attractionsData.palestras_simultaneas) { %>
+                                                                    <p><i>Múltiplas palestras ocorrendo. Horários a
+                                                                            confirmar no local.</i></p>
+                                                                    <% } %>
+                                                                        <ul class="attraction-list">
+                                                                            <%
+                                                                                event.attractionsData.palestras.forEach(p=>
+                                                                                { %>
+                                                                                <li>
+                                                                                    <strong>
+                                                                                        <%= p.nome %>
+                                                                                    </strong> (<%= p.profissao %>)
+                                                                                        <% if
+                                                                                            (!event.attractionsData.palestras_simultaneas
+                                                                                            && p.horario) { %>
+                                                                                            - às <%= p.horario %>
+                                                                                                <% } %>
+                                                                                </li>
+                                                                                <% }) %>
+                                                                        </ul>
+                                                                        <% } %>
+
+                                                                            <% if
+                                                                                (event.attractionsData.artistas.length>
+                                                                                0) { %>
+                                                                                <h4>Artistas</h4>
+                                                                                <% if
+                                                                                    (event.attractionsData.artistas_simultaneos)
+                                                                                    { %>
+                                                                                    <p><i>Múltiplas atrações ocorrendo.
+                                                                                            Horários a confirmar no
+                                                                                            local.</i></p>
+                                                                                    <% } %>
+                                                                                        <ul class="attraction-list">
+                                                                                            <%
+                                                                                                event.attractionsData.artistas.forEach(a=>
+                                                                                                { %>
+                                                                                                <li>
+                                                                                                    <strong>
+                                                                                                        <%= a.nome %>
+                                                                                                    </strong> (<%=
+                                                                                                        a.descricao %>)
+                                                                                                        <% if
+                                                                                                            (!event.attractionsData.artistas_simultaneos
+                                                                                                            &&
+                                                                                                            a.horario) {
+                                                                                                            %>
+                                                                                                            - às <%=
+                                                                                                                a.horario
+                                                                                                                %>
+                                                                                                                <% } %>
+                                                                                                </li>
+                                                                                                <% }) %>
+                                                                                        </ul>
+                                                                                        <% } %>
+                                                        </div>
+                                                        <% } %>
+
+                        </div>
+        </div>
+
+        <%# CSS para esta página %>
+            <style>
+                .event-detail-card {
+                    background-color: var(--card-color);
+                    border: 1px solid var(--border-color);
+                    border-radius: 8px;
+                    padding: 1.5rem 2rem;
+                    margin-bottom: 1.5rem;
+                }
+
+                .event-detail-card h2 {
+                    margin-bottom: 1rem;
+                }
+
+                .detail-item {
+                    color: var(--text-primary);
+                    margin-bottom: 0.5rem;
+                    font-size: 1.1em;
+                }
+
+                .action-card {
+                    background-color: var(--bg-color);
+                }
+
+                .action-card .btn,
+                .action-card .btn-disabled {
+                    width: 100%;
+                    text-align: center;
+                    font-size: 1.2rem;
+                }
+
+                .btn-disabled {
+                    display: block;
+                    background-color: var(--success-color);
+                    color: #ffffff;
+                    padding: 0.75rem 1.25rem;
+                    border-radius: 5px;
+                    font-weight: 600;
+                    opacity: 0.7;
+                    cursor: not-allowed;
+                }
+
+                .attraction-list {
+                    list-style-type: none;
+                    padding-left: 10px;
+                }
+
+                .attraction-list li {
+                    padding: 8px;
+                    border-bottom: 1px solid var(--border-color);
+                }
+
+                .attraction-list li:last-child {
+                    border-bottom: none;
+                }
+            </style>
+
+            <%- include('partials/footer') %>

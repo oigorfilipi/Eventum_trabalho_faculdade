@@ -6,18 +6,19 @@ const router = express.Router();
 
 // POST /subscribe (rota que o formulário chama)
 router.post('/', (req, res) => {
+  const redirectUrl = req.headers.referer || '/site/eventos';
   const { eventId, userId } = req.body || {};
 
   // Validação de segurança básica
   if (!req.session.user || req.session.user.id.toString() !== userId) {
     // Impede que um usuário logado tente inscrever outro usuário
     req.session.message = { type: 'error', text: 'Erro de autenticação.' };
-    return res.redirect('/site/eventos');
+    return res.redirect(redirectUrl);
   }
 
   if (!eventId || !userId) {
     req.session.message = { type: 'error', text: 'Erro: Dados da inscrição incompletos.' };
-    return res.redirect('/site/eventos');
+    return res.redirect(redirectUrl);
   }
 
   // --- Lógica de Validação (que você já tinha) ---
@@ -25,14 +26,14 @@ router.post('/', (req, res) => {
 
   if (!event) {
     req.session.message = { type: 'error', text: 'Erro: Evento não existe.' };
-    return res.redirect('/site/eventos');
+    return res.redirect(redirectUrl);
   }
 
   const currentSubs = db.prepare('SELECT COUNT(*) as count FROM subscriptions WHERE event_id = ?').get(eventId).count;
 
   if (currentSubs >= event.qtdSubs) {
     req.session.message = { type: 'error', text: 'Inscrição falhou: O evento está lotado.' };
-    return res.redirect('/site/eventos');
+    return res.redirect(redirectUrl);
   }
   // --- Fim da Validação ---
 
@@ -53,8 +54,34 @@ router.post('/', (req, res) => {
     }
 
     stmt.finalize();
+
+    // 1. LÓGICA DE ERRO
+    if (err) {
+      if (err.message.includes('UNIQUE')) {
+        req.session.message = { type: 'error', text: 'Você já está inscrito neste evento.' };
+      } else {
+        req.session.message = { type: 'error', text: 'Erro interno ao processar inscrição.' };
+      }
+      // Se deu erro, volta para a página anterior (ex: a de pagamento)
+      return res.redirect(redirectUrl); 
+    } 
+    
+    // 2. LÓGICA DE SUCESSO
+    
+    // Constrói a URL da página de DETALHES do evento
+    const detailsPageUrl = `/site/eventos/${eventId}`;
+
+    // Mensagem de sucesso personalizada (como você pediu)
+    // Se o usuário veio da página de pagamento, mostramos "Pagamento efetuado"
+    if (redirectUrl.includes('/pagamento/')) {
+        req.session.message = { type: 'success', text: 'Pagamento efetuado! Inscrição confirmada.' };
+    } else {
+        // Se veio da inscrição gratuita
+        req.session.message = { type: 'success', text: 'Inscrição realizada com sucesso!' };
+    }
+
     // Em qualquer caso (sucesso ou erro), redireciona de volta
-    return res.redirect('/site/eventos');
+    return res.redirect(detailsPageUrl);
   });
 });
 
