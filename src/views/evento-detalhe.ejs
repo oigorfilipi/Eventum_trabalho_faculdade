@@ -110,6 +110,14 @@
                                                                         <%= event.qtdSubs ? `Limitado a ${event.qtdSubs}
                                                                             pessoas` : 'Ilimitado' %>
                                                                     </div>
+
+                                                                    %# --- ORGANIZADOR ADICIONADO --- %>
+                                                                    <% if (event.organizer) { %>
+                                                                        <div class="detail-item">
+                                                                            <strong>Organizado por:</strong>
+                                                                            <%= event.organizer %>
+                                                                        </div>
+                                                                        <% } %>
                                                 </div>
 
                                                 <%# --- Detalhes do Endereço --- %>

@@ -122,6 +122,17 @@ db.serialize(() => {
     if (err && !err.message.includes('duplicate column name')) {
       console.error('Erro ao adicionar coluna cover_image_url:', err.message);
     }
+
+    // --- NOVA COLUNA DO ORGANIZADOR ---
+  db.run(`
+    ALTER TABLE events
+    ADD COLUMN organizer TEXT
+  `, (err) => {
+    if (err && !err.message.includes('duplicate column name')) {
+      console.error('Erro ao adicionar coluna organizer:', err.message);
+    }
+  });
+
   });
 
 });
