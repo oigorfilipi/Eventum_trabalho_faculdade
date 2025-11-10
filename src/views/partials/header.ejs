@@ -12,6 +12,25 @@
     </style>
 
     <link rel="stylesheet" href="/css/styles.css">
+
+    <script>
+        (function () {
+            // Pega o tema salvo no localStorage
+            const theme = localStorage.getItem('theme');
+            if (theme === 'light') {
+                // Se for 'light', aplica a classe ANTES da página renderizar
+                document.documentElement.classList.add('light-theme');
+            } else {
+                // Se for 'dark' ou nulo, remove (garante o padrão)
+                document.documentElement.classList.remove('light-theme');
+            }
+
+            // OBS: Usamos 'document.documentElement' (o <html>)
+            // mas a regra CSS é 'body.light-theme'. Vamos ajustar o CSS
+            // para 'html.light-theme' que é mais rápido.
+        })();
+    </script>
+
 </head>
 
 <body>
@@ -22,7 +41,7 @@
             <a href="/site/eventos">Eventos</a>
 
             <% if (user) { %>
-                <a href="#">Minha Conta</a>
+                <a href="/site/minha-conta">Minha Conta</a>
 
                 <% if (user.role==='admin' ) { %>
                     <a href="/site/eventos/novo" class="admin-link">+ Adicionar Evento</a>
@@ -35,6 +54,9 @@
         </div>
 
         <div class="nav-right">
+            <button id="theme-toggle-btn" class="theme-toggle">
+                ☀️ </button>
+
             <% if (user) { %>
                 <span>Olá, <%= user.name %>!</span>
                 <a href="/site/logout" class="logout-btn">Sair</a>

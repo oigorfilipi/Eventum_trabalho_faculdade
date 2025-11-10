@@ -1,60 +1,129 @@
-<% const ev=(typeof evento !=='undefined' ) ? evento : {}; // Helper para os checkboxes: const
-    atracoesMarcadas=(ev.atracoes || '' ).split(','); %>
+<%# Arquivo: src/views/partials/event-form.ejs VERSÃO ATUALIZADA com campos condicionais %>
 
-    <form action="<%= actionUrl %>" method="POST">
+    <% const ev=(typeof evento !=='undefined' ) ? evento : {}; %>
 
-        <div class="form-group">
-            <label for="title">Título do Evento:</label>
-            <input type="text" id="title" name="title" class="form-control" value="<%= ev.title || '' %>" required>
-        </div>
+        <%# Tenta "parsear" o JSON de atrações. Se falhar, usa um objeto vazio. Isso é crucial para a tela de EDIÇÃO. %>
+            <% let attractions={ palestras: [], artistas: [] }; if (ev.attractions) { try {
+                attractions=JSON.parse(ev.attractions); } catch(e) {} if (!attractions.palestras)
+                attractions.palestras=[]; if (!attractions.artistas) attractions.artistas=[]; } %>
 
-        <div class="form-group">
-            <label for="organizador">Organizador:</label>
-            <input type="text" id="organizador" name="organizador" class="form-control"
-                value="<%= ev.organizador || '' %>">
-        </div>
 
-        <div class="form-group">
-            <label for="local">Local do Evento:</label>
-            <input type="text" id="local" name="local" class="form-control" value="<%= ev.local || '' %>">
-        </div>
+                <form action="<%= actionUrl %>" method="POST" id="event-form">
 
-        <div class="form-group">
-            <label for="date">Data (YYYY-MM-DD):</label>
-            <input type="date" id="date" name="date" class="form-control" value="<%= ev.date || '' %>">
-        </div>
+                    <div class="form-group">
+                        <label for="title">Título do Evento:</label>
+                        <input type="text" id="title" name="title" class="form-control" value="<%= ev.title || '' %>"
+                            required>
+                    </div>
 
-        <div class="form-group">
-            <label for="description">Descrição:</label>
-            <textarea id="description" name="description" rows="5"
-                class="form-control"><%= ev.description || '' %></textarea>
-        </div>
+                    <div class="form-group">
+                        <label for="description">Descrição:</label>
+                        <textarea id="description" name="description" rows="5"
+                            class="form-control"><%= ev.description || '' %></textarea>
+                    </div>
 
-        <div class="form-group">
-            <label for="objetivo">Objetivo do Evento:</label>
-            <textarea id="objetivo" name="objetivo" rows="3" class="form-control"><%= ev.objetivo || '' %></textarea>
-        </div>
+                    <div class="form-group">
+                        <label for="location">Local:</label>
+                        <input type="text" id="location" name="location" class="form-control"
+                            value="<%= ev.location || '' %>">
+                    </div>
 
-        <div class="form-group">
-            <label>Atrações Principais:</label>
-            <div class="checkbox-group" style="padding-top: 0.5rem;">
-                <% ['Palestra', 'Workshop' , 'Música ao Vivo' , 'Coffee Break' , 'Networking' ].forEach(atracao=> { %>
-                    <label style="display: inline-flex; align-items: center; margin-right: 1.5rem; font-weight: 400;">
-                        <input type="checkbox" name="atracoes" value="<%= atracao %>"
-                            <%=atracoesMarcadas.includes(atracao) ? 'checked' : '' %>
-                        style="width: auto; margin-right: 0.5rem;">
-                        <%= atracao %>
-                    </label>
-                    <% }) %>
-            </div>
-        </div>
+                    <div class="form-group">
+                        <label for="date">Data (YYYY-MM-DD):</label>
+                        <input type="date" id="date" name="date" class="form-control" value="<%= ev.date || '' %>">
+                    </div>
 
-        <div class="form-group">
-            <label for="qtdSubs">Limite de Inscrições:</label>
-            <input type="number" id="qtdSubs" name="qtdSubs" class="form-control" value="<%= ev.qtdSubs || 100 %>"
-                min="1" required>
-        </div>
+                    <div class="form-group">
+                        <label for="time">Hora (ex: 19:30):</label>
+                        <input type="time" id="time" name="time" class="form-control" value="<%= ev.time || '' %>">
+                    </div>
 
-        <button type="submit" class="btn btn-success">Salvar Evento</button>
-        <a href="/site/eventos" class="btn-secondary" style="margin-left: 1rem;">Cancelar</a>
-    </form>
+                    <div class="form-group">
+                        <label for="qtdSubs">Limite de Inscrições:</label>
+                        <input type="number" id="qtdSubs" name="qtdSubs" class="form-control"
+                            value="<%= ev.qtdSubs || 100 %>" min="1" required>
+                    </div>
+
+                    <hr style="border: 1px solid var(--border-color); margin: 2rem 0;">
+
+                    <h3>Atrações do Evento</h3>
+
+                    <input type="hidden" name="attractions" id="attractions-json">
+
+                    <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
+                        <input type="checkbox" id="chk-palestras" data-target="#section-palestras"
+                            <%=(attractions.palestras.length> 0) ? 'checked' : '' %>>
+                        <label for="chk-palestras" style="margin: 0;">Terá Palestras?</label>
+                    </div>
+
+                    <div id="section-palestras"
+                        class="hidden-section <%= (attractions.palestras.length > 0) ? '' : 'hidden' %>">
+                        <h4>Palestrantes</h4>
+                        <div id="speakers-list">
+                            <%# Popula os campos se estiver editando %>
+                                <% attractions.palestras.forEach(p=> { %>
+                                    <div class="dynamic-item">
+                                        <input type="text" placeholder="Nome do Palestrante"
+                                            class="form-control speaker-name" value="<%= p.nome %>">
+                                        <input type="text" placeholder="Profissão/Tópico"
+                                            class="form-control speaker-job" value="<%= p.profissao %>">
+                                    </div>
+                                    <% }) %>
+                        </div>
+                        <button type="button" class="btn-secondary" id="add-speaker">+ Adicionar Palestrante</button>
+                    </div>
+
+                    <div class="form-group" style="display: flex; align-items: center; gap: 10px; margin-top: 1.5rem;">
+                        <input type="checkbox" id="chk-artistas" data-target="#section-artistas"
+                            <%=(attractions.artistas.length> 0) ? 'checked' : '' %>>
+                        <label for="chk-artistas" style="margin: 0;">Terá Atrações Artísticas?</label>
+                    </div>
+
+                    <div id="section-artistas"
+                        class="hidden-section <%= (attractions.artistas.length > 0) ? '' : 'hidden' %>">
+                        <h4>Artistas</h4>
+                        <div id="artists-list">
+                            <%# Popula os campos se estiver editando %>
+                                <% attractions.artistas.forEach(a=> { %>
+                                    <div class="dynamic-item">
+                                        <input type="text" placeholder="Nome do Artista/Grupo"
+                                            class="form-control artist-name" value="<%= a.nome %>">
+                                        <input type="text" placeholder="O que faz (ex: Banda, Teatro)"
+                                            class="form-control artist-desc" value="<%= a.descricao %>">
+                                    </div>
+                                    <% }) %>
+                        </div>
+                        <button type="button" class="btn-secondary" id="add-artist">+ Adicionar Artista</button>
+                    </div>
+
+
+                    <hr style="border: 1px solid var(--border-color); margin: 2rem 0;">
+
+                    <button type="submit" class="btn btn-success">Salvar Evento</button>
+                    <a href="/site/eventos" class="btn-secondary" style="margin-left: 1rem;">Cancelar</a>
+                </form>
+
+                <%# CSS rápido para as seções dinâmicas %>
+                    <style>
+                        .hidden {
+                            display: none !important;
+                        }
+
+                        .hidden-section {
+                            background-color: var(--bg-color);
+                            border: 1px dashed var(--border-color);
+                            border-radius: 8px;
+                            padding: 1rem;
+                            margin-top: 0.5rem;
+                        }
+
+                        .dynamic-item {
+                            display: flex;
+                            gap: 10px;
+                            margin-bottom: 10px;
+                        }
+
+                        .dynamic-item input {
+                            flex: 1;
+                        }
+                    </style>

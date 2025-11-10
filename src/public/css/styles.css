@@ -24,6 +24,25 @@
     /* Vermelho para excluir */
 }
 
+html.light-theme {
+    --bg-color: #F0F2F5;
+    /* Fundo claro (cinza-azulado) */
+    --card-color: #FFFFFF;
+    /* Cards brancos */
+    --border-color: #DDDDDD;
+    /* Borda cinza clara */
+    --text-primary: #1C1E21;
+    /* Texto principal (quase preto) */
+    --text-secondary: #555555;
+    /* Texto secundário (cinza escuro) */
+
+    /* Cores de acento (azul, verde, vermelho) podem ser as mesmas */
+    --accent-color: #007BFF;
+    --accent-hover: #0056b3;
+    --success-color: #4CAF50;
+    --danger-color: #E53935;
+}
+
 /* Reset básico e fonte */
 * {
     font-family: "Poppins", sans-serif;
@@ -249,6 +268,18 @@ a:hover {
     background-color: var(--card-color);
     color: var(--text-primary);
     transform: none;
+}
+
+.theme-toggle {
+    background: none;
+    border: none;
+    font-size: 1.5rem; /* Tamanho do emoji */
+    cursor: pointer;
+    color: var(--text-primary);
+    padding: 0 0.5rem;
+}
+.theme-toggle:hover {
+    opacity: 0.8;
 }
 
 

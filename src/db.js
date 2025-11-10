@@ -33,10 +33,6 @@ db.serialize(() => {
       title TEXT NOT NULL,
       description TEXT,
       date TEXT,
-      local TEXT,
-      organizador TEXT,
-      objetivo TEXT,
-      atracoes TEXT,
       created_by INTEGER,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY(created_by) REFERENCES users(id)
@@ -62,21 +58,36 @@ db.serialize(() => {
       console.error('Erro ao adicionar coluna qtdSubs:', err.message);
     }
   });
-});
 
-// --- ADICIONE ESTES 4 NOVOS BLOCOS ---
-const alterEventTable = (columnDefinition, columnName) => {
-  db.run(`ALTER TABLE events ADD COLUMN ${columnDefinition}`, (err) => {
+  // --- NOVAS COLUNAS ---
+  db.run(`
+    ALTER TABLE events
+    ADD COLUMN location TEXT
+  `, (err) => {
     if (err && !err.message.includes('duplicate column name')) {
-      console.error(`Erro ao adicionar coluna ${columnName}:`, err.message);
+      console.error('Erro ao adicionar coluna location:', err.message);
     }
   });
-};
 
-alterEventTable('qtdSubs INTEGER DEFAULT 100', 'qtdSubs'); // Você já tem este
-alterEventTable('local TEXT', 'local');
-alterEventTable('organizador TEXT', 'organizador');
-alterEventTable('objetivo TEXT', 'objetivo');
-alterEventTable('atracoes TEXT', 'atracoes');
+  db.run(`
+    ALTER TABLE events
+    ADD COLUMN time TEXT
+  `, (err) => {
+    if (err && !err.message.includes('duplicate column name')) {
+      console.error('Erro ao adicionar coluna time:', err.message);
+    }
+  });
+
+  db.run(`
+    ALTER TABLE events
+    ADD COLUMN attractions TEXT
+  `, (err) => {
+    if (err && !err.message.includes('duplicate column name')) {
+      console.error('Erro ao adicionar coluna attractions:', err.message);
+    }
+  });
+  // --- FIM DAS NOVAS COLUNAS ---
+
+});
 
 module.exports = db;

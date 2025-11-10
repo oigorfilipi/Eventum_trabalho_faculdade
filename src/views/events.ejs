@@ -16,42 +16,41 @@
                             <h3>
                                 <%= event.title %>
                             </h3>
-
                             <div class="date">
                                 <%= event.date ? new Date(event.date).toLocaleDateString('pt-BR', {timeZone: 'UTC' })
                                     : 'Data a definir' %>
-
-                                    <% if (event.local) { %>
-                                        <span style="color: var(--text-secondary); font-weight: 400;">
-                                            | Local: <%= event.local %>
-                                        </span>
-                                        <% } %>
                             </div>
-
-                            <% if (event.organizador) { %>
-                                <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.5rem;">
-                                    Organizado por: <strong>
-                                        <%= event.organizador %>
-                                    </strong>
-                                </p>
-                                <% } %>
-
-                                    <p>
-                                        <%= event.description || 'Este evento não possui descrição.' %>
-                                    </p>
-
-                                    <% if (event.atracoes) { %>
-                                        <div class="atracoes-list"
-                                            style="margin-bottom: 1.5rem; display: flex; flex-wrap: wrap; gap: 0.5rem;">
-                                            <% event.atracoes.split(',').forEach(atracao=> { %>
-                                                <span class="atracao-badge"
-                                                    style="background-color: var(--border-color); color: var(--text-primary); padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.8rem;">
-                                                    <%= atracao %>
-                                                </span>
-                                                <% }) %>
-                                        </div>
+                            <%# ADICIONAR ESTES CAMPOS %>
+                                <div class="location-time"
+                                    style="color: var(--text-secondary); margin-bottom: 0.75rem;">
+                                    <% if (event.location) { %>
+                                        <span>📍 <%= event.location %></span>
                                         <% } %>
+                                            <% if (event.time) { %>
+                                                <span style="margin-left: 10px;">🕒 <%= event.time %></span>
+                                                <% } %>
+                                </div>
+                                <p>
+                                    <%= event.description || 'Este evento não possui descrição.' %>
+                                </p>
 
+                                <% if (user) { %>
+                                    <% if (user.role==='admin' ) { %>
+                                        <div class="event-card-actions">
+                                            <a href="/site/eventos/<%= event.id %>/editar" class="btn">Editar</a>
+                                            <a href="/site/eventos/<%= event.id %>/excluir"
+                                                class="btn btn-danger">Excluir</a>
+                                        </div>
+                                        <% } else { %>
+                                            <form action="/subscribe" method="POST">
+                                                <input type="hidden" name="eventId" value="<%= event.id %>">
+                                                <input type="hidden" name="userId" value="<%= user.id %>">
+                                                <button type="submit" class="btn">Inscrever-se</button>
+                                            </form>
+                                            <% } %>
+                                                <% } else { %>
+                                                    <a href="/site/login" class="btn">Login para se inscrever</a>
+                                                    <% } %>
                         </div>
                         <% }) %>
 
