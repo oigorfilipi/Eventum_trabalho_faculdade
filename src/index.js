@@ -27,6 +27,115 @@ app.use((req, res, next) => {
   next();
 });
 
+const isAdmin = (req, res, next) => {
+  if (!req.session.user || req.session.user.role !== 'admin') {
+    return res.render('login', { error: 'Você precisa ser um admin para acessar esta página.' });
+  }
+  next();
+};
+
+app.get('/site/eventos/novo', isAdmin, (req, res) => {
+  res.render('evento-novo'); // Renderiza o arquivo que criamos
+});
+
+app.post('/site/eventos/novo', isAdmin, (req, res) => {
+  // 1. Pega os dados do formulário (req.body)
+  const { title, description, date, qtdSubs } = req.body;
+
+  // 2. Pega o ID do admin logado (da sessão)
+  const createdBy = req.session.user.id;
+
+  if (!title) {
+    // Idealmente, renderizar o form de novo com o erro
+    return res.status(400).send('O título é obrigatório');
+  }
+
+  // 3. Insere no banco (similar ao seu events.js da API)
+  const stmt = db.prepare(
+    'INSERT INTO events (title, description, date, created_by, qtdSubs) VALUES (?, ?, ?, ?, ?)'
+  );
+  stmt.run(
+    title,
+    description || null,
+    date || null,
+    createdBy,
+    qtdSubs || 100,
+    function (err) {
+      if (err) {
+        console.error('Erro ao criar evento:', err);
+        return res.status(500).send('Erro ao salvar o evento.');
+      }
+      // 4. Sucesso! Redireciona para a lista de eventos
+      res.redirect('/site/eventos');
+    }
+  );
+  stmt.finalize();
+});
+
+app.get('/site/eventos/:id/editar', isAdmin, (req, res) => {
+  const eventId = req.params.id;
+
+  // 1. Busca o evento no banco
+  db.get('SELECT * FROM events WHERE id = ?', [eventId], (err, evento) => {
+    if (err || !evento) {
+      return res.status(404).send('Evento não encontrado');
+    }
+    // 2. Renderiza a view de edição, passando os dados do evento
+    res.render('evento-editar', { evento: evento });
+  });
+});
+
+// Rota POST para ATUALIZAR o evento no banco
+app.post('/site/eventos/:id/editar', isAdmin, (req, res) => {
+  const eventId = req.params.id;
+  const { title, description, date, qtdSubs } = req.body;
+
+  if (!title) {
+    return res.status(400).send('O título é obrigatório');
+  }
+
+  // 1. Roda o UPDATE no banco
+  const stmt = db.prepare(`
+    UPDATE events 
+    SET title = ?, description = ?, date = ?, qtdSubs = ?
+    WHERE id = ?
+  `);
+  stmt.run(
+    title,
+    description || null,
+    date || null,
+    qtdSubs || 100,
+    eventId,
+    function (err) {
+      if (err) {
+        console.error('Erro ao atualizar evento:', err);
+        return res.status(500).send('Erro ao salvar o evento.');
+      }
+      // 2. Sucesso! Redireciona para a lista
+      res.redirect('/site/eventos');
+    }
+  );
+  stmt.finalize();
+});
+
+// Rota GET para EXCLUIR um evento
+app.get('/site/eventos/:id/excluir', isAdmin, (req, res) => {
+  const eventId = req.params.id;
+
+  // Cuidado: Em uma app real, você também deveria excluir as INSCRIÇÕES
+  // db.run('DELETE FROM subscriptions WHERE event_id = ?', [eventId], (err) => { ... });
+
+  db.run('DELETE FROM events WHERE id = ?', [eventId], (err) => {
+    if (err) {
+      console.error('Erro ao excluir evento:', err);
+      return res.status(500).send('Erro ao excluir o evento.');
+    }
+    // Sucesso! Redireciona para a lista
+    res.redirect('/site/eventos');
+  });
+});
+
+
 // Rotas
 app.use('/users', userRoutes);
 app.use('/events', eventRoutes);
@@ -105,7 +214,7 @@ app.post('/site/login', (req, res) => {
     const match = await bcrypt.compare(password, user.password);
     if (match) {
       // 3. Salvar na sessão
-      req.session.user = { id: user.id, name: user.name, email: user.email, role: userRole };
+      req.session.user = { id: user.id, name: user.name, email: user.email, role: user.role };
       res.redirect('/site/eventos'); // Sucesso! Redireciona
     } else {
       // Senha incorreta

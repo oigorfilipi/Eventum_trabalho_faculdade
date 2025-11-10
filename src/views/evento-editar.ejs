@@ -1,0 +1,11 @@
+<%- include('partials/header', { title: 'Editar Evento' }) %>
+
+    <div class="container">
+        <h1>Editar Evento: <%= evento.title %>
+        </h1>
+
+        <%- include('partials/event-form', { actionUrl: '/site/eventos/' + evento.id + '/editar' , evento: evento }) %>
+
+    </div>
+
+    <%- include('partials/footer') %>

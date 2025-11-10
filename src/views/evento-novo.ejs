@@ -1,0 +1,10 @@
+<%- include('partials/header', { title: 'Adicionar Novo Evento' }) %>
+
+    <div class="container">
+        <h1>Adicionar Novo Evento</h1>
+
+        <%- include('partials/event-form', { actionUrl: '/site/eventos/novo' , evento: {} }) %>
+
+    </div>
+
+    <%- include('partials/footer') %>
