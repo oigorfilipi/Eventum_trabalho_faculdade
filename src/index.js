@@ -38,10 +38,15 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use((req, res, next) => {
-  res.locals.user = req.session.user || null;
-  next();
-});
+function formatarAtracoes(atracoes) {
+  if (Array.isArray(atracoes)) {
+    return atracoes.join(','); // Se for um array ['A', 'B'], vira "A,B"
+  }
+  if (typeof atracoes === 'string') {
+    return atracoes; // Se for uma string "A", continua "A"
+  }
+  return null; // Se for undefined (nenhum marcado)
+}
 
 const isAdmin = (req, res, next) => {
   if (!req.session.user || req.session.user.role !== 'admin') {
@@ -55,10 +60,8 @@ app.get('/site/eventos/novo', isAdmin, (req, res) => {
 });
 
 app.post('/site/eventos/novo', isAdmin, (req, res) => {
-  // 1. Pega os dados do formulário (req.body)
-  const { title, description, date, qtdSubs } = req.body;
-
-  // 2. Pega o ID do admin logado (da sessão)
+  const { title, description, date, qtdSubs, local, organizador, objetivo } = req.body;
+  const atracoes = formatarAtracoes(req.body.atracoes); // <-- Helper
   const createdBy = req.session.user.id;
 
   if (!title) {
@@ -68,7 +71,7 @@ app.post('/site/eventos/novo', isAdmin, (req, res) => {
 
   // 3. Insere no banco (similar ao seu events.js da API)
   const stmt = db.prepare(
-    'INSERT INTO events (title, description, date, created_by, qtdSubs) VALUES (?, ?, ?, ?, ?)'
+    `INSERT INTO events (title, description, date, created_by, qtdSubs, local, organizador, objetivo, atracoes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
   );
   stmt.run(
     title,
@@ -76,6 +79,10 @@ app.post('/site/eventos/novo', isAdmin, (req, res) => {
     date || null,
     createdBy,
     qtdSubs || 100,
+    local || null,
+    organizador || null,
+    objetivo || null,
+    atracoes, // <-- Novo
     function (err) {
       if (err) {
         console.error('Erro ao criar evento:', err);
@@ -90,6 +97,9 @@ app.post('/site/eventos/novo', isAdmin, (req, res) => {
 
 app.get('/site/eventos/:id/editar', isAdmin, (req, res) => {
   const eventId = req.params.id;
+  // 1. Pega os dados (com os novos campos)
+  const { title, description, date, qtdSubs, local, organizador, objetivo } = req.body;
+  const atracoes = formatarAtracoes(req.body.atracoes);
 
   // 1. Busca o evento no banco
   db.get('SELECT * FROM events WHERE id = ?', [eventId], (err, evento) => {
@@ -112,15 +122,16 @@ app.post('/site/eventos/:id/editar', isAdmin, (req, res) => {
 
   // 1. Roda o UPDATE no banco
   const stmt = db.prepare(`
-    UPDATE events 
-    SET title = ?, description = ?, date = ?, qtdSubs = ?
-    WHERE id = ?
-  `);
+    UPDATE events SET title = ?, description = ?, date = ?, qtdSubs = ?, local = ?, organizador = ?, objetivo = ?, atracoes = ? WHERE id = ?`);
   stmt.run(
     title,
     description || null,
     date || null,
     qtdSubs || 100,
+    local || null,
+    organizador || null,
+    objetivo || null,
+    atracoes, // <-- Novo
     eventId,
     function (err) {
       if (err) {
@@ -161,7 +172,7 @@ app.use('/subscribe', subscribeRoutes);
 app.get('/', (req, res) => res.json({ status: 'ok', service: 'eventum-api' }));
 
 app.get('/site/eventos', (req, res) => {
-  const sql = 'SELECT id, title, description, date FROM events ORDER BY date IS NULL, date ASC, created_at DESC';
+  const sql = 'SELECT * FROM events ORDER BY date IS NULL, date ASC, created_at DESC';
 
   db.all(sql, [], (err, rows) => {
     if (err) {

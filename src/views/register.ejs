@@ -1,31 +1,37 @@
 <%- include('partials/header', { title: 'Cadastro' }) %>
 
     <div class="container">
-        <h2>Cadastro</h2>
 
-        <form action="/site/register" method="POST" style="max-width: 400px;">
+        <div class="form-container">
+            <h2>Cadastro</h2>
 
-            <% if (typeof error !=='undefined' && error) { %>
-                <p style="color: red;">
-                    <%= error %>
-                </p>
-                <% } %>
+            <form action="/site/register" method="POST">
 
-                    <div style="margin-bottom: 1rem;">
-                        <label for="name">Nome:</label>
-                        <input type="text" id="name" name="name" required>
+                <% if (typeof error !=='undefined' && error) { %>
+                    <div class="flash-message error" style="margin-bottom: 1rem;">
+                        <%= error %>
                     </div>
-                    <div style="margin-bottom: 1rem;">
-                        <label for="email">Email:</label>
-                        <input type="email" id="email" name="email" required>
-                    </div>
-                    <div style="margin-bottom: 1rem;">
-                        <label for="password">Senha:</label>
-                        <input type="password" id="password" name="password" required>
-                    </div>
-                    <button type="submit" class="btn">Cadastrar</button>
-        </form>
-        <p style="margin-top: 1rem;">Já tem uma conta? <a href="/site/login">Faça Login</a></p>
+                    <% } %>
+
+                        <div class="form-group">
+                            <label for="name">Nome:</label>
+                            <input type="text" id="name" name="name" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email:</label>
+                            <input type="email" id="email" name="email" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Senha:</label>
+                            <input type="password" id="password" name="password" class="form-control" required>
+                        </div>
+
+                        <button type="submit" class="btn">Cadastrar</button>
+            </form>
+
+            <p class="form-link">Já tem uma conta? <a href="/site/login">Faça Login</a></p>
+        </div>
+
     </div>
 
     <%- include('partials/footer') %>

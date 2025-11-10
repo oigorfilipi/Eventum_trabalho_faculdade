@@ -4,9 +4,11 @@
   "description": "API simples para cadastro de usuários e eventos",
   "main": "src/index.js",
   "scripts": {
-    "start": "node src/index.js",
-    "dev": "nodemon src/index.js"
-  },
+  "start": "node src/index.js",
+  "server": "nodemon src/index.js",
+  "open": "open-cli http://localhost:3000/site/eventos",
+  "dev": "start-server-and-test server http://localhost:3000/site/eventos open"
+},
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "ejs": "^3.1.10",
@@ -15,6 +17,8 @@
     "sqlite3": "^5.1.6"
   },
   "devDependencies": {
-    "nodemon": "^3.0.1"
+    "nodemon": "^3.0.1",
+    "open-cli": "^8.0.0",
+    "start-server-and-test": "^2.1.2"
   }
 }

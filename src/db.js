@@ -33,6 +33,10 @@ db.serialize(() => {
       title TEXT NOT NULL,
       description TEXT,
       date TEXT,
+      local TEXT,
+      organizador TEXT,
+      objetivo TEXT,
+      atracoes TEXT,
       created_by INTEGER,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY(created_by) REFERENCES users(id)
@@ -59,5 +63,20 @@ db.serialize(() => {
     }
   });
 });
+
+// --- ADICIONE ESTES 4 NOVOS BLOCOS ---
+const alterEventTable = (columnDefinition, columnName) => {
+  db.run(`ALTER TABLE events ADD COLUMN ${columnDefinition}`, (err) => {
+    if (err && !err.message.includes('duplicate column name')) {
+      console.error(`Erro ao adicionar coluna ${columnName}:`, err.message);
+    }
+  });
+};
+
+alterEventTable('qtdSubs INTEGER DEFAULT 100', 'qtdSubs'); // Você já tem este
+alterEventTable('local TEXT', 'local');
+alterEventTable('organizador TEXT', 'organizador');
+alterEventTable('objetivo TEXT', 'objetivo');
+alterEventTable('atracoes TEXT', 'atracoes');
 
 module.exports = db;
