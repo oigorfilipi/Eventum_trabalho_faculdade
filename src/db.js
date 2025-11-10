@@ -143,6 +143,16 @@ db.serialize(() => {
     }
   });
 
+  // --- NOVA COLUNA DE VISIBILIDADE ---
+  db.run(`
+    ALTER TABLE events
+    ADD COLUMN is_hidden INTEGER DEFAULT 0
+  `, (err) => {
+    if (err && !err.message.includes('duplicate column name')) {
+      console.error('Erro ao adicionar coluna is_hidden:', err.message);
+    }
+  });
+
 });
 
 module.exports = db;

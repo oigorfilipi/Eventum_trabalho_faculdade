@@ -1311,3 +1311,19 @@ th {
     margin-bottom: 0.75rem;
     align-self: flex-start; /* Alinha a tag à esquerda */
 }
+
+/* [ COLE ISTO NO FINAL DE styles.css ]
+*/
+/* 11. TAG DE EVENTO OCULTO (EVENT CARD)
+--------------------------------------------- */
+.event-card-hidden {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background-color: var(--danger-color);
+    color: #ffffff;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    align-self: flex-start;
+}

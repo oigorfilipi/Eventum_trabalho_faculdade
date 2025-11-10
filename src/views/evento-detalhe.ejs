@@ -127,6 +127,17 @@
                                                                                         <%= event.category %>
                                                                                     </div>
                                                                                     <% } %>
+
+                                                                                        <%# --- AVISO DE EVENTO OCULTO
+                                                                                            --- %>
+                                                                                            <% if (event.is_hidden===1)
+                                                                                                { %>
+                                                                                                <div class="detail-item"
+                                                                                                    style="color: var(--danger-color); font-weight: bold;">
+                                                                                                    <strong>Status:</strong>
+                                                                                                    👁️ Evento Oculto
+                                                                                                </div>
+                                                                                                <% } %>
                                                 </div>
 
                                                 <%# --- Detalhes do Endereço --- %>
