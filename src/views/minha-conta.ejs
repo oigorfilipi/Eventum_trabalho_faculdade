@@ -5,151 +5,425 @@
 
         <div class="container">
 
-            <%# --------------------------------------------------- %>
-                <%# 1. VISÃO DO ADMIN %>
-                    <%# --------------------------------------------------- %>
-                        <% if (user.role==='admin' ) { %>
-                            <h1>Painel de Controle</h1>
-                            <p>Olá, admin <%= user.name %>. Aqui está um resumo do sistema.</p>
+            <%# Exibe mensagens de erro/sucesso %>
+                <% if (message) { %>
+                    <div class="flash-message <%= message.type %>" style="margin-bottom: 1.5rem;">
+                        <%= message.text %>
+                    </div>
+                    <% } %>
 
-                            <div class="form-container" style="margin-top: 2rem;">
-                                <h2>Estatísticas Rápidas</h2>
-                                <div class="admin-stats">
-                                    <div class="stat-card">
-                                        <h3>
-                                            <%= stats.users %>
-                                        </h3>
-                                        <p>Usuários Totais</p>
-                                    </div>
-                                    <div class="stat-card">
-                                        <h3>
-                                            <%= stats.events %>
-                                        </h3>
-                                        <p>Eventos Criados</p>
-                                    </div>
-                                    <div class="stat-card">
-                                        <h3>
-                                            <%= stats.subscriptions %>
-                                        </h3>
-                                        <p>Inscrições Totais</p>
-                                    </div>
-                                </div>
-                            </div>
+                        <%# --------------------------------------------------- %>
+                            <%# 1. VISÃO DO ADMIN (Permanece igual) %>
+                                <%# --------------------------------------------------- %>
+                                    <% if (user.role==='admin' ) { %>
+                                        <h1>Painel de Controle</h1>
+                                        <p>Olá, admin <%= user.name %>. Aqui está um resumo do sistema.</p>
 
-                            <div class="form-container" style="margin-top: 2rem;">
-                                <h2>Ações de Admin</h2>
-                                <a href="/site/eventos/novo" class="btn btn-success"
-                                    style="margin-bottom: 1rem; text-align: center;">+ Criar Novo Evento</a>
-                                <a href="/site/eventos" class="btn-secondary" style="text-align: center;">Gerenciar
-                                    Eventos Existentes</a>
-                            </div>
-
-                            <%# --------------------------------------------------- %>
-                                <%# 2. VISÃO DO USUÁRIO COMUM %>
-                                    <%# --------------------------------------------------- %>
-                                        <% } else { %>
-                                            <h1>Minha Conta</h1>
-
-                                            <div class="form-container" style="margin-top: 2rem;">
-                                                <h2>Minhas Informações</h2>
-                                                <div class="form-group">
-                                                    <label>Nome:</label>
-                                                    <input type="text" class="form-control" value="<%= user.name %>"
-                                                        disabled>
+                                        <div class="form-container form-container-wide" style="margin-top: 2rem;">
+                                            <h2>Estatísticas Rápidas</h2>
+                                            <div class="admin-stats">
+                                                <div class="stat-card">
+                                                    <h3>
+                                                        <%= stats.users %>
+                                                    </h3>
+                                                    <p>Usuários Totais</p>
                                                 </div>
-                                                <div class="form-group">
-                                                    <label>Email:</label>
-                                                    <input type="email" class="form-control" value="<%= user.email %>"
-                                                        disabled>
+                                                <div class="stat-card">
+                                                    <h3>
+                                                        <%= stats.events %>
+                                                    </h3>
+                                                    <p>Eventos Ativos</p>
+                                                </div>
+                                                <div class="stat-card">
+                                                    <h3>
+                                                        <%= stats.activeSubscriptions %>
+                                                    </h3>
+                                                    <p>Inscrições Ativas</p>
+                                                </div>
+                                                <div class="stat-card">
+                                                    <h3>
+                                                        <%= stats.totalSubscriptions %>
+                                                    </h3>
+                                                    <p>Inscrições Totais (Histórico)</p>
                                                 </div>
                                             </div>
+                                        </div>
 
-                                            <div class="form-container" style="margin-top: 2rem;">
-                                                <h2>Alterar Senha</h2>
-                                                <p style="color: var(--text-secondary); margin-bottom: 1rem;">
-                                                    (Esta funcionalidade de alterar senha ainda não foi implementada no
-                                                    backend,
-                                                    mas este é o formulário.)
-                                                </p>
-                                                <form action="/site/mudar-senha" method="POST">
-                                                    <div class="form-group">
-                                                        <label for="senha-atual">Senha Atual:</label>
-                                                        <input type="password" id="senha-atual" name="senhaAtual"
-                                                            class="form-control">
-                                                    </div>
-                                                    <div class="form-group">
-                                                        <label for="nova-senha">Nova Senha:</label>
-                                                        <input type="password" id="nova-senha" name="novaSenha"
-                                                            class="form-control">
-                                                    </div>
-                                                    <button type="submit" class="btn" disabled>Salvar Nova
-                                                        Senha</button>
-                                                </form>
+                                        <div class="form-container form-container-wide" style="margin-top: 2rem;">
+                                            <h2>Ações de Admin</h2>
+                                            <div class="form-actions"
+                                                style="flex-direction: column; align-items: stretch;">
+                                                <a href="/site/eventos/novo" class="btn btn-success"
+                                                    style="text-align: center;">+ Criar Novo Evento</a>
+                                                <a href="/site/eventos/todos" class="btn btn-secondary"
+                                                    style="text-align: center;">Gerenciar Eventos Existentes</a>
+                                                <a href="/site/relatorio-admin" target="_blank" class="btn btn-secondary"
+                                                    style="text-align: center;">Imprimir Relatório Geral</a>
+                                                <a href="/site/admin/mensagens" class="btn btn-secondary"
+                                                    style="text-align: center;">Ver Mensagens de Contato</a>
                                             </div>
+                                        </div>
 
-                                            <div style="margin-top: 2rem;">
-                                                <h2>Meus Eventos Inscritos</h2>
-
-                                                <% if (myEvents && myEvents.length> 0) { %>
-                                                    <div class="event-list">
-                                                        <% myEvents.forEach(event=> { %>
-                                                            <div class="event-card">
-                                                                <h3>
-                                                                    <%= event.title %>
-                                                                </h3>
-                                                                <div class="date">
-                                                                    <%= event.date ? new
-                                                                        Date(event.date).toLocaleDateString('pt-BR',
-                                                                        {timeZone: 'UTC' }) : 'Data a definir' %>
-                                                                </div>
-                                                                <p>
-                                                                    <%= event.description
-                                                                        || 'Este evento não possui descrição.' %>
-                                                                </p>
-                                                                <p
-                                                                    style="color: var(--success-color); font-weight: bold;">
-                                                                    ✓ Inscrito</p>
-                                                            </div>
-                                                            <% }) %>
-                                                    </div>
-                                                    <% } else { %>
-                                                        <div class="form-container">
-                                                            <p>Você ainda não se inscreveu em nenhum evento.</p>
-                                                            <a href="/site/eventos" class="btn"
-                                                                style="margin-top: 1rem; text-align: center;">Ver
-                                                                Eventos Disponíveis</a>
+                                        <div class="form-container form-container-wide" style="margin-top: 2rem;">
+                                            <h2>Gerar Certificados</h2>
+                                            <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                                                Selecione um evento para gerar um certificado para todos os usuários
+                                                inscritos.
+                                            </p>
+                                            <div class="certificate-list">
+                                                <% if (events && events.length> 0) { %>
+                                                    <% events.forEach(event=> { %>
+                                                        <div class="certificate-item">
+                                                            <span>
+                                                                <%= event.title %>
+                                                            </span>
+                                                            <a href="/site/certificados/<%= event.id %>"
+                                                                class="btn btn-secondary" target="_blank">Gerar</a>
                                                         </div>
-                                                        <% } %>
+                                                        <% }) %>
+                                                            <% } else { %>
+                                                                <p>Nenhum evento criado ainda.</p>
+                                                                <% } %>
                                             </div>
-                                            <% } %>
+                                        </div>
 
+                                        <%# --------------------------------------------------- %>
+                                            <%# 2. VISÃO DO USUÁRIO (NOVO LAYOUT DE ABAS) %>
+                                                <%# --------------------------------------------------- %>
+                                                    <% } else { %>
+                                                        <h1>Minha Conta</h1>
+
+                                                        <%# --- NAVEGAÇÃO DAS ABAS --- %>
+                                                            <nav class="tab-navigation">
+                                                                <button class="tab-button active"
+                                                                    data-target="#tab-meus-dados">Meus Dados</button>
+                                                                <button class="tab-button"
+                                                                    data-target="#tab-seguranca">Privacidade e
+                                                                    Segurança</button>
+                                                                <button class="tab-button"
+                                                                    data-target="#tab-meus-eventos">Meus Eventos
+                                                                    Inscritos</button>
+                                                            </nav>
+
+                                                            <%# --- CONTEÚDO DAS ABAS --- %>
+
+                                                                <%# Aba 1: Meus Dados %>
+                                                                    <div class="tab-content active" id="tab-meus-dados">
+                                                                        <div class="form-container form-container-wide">
+                                                                            <h2>Meus Dados</h2>
+
+                                                                            <form action="/site/atualizar-perfil"
+                                                                                method="POST">
+
+                                                                                <div class="form-group">
+                                                                                    <label>Nome Completo (Não pode ser
+                                                                                        alterado):</label>
+                                                                                    <input type="text"
+                                                                                        class="form-control"
+                                                                                        value="<%= user.nome_completo %>"
+                                                                                        disabled>
+                                                                                </div>
+
+                                                                                <div class="form-group">
+                                                                                    <label for="name">Nome Social (Como
+                                                                                        prefere ser chamado):</label>
+                                                                                    <input type="text" id="name"
+                                                                                        name="name" class="form-control"
+                                                                                        value="<%= user.name %>"
+                                                                                        required disabled>
+                                                                                    <%# ADICIONADO 'disabled' %>
+                                                                                </div>
+
+                                                                                <div class="form-group">
+                                                                                    <label
+                                                                                        for="phone-mask">Telefone:</label>
+                                                                                    <input type="tel" id="phone-mask"
+                                                                                        name="phone"
+                                                                                        class="form-control"
+                                                                                        placeholder="(00) 0 0000-0000"
+                                                                                        value="<%= user.phone || '' %>"
+                                                                                        disabled>
+                                                                                    <%# ADICIONADO 'disabled' %>
+                                                                                </div>
+
+                                                                                <div class="form-group">
+                                                                                    <label>Email (Não pode ser
+                                                                                        alterado):</label>
+                                                                                    <input type="email"
+                                                                                        class="form-control"
+                                                                                        value="<%= user.email %>"
+                                                                                        disabled>
+                                                                                </div>
+
+                                                                                <%# --- BOTÕES DE CONTROLE --- %>
+                                                                                    <div class="form-actions"
+                                                                                        id="profile-actions-view">
+                                                                                        <button type="button"
+                                                                                            class="btn btn-secondary"
+                                                                                            id="edit-profile-btn">Alterar
+                                                                                            Dados</button>
+                                                                                    </div>
+
+                                                                                    <div class="form-actions hidden"
+                                                                                        id="profile-actions-edit">
+                                                                                        <button type="submit"
+                                                                                            class="btn btn-success">Salvar
+                                                                                            Alterações</button>
+                                                                                        <button type="button"
+                                                                                            class="btn btn-secondary"
+                                                                                            id="cancel-profile-btn">Cancelar</button>
+                                                                                    </div>
+                                                                            </form>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <%# Aba 2: Privacidade e Segurança %>
+                                                                        <div class="tab-content" id="tab-seguranca">
+
+                                                                            <%# Formulário de Alterar Senha %>
+                                                                                <div
+                                                                                    class="form-container form-container-wide">
+                                                                                    <%# <-- ADICIONE AQUI %>
+                                                                                        <h2>Alterar Senha</h2>
+                                                                                        <p
+                                                                                            style="color: var(--text-secondary); margin-bottom: 1rem;">
+                                                                                            A senha deve ter no mínimo 6
+                                                                                            dígitos.</p>
+                                                                                        <form action="/site/mudar-senha"
+                                                                                            method="POST">
+                                                                                            <div class="form-group">
+                                                                                                <label
+                                                                                                    for="senha-atual">Senha
+                                                                                                    Atual:</label>
+                                                                                                <div
+                                                                                                    class="password-wrapper">
+                                                                                                    <input
+                                                                                                        type="password"
+                                                                                                        id="senha-atual"
+                                                                                                        name="senhaAtual"
+                                                                                                        class="form-control"
+                                                                                                        required>
+                                                                                                    <button
+                                                                                                        type="button"
+                                                                                                        class="password-toggle">👁️</button>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                            <div class="form-group">
+                                                                                                <label
+                                                                                                    for="nova-senha">Nova
+                                                                                                    Senha:</label>
+                                                                                                <div
+                                                                                                    class="password-wrapper">
+                                                                                                    <input
+                                                                                                        type="password"
+                                                                                                        id="nova-senha"
+                                                                                                        name="novaSenha"
+                                                                                                        class="form-control"
+                                                                                                        required
+                                                                                                        minlength="6">
+                                                                                                    <button
+                                                                                                        type="button"
+                                                                                                        class="password-toggle">👁️</button>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                            <button type="submit"
+                                                                                                class="btn btn-secondary">Salvar
+                                                                                                Nova Senha</button>
+                                                                                        </form>
+                                                                                </div>
+
+                                                                                <%# Simulação de Termos e 2FA %>
+                                                                                    <div class="form-container form-container-wide"
+                                                                                        style="margin-top: 2rem;">
+                                                                                        <%# <-- ADICIONE AQUI %>
+                                                                                            <h2>Termos e Fatores de
+                                                                                                Autenticação</h2>
+                                                                                            <div class="form-group">
+                                                                                                <p>Lorem ipsum dolor sit
+                                                                                                    amet, consectetur
+                                                                                                    adipiscing elit.
+                                                                                                    Nullam
+                                                                                                    in dui mauris.
+                                                                                                    Vivamus
+                                                                                                    hendrerit arcu sed
+                                                                                                    erat
+                                                                                                    molestie vehicula.
+                                                                                                    Sed
+                                                                                                    auctor neque eu
+                                                                                                    tellus
+                                                                                                    rhoncus, aenean.</p>
+                                                                                            </div>
+
+                                                                                            <%# Formulário simulado %>
+                                                                                                <%# CORREÇÃO: Adicionado
+                                                                                                    ID ao form %>
+                                                                                                    <form
+                                                                                                        id="termos-form-simulado">
+                                                                                                        <div
+                                                                                                            class="form-group checkbox-group">
+                                                                                                            <input
+                                                                                                                type="checkbox"
+                                                                                                                id="termos-check"
+                                                                                                                <%=(user.aceitou_termos===1)
+                                                                                                                ? 'checked'
+                                                                                                                : '' %>
+                                                                                                            <%= (user.aceitou_termos===1)
+                                                                                                                ? 'disabled'
+                                                                                                                : '' %>>
+                                                                                                                <label
+                                                                                                                    for="termos-check">Eu
+                                                                                                                    aceito
+                                                                                                                    os
+                                                                                                                    termos
+                                                                                                                    e
+                                                                                                                    condições</label>
+                                                                                                        </div>
+                                                                                                        <div
+                                                                                                            class="form-group checkbox-group">
+                                                                                                            <input
+                                                                                                                type="checkbox"
+                                                                                                                id="2fa-check"
+                                                                                                                <%=(user.usa_2fa===1)
+                                                                                                                ? 'checked'
+                                                                                                                : '' %>
+                                                                                                            <%= (user.aceitou_termos===1)
+                                                                                                                ? 'disabled'
+                                                                                                                : '' %>>
+                                                                                                                <label
+                                                                                                                    for="2fa-check">Ativar
+                                                                                                                    Autenticação
+                                                                                                                    de
+                                                                                                                    Dois
+                                                                                                                    Fatores
+                                                                                                                    (2FA)</label>
+                                                                                                        </div>
+
+                                                                                                        <% if
+                                                                                                            (user.aceitou_termos
+                                                                                                            !==1) { %>
+                                                                                                            <div class="form-actions"
+                                                                                                                style="margin-top: 1.5rem;">
+                                                                                                                <button
+                                                                                                                    type="submit"
+                                                                                                                    class="btn btn-secondary"
+                                                                                                                    id="salvar-termos-btn">Salvar
+                                                                                                                    Preferências</button>
+                                                                                                            </div>
+
+                                                                                                            <div class="termos-success-msg hidden"
+                                                                                                                id="termos-success-msg"
+                                                                                                                style="margin-top: 1rem;">
+                                                                                                                ✓
+                                                                                                                Alterações
+                                                                                                                salvas
+                                                                                                                com
+                                                                                                                sucesso!
+                                                                                                            </div>
+                                                                                                            <% } else {
+                                                                                                                %>
+                                                                                                                <div class="termos-success-msg"
+                                                                                                                    id="termos-success-msg"
+                                                                                                                    style="margin-top: 1rem;">
+                                                                                                                    ✓
+                                                                                                                    Preferências
+                                                                                                                    salvas.
+                                                                                                                </div>
+                                                                                                                <% } %>
+                                                                                                    </form>
+                                                                                    </div>
+
+                                                                                    <%# Zona de Perigo (Simulada) %>
+                                                                                        <div class="form-container danger-zone form-container-wide"
+                                                                                            style="margin-top: 2rem;">
+                                                                                            <%# <-- ADICIONE AQUI %>
+                                                                                                <h2>Zona de Perigo</h2>
+                                                                                                <div
+                                                                                                    style="display: flex; gap: 1rem; flex-wrap: wrap;">
+
+                                                                                                    <%# --- BOTÃO
+                                                                                                        DELETAR ATIVADO
+                                                                                                        --- %>
+                                                                                                        <form
+                                                                                                            action="/site/deletar-conta"
+                                                                                                            method="POST"
+                                                                                                            onsubmit="return confirm('ATENÇÃO: Você tem certeza que deseja DELETAR sua conta? Esta ação é irreversível e todos os seus dados e inscrições serão perdidos.');">
+                                                                                                            <button
+                                                                                                                type="submit"
+                                                                                                                class="btn btn-danger">Deletar
+                                                                                                                Minha
+                                                                                                                Conta</button>
+                                                                                                        </form>
+
+                                                                                                </div>
+                                                                                        </div>
+                                                                        </div>
+
+                                                                        <%# Aba 3: Meus Eventos Inscritos %>
+                                                                            <div class="tab-content"
+                                                                                id="tab-meus-eventos">
+                                                                                <%# Seção "Meus Eventos Inscritos" %>
+                                                                                    <div
+                                                                                        class="form-container form-container-wide">
+                                                                                        <%# <-- ADICIONE AQUI %>
+                                                                                            <h1>Meus Eventos Inscritos
+                                                                                            </h1>
+                                                                                            <% if (myEvents &&
+                                                                                                myEvents.length> 0) { %>
+                                                                                                <div class="event-list">
+                                                                                                    <%
+                                                                                                        myEvents.forEach(event=>
+                                                                                                        { %>
+                                                                                                        <div
+                                                                                                            class="event-card">
+                                                                                                            <% if
+                                                                                                                (event.cover_image_url)
+                                                                                                                { %>
+                                                                                                                <a href="/site/eventos/<%= event.id %>"
+                                                                                                                    class="event-card-image-link"
+                                                                                                                    aria-hidden="true"
+                                                                                                                    tabindex="-1">
+                                                                                                                    <img src="<%= event.cover_image_url %>"
+                                                                                                                        alt=""
+                                                                                                                        class="event-card-image-novo">
+                                                                                                                </a>
+                                                                                                                <% } %>
+                                                                                                                    <div
+                                                                                                                        class="event-card-content">
+                                                                                                                        <a href="/site/eventos/<%= event.id %>"
+                                                                                                                            class="event-title-link">
+                                                                                                                            <h3>
+                                                                                                                                <%= event.title
+                                                                                                                                    %>
+                                                                                                                            </h3>
+                                                                                                                        </a>
+                                                                                                                        <p
+                                                                                                                            style="color: var(--success-color); font-weight: bold; margin-top: auto;">
+                                                                                                                            ✓
+                                                                                                                            Inscrito
+                                                                                                                        </p>
+                                                                                                                    </div>
+                                                                                                        </div>
+                                                                                                        <% }) %>
+                                                                                                </div>
+                                                                                                <% } else { %>
+                                                                                                    <div
+                                                                                                        style="text-align: center;">
+                                                                                                        <p>Você ainda
+                                                                                                            não se
+                                                                                                            inscreveu em
+                                                                                                            nenhum
+                                                                                                            evento.
+                                                                                                        </p>
+                                                                                                        <a href="/site/eventos/todos"
+                                                                                                            class="btn btn-secondary"
+                                                                                                            style="margin-top: 1rem;">Ver
+                                                                                                            Eventos
+                                                                                                            Disponíveis</a>
+                                                                                                    </div>
+                                                                                                    <% } %>
+                                                                                    </div>
+                                                                            </div>
+                                                                            <% } %>
         </div>
 
-        <%# CSS Rápido para os cards de estatística do Admin %>
-            <style>
-                .admin-stats {
-                    display: flex;
-                    justify-content: space-between;
-                    gap: 1rem;
-                }
-
-                .stat-card {
-                    flex: 1;
-                    background-color: var(--bg-color);
-                    border: 1px solid var(--border-color);
-                    border-radius: 8px;
-                    padding: 1.5rem;
-                    text-align: center;
-                }
-
-                .stat-card h3 {
-                    font-size: 2.5rem;
-                    color: var(--accent-color);
-                }
-
-                .stat-card p {
-                    color: var(--text-secondary);
-                }
-            </style>
-
-            <%- include('partials/footer') %>
+        <%- include('partials/footer') %>

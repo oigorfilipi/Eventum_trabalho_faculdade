@@ -12,22 +12,20 @@
     </style>
 
     <link rel="stylesheet" href="/css/styles.css">
+    <link rel="shortcut icon" href="/img/Logo-Eventum.png" type="image/x-icon">
+
 
     <script>
         (function () {
             // Pega o tema salvo no localStorage
             const theme = localStorage.getItem('theme');
-            if (theme === 'light') {
-                // Se for 'light', aplica a classe ANTES da página renderizar
-                document.documentElement.classList.add('light-theme');
-            } else {
-                // Se for 'dark' ou nulo, remove (garante o padrão)
-                document.documentElement.classList.remove('light-theme');
-            }
 
-            // OBS: Usamos 'document.documentElement' (o <html>)
-            // mas a regra CSS é 'body.light-theme'. Vamos ajustar o CSS
-            // para 'html.light-theme' que é mais rápido.
+            // LÓGICA CORRIGIDA:
+            if (theme === 'dark') {
+                // Se for 'dark', ADICIONA a classe escura
+                document.documentElement.classList.add('dark-theme');
+            }
+            // Se for 'light' ou 'null', não faz nada (o padrão já é claro)
         })();
     </script>
 
@@ -38,20 +36,25 @@
     <nav class="navbar">
 
         <div class="nav-left">
-            <a href="/site/eventos">Eventos</a>
 
-            <% if (user) { %>
-                <a href="/site/minha-conta">Minha Conta</a>
+            <%# --- LINK "HOME" ADICIONADO --- %>
+                <a href="/site/eventos">Home</a>
 
-                <% if (user.role==='admin' ) { %>
-                    <a href="/site/eventos/novo" class="admin-link">+ Adicionar Evento</a>
-                    <% } %>
-                        <% } %>
+                <%# CORREÇÃO: O link de "Eventos" agora aponta para a página do grid %>
+                    <a href="/site/eventos/todos">Eventos</a>
+
+                    <% if (user) { %>
+                        <a href="/site/minha-conta">Minha Conta</a>
+
+                        <% if (user.role==='admin' ) { %>
+                            <a href="/site/eventos/novo" class="admin-link">+ Adicionar Evento</a>
+                            <% } %>
+                                <% } %>
         </div>
 
-        <div class="nav-center">
+        <a href="/site/eventos" class="nav-center">
             Eventum
-        </div>
+        </a>
 
         <div class="nav-right">
             <button id="theme-toggle-btn" class="theme-toggle">
@@ -61,18 +64,11 @@
                 <span>Olá, <%= user.name %>!</span>
                 <a href="/site/logout" class="logout-btn">Sair</a>
                 <% } else { %>
-                    <a href="/site/login">Login</a>
-                    <a href="/site/register" class="btn">Cadastre-se</a>
-                    <% } %>
+                    <%# CORREÇÃO: Adicionada a classe "btn-secondary" %>
+                        <a href="/site/login" class="btn-secondary">Login</a>
+                        <a href="/site/register" class="btn btn-secondary">Cadastre-se</a>
+                        <% } %>
         </div>
     </nav>
 
-    <% if (!title.includes('Login') && !title.includes('Cadastro')) { %>
-        <header class="hero">
-            <div class="hero-text">
-                Facilitando sua vida Eventual
-            </div>
-        </header>
-        <% } %>
-
-            <main class="main-content">
+    <main class="main-content">
