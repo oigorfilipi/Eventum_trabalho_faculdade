@@ -517,6 +517,31 @@ app.post('/site/atualizar-perfil', isLoggedIn, (req, res) => {
   });
 });
 
+// --- NOVA ROTA PARA O FORMULÁRIO DE CONTATO ---
+app.post('/site/contato', (req, res) => {
+  const { name, email, phone, message } = req.body;
+
+  if (!name || !email || !message) {
+    req.session.message = { type: 'error', text: 'Nome, Email e Mensagem são obrigatórios.' };
+    return res.redirect('/site/eventos#contact-form'); // Volta para a home, direto para o formulário
+  }
+
+  // 1. Salva a mensagem no banco
+  const stmt = db.prepare('INSERT INTO contact_messages (name, email, phone, message) VALUES (?, ?, ?, ?)');
+  stmt.run(name, email, phone, message, (err) => {
+    if (err) {
+      req.session.message = { type: 'error', text: 'Erro ao salvar sua mensagem. Tente novamente.' };
+      return res.redirect('/site/eventos#contact-form');
+    }
+
+    // 2. Sucesso!
+    req.session.message = { type: 'success', text: 'Mensagem recebida! Entraremos em contato em breve.' };
+    res.redirect('/site/eventos'); // Volta para a home (topo)
+  });
+  stmt.finalize();
+});
+
+
 
 
 // 1. ROTA PÁGINA DE DETALHES DO EVENTO

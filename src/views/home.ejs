@@ -158,7 +158,7 @@
                 </div>
             </div>
             <div class="container">
-                <div class="form-container">
+                <div class="form-container" id="contact-form">
                     <h2 style="text-align: center;">Entre em Contato</h2>
 
                     <form action="/site/contato" method="POST">
@@ -179,7 +179,8 @@
                             <textarea id="contact-message" name="message" class="form-control" rows="5"
                                 required></textarea>
                         </div>
-                        <button type="submit" class="btn-secondary" disabled>Enviar Mensagem (Em Breve)</button>
+                        <%# CORREÇÃO: Removido o 'disabled' %>
+                            <button type="submit" class="btn btn-secondary">Enviar Mensagem</button>
                     </form>
                 </div>
             </div>

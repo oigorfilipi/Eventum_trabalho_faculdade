@@ -153,6 +153,18 @@ db.serialize(() => {
     }
   });
 
+  // --- NOVA TABELA PARA MENSAGENS DE CONTATO ---
+  db.run(`
+    CREATE TABLE IF NOT EXISTS contact_messages (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      email TEXT NOT NULL,
+      phone TEXT,
+      message TEXT NOT NULL,
+      received_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
 });
 
 module.exports = db;
