@@ -450,7 +450,7 @@ app.post('/site/register', async (req, res) => {
       }
 
       // LOGA O USUÁRIO AUTOMATICAMENTE APÓS O REGISTRO
-      req.session.user = { id: this.lastID, name: name, email: email, role: userRole, aceitou_termos: 0, usa_2fa: 0};
+      req.session.user = { id: this.lastID, name: name, email: email, role: userRole, aceitou_termos: 0, usa_2fa: 0 };
       req.session.message = { type: 'success', text: 'Cadastro realizado com sucesso! Você já está logado.' };
       res.redirect('/site/eventos'); // Redireciona para a home
     });
@@ -477,7 +477,7 @@ app.post('/site/login', (req, res) => {
     const match = await bcrypt.compare(password, user.password);
     if (match) {
       // 3. Salvar na sessão
-      req.session.user = { id: user.id, name: user.name, email: user.email, role: user.role, aceitou_termos: user.aceitou_termos, usa_2fa: user.usa_2fa};
+      req.session.user = { id: user.id, name: user.name, email: user.email, role: user.role, aceitou_termos: user.aceitou_termos, usa_2fa: user.usa_2fa };
       req.session.message = { type: 'success', text: `Bem-vindo de volta, ${user.name}!` };
       res.redirect('/site/eventos'); // Sucesso! Redireciona
     } else {
@@ -489,7 +489,18 @@ app.post('/site/login', (req, res) => {
 
 // Rota GET de Logout
 app.get('/site/logout', (req, res) => {
-  req.session.destroy(err => {
+  // Pega o nome ANTES de apagar o usuário
+  const name = req.session.user ? req.session.user.name : 'usuário';
+
+  // Limpa o usuário da sessão (mantém a sessão para a flash message)
+  req.session.user = null;
+
+  // Adiciona a mensagem
+  req.session.message = { type: 'success', text: `Até logo, ${name}!` };
+
+  // Salva as mudanças na sessão e redireciona
+  req.session.save(err => {
+    if (err) console.error("Erro ao salvar sessão no logout:", err);
     res.redirect('/site/eventos'); // Redireciona para a home
   });
 });
@@ -681,14 +692,16 @@ app.post('/site/deletar-conta', isLoggedIn, (req, res) => {
         return res.redirect('/site/minha-conta');
       }
 
-      // 3. Destrói a sessão (Faz o logout)
-      req.session.destroy(err => {
-        if (err) {
-          // Mesmo se o logout falhar, redireciona
-          return res.redirect('/site/eventos');
-        }
-        // Redireciona para a home page como um usuário "morto"
-        res.redirect('/site/eventos');
+      // 3. FAZ O LOGOUT (sem destruir a sessão)
+      req.session.user = null;
+
+      // 4. ADICIONA A MENSAGEM
+      req.session.message = { type: 'success', text: 'Sua conta foi deletada com sucesso. Que pena ver você ir.' };
+
+      // 5. Salva a sessão e redireciona
+      req.session.save(err => {
+        if (err) console.error("Erro ao salvar sessão na deleção:", err);
+        res.redirect('/site/eventos'); // Redireciona para a home
       });
     });
   });

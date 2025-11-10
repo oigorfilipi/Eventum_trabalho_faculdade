@@ -3,7 +3,7 @@
     <%- include('partials/header', { title: 'Home' }) %>
 
         <%# --- MENSAGEM DE FEEDBACK ADICIONADA --- %>
-            <div class="container" style="margin-bottom: -2rem;">
+            <div class="container">
                 <% if (message) { %>
                     <div class="flash-message <%= message.type %>">
                         <%= message.text %>
