@@ -14,8 +14,7 @@
     <link rel="stylesheet" href="/css/styles.css">
     <link rel="shortcut icon" href="/img/Logo-Eventum.png" type="image/x-icon">
 
-    /* [ SUBSTITUA O SCRIPT EM header.ejs ]
-*/
+
     <script>
         (function () {
             // Pega o tema salvo no localStorage
@@ -39,18 +38,18 @@
         <div class="nav-left">
 
             <%# --- LINK "HOME" ADICIONADO --- %>
-            <a href="/site/eventos">Home</a>
+                <a href="/site/eventos">Home</a>
 
-            <%# CORREÇÃO: O link de "Eventos" agora aponta para a página do grid %>
-                <a href="/site/eventos/todos">Eventos</a>
+                <%# CORREÇÃO: O link de "Eventos" agora aponta para a página do grid %>
+                    <a href="/site/eventos/todos">Eventos</a>
 
-                <% if (user) { %>
-                    <a href="/site/minha-conta">Minha Conta</a>
+                    <% if (user) { %>
+                        <a href="/site/minha-conta">Minha Conta</a>
 
-                    <% if (user.role==='admin' ) { %>
-                        <a href="/site/eventos/novo" class="admin-link">+ Adicionar Evento</a>
-                        <% } %>
+                        <% if (user.role==='admin' ) { %>
+                            <a href="/site/eventos/novo" class="admin-link">+ Adicionar Evento</a>
                             <% } %>
+                                <% } %>
         </div>
 
         <a href="/site/eventos" class="nav-center">

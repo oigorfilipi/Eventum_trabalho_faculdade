@@ -31,6 +31,25 @@ router.post('/', (req, res) => {
 
   const currentSubs = db.prepare('SELECT COUNT(*) as count FROM subscriptions WHERE event_id = ?').get(eventId).count;
 
+  // CORREÇÃO 1: Trata o NULL (se for nulo, usa 100)
+  const eventLimit = event.qtdSubs || 100;
+
+  // CORREÇÃO 2: Adicionado o IF/ELSE
+  if (currentSubs >= eventLimit) {
+
+    // SE ESTIVER LOTADO:
+    req.session.message = { type: 'error', text: 'Inscrição falhou: O evento está lotado.' };
+    return res.redirect(redirectUrl);
+
+  } else {
+
+    // SE TIVER VAGA: Tenta inserir no banco
+    const stmt = db.prepare('INSERT INTO subscriptions (event_id, user_id) VALUES (?, ?)');
+    stmt.run(eventId, userId, function (err) {
+      // ... (resto da sua lógica de sucesso/erro) ...
+    });
+  } // <-- Fim do ELSE
+
   if (currentSubs >= event.qtdSubs) {
     req.session.message = { type: 'error', text: 'Inscrição falhou: O evento está lotado.' };
     return res.redirect(redirectUrl);

@@ -657,7 +657,12 @@ textarea.form-control {
 }
 
 /* Aplica o filtro QUANDO o tema for escuro */
-html:not(.light-theme) .about-image img {
+html.dark-theme .about-image img {
+    filter: invert(1) brightness(2);
+    /* Inverte o preto para branco e aumenta o brilho */
+}
+
+html.light-theme .about-image img {
     filter: invert(1) brightness(2);
     /* Inverte o preto para branco e aumenta o brilho */
 }
@@ -1202,7 +1207,6 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f4f4f4;
     color: #333;
 }
 
