@@ -450,7 +450,8 @@ app.post('/site/register', async (req, res) => {
       }
 
       // LOGA O USUÁRIO AUTOMATICAMENTE APÓS O REGISTRO
-      req.session.user = { id: this.lastID, name: name, email: email, role: userRole };
+      req.session.user = { id: this.lastID, name: name, email: email, role: userRole, aceitou_termos: 0, usa_2fa: 0};
+      req.session.message = { type: 'success', text: 'Cadastro realizado com sucesso! Você já está logado.' };
       res.redirect('/site/eventos'); // Redireciona para a home
     });
     stmt.finalize();
@@ -476,7 +477,8 @@ app.post('/site/login', (req, res) => {
     const match = await bcrypt.compare(password, user.password);
     if (match) {
       // 3. Salvar na sessão
-      req.session.user = { id: user.id, name: user.name, email: user.email, role: user.role };
+      req.session.user = { id: user.id, name: user.name, email: user.email, role: user.role, aceitou_termos: user.aceitou_termos, usa_2fa: user.usa_2fa};
+      req.session.message = { type: 'success', text: `Bem-vindo de volta, ${user.name}!` };
       res.redirect('/site/eventos'); // Sucesso! Redireciona
     } else {
       // Senha incorreta
@@ -691,6 +693,33 @@ app.post('/site/deletar-conta', isLoggedIn, (req, res) => {
     });
   });
 });
+
+// ▼▼▼ ADICIONE ESTE NOVO BLOCO DE CÓDIGO AQUI ▼▼▼
+// --- NOVA ROTA PARA SALVAR PRIVACIDADE (TERMOS E 2FA) ---
+app.post('/site/atualizar-privacidade', isLoggedIn, (req, res) => {
+  const userId = req.session.user.id;
+
+  // Converte true/false (do JavaScript) para 1/0 (do SQLite)
+  const aceitouTermos = req.body.aceitou_termos ? 1 : 0;
+  const usa2FA = req.body.usa_2fa ? 1 : 0;
+
+  // Salva no banco
+  const sql = `UPDATE users SET aceitou_termos = ?, usa_2fa = ? WHERE id = ?`;
+
+  db.run(sql, [aceitouTermos, usa2FA, userId], (err) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ success: false, message: 'Erro ao salvar.' });
+    }
+
+    // Atualiza a sessão do usuário também
+    req.session.user.aceitou_termos = aceitouTermos;
+    req.session.user.usa_2fa = usa2FA;
+
+    return res.json({ success: true, message: 'Salvo!' });
+  });
+});
+// ▲▲▲ FIM DO NOVO BLOCO ▲▲▲
 
 
 // 1. ROTA PÁGINA DE DETALHES DO EVENTO

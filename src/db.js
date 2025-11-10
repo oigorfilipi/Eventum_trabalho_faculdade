@@ -172,6 +172,27 @@ db.serialize(() => {
     )
   `);
 
+  // ▼▼▼ ADICIONE ESTAS LINHAS AQUI ▼▼▼
+  // --- NOVAS COLUNAS PARA PRIVACIDADE (MINHA CONTA) ---
+  db.run(`
+    ALTER TABLE users
+    ADD COLUMN aceitou_termos INTEGER DEFAULT 0
+  `, (err) => {
+    if (err && !err.message.includes('duplicate column name')) {
+      console.error('Erro ao adicionar coluna aceitou_termos:', err.message);
+    }
+  });
+
+  db.run(`
+    ALTER TABLE users
+    ADD COLUMN usa_2fa INTEGER DEFAULT 0
+  `, (err) => {
+    if (err && !err.message.includes('duplicate column name')) {
+      console.error('Erro ao adicionar coluna usa_2fa:', err.message);
+    }
+  });
+  // ▲▲▲ FIM DO NOVO CÓDIGO ▲▲▲
+
 });
 
 module.exports = db;

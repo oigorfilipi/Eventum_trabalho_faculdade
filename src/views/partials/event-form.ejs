@@ -35,17 +35,17 @@
                                                     <h3>Etapa 1: Informações Gerais</h3>
 
                                                     <div class="form-group">
-                                                        <label for="title">Título do Evento:</label>
+                                                        <label for="title">Título do Evento: <span class="required-star">*</span></label>
                                                         <input type="text" id="title" name="title" class="form-control"
                                                             value="<%= ev.title || '' %>" required>
                                                     </div>
                                                     <div class="form-group">
-                                                        <label for="description">Descrição:</label>
+                                                        <label for="description">Descrição: <span class="required-star">*</span></label>
                                                         <textarea id="description" name="description" rows="5"
                                                             class="form-control auto-grow"><%= ev.description || '' %></textarea>,
                                                     </div>
                                                     <div class="form-group">
-                                                        <label for="category">Categoria:</label>
+                                                        <label for="category">Categoria: <span class="required-star">*</span></label>
                                                         <select id="category" name="category" class="form-control">
                                                             <option value="Indefinido" <%=(ev.category==='Indefinido' ||
                                                                 !ev.category) ? 'selected' : '' %>>-- Selecione --
@@ -135,27 +135,27 @@
                                                                 <h3>Endereço do Evento</h3>
                                                                 <div class="form-group">
                                                                     <label for="address_street">Logradouro /
-                                                                        Rua:</label>
+                                                                        Rua: <span class="required-star">*</span></label>
                                                                     <input type="text" id="address_street"
                                                                         class="form-control"
                                                                         value="<%= address.street %>">
                                                                 </div>
                                                                 <div class="form-row">
                                                                     <div class="form-group">
-                                                                        <label for="address_number">Número:</label>
+                                                                        <label for="address_number">Número: <span class="required-star">*</span></label>
                                                                         <input type="text" id="address_number"
                                                                             class="form-control"
                                                                             value="<%= address.number %>">
                                                                     </div>
                                                                     <div class="form-group">
-                                                                        <label for="address_cep">CEP:</label>
+                                                                        <label for="address_cep">CEP: <span class="required-star">*</span></label>
                                                                         <input type="text" id="address_cep"
                                                                             class="form-control"
                                                                             value="<%= address.cep %>">
                                                                     </div>
                                                                 </div>
                                                                 <div class="form-group">
-                                                                    <label for="address_neighborhood">Bairro:</label>
+                                                                    <label for="address_neighborhood">Bairro: <span class="required-star">*</span></label>
                                                                     <input type="text" id="address_neighborhood"
                                                                         class="form-control"
                                                                         value="<%= address.neighborhood %>">
@@ -179,13 +179,13 @@
                                                                 <h3>Data e Hora</h3>
                                                                 <div class="form-row">
                                                                     <div class="form-group">
-                                                                        <label for="date_start">Data de Início:</label>
+                                                                        <label for="date_start">Data de Início: <span class="required-star">*</span></label>
                                                                         <input type="date" id="date_start"
                                                                             class="form-control"
                                                                             value="<%= schedule.date_start %>">
                                                                     </div>
                                                                     <div class="form-group">
-                                                                        <label for="time_start">Hora de Início:</label>
+                                                                        <label for="time_start">Hora de Início: <span class="required-star">*</span></label>
                                                                         <input type="time" id="time_start"
                                                                             class="form-control"
                                                                             value="<%= schedule.time_start %>">
@@ -193,13 +193,13 @@
                                                                 </div>
                                                                 <div class="form-row">
                                                                     <div class="form-group">
-                                                                        <label for="date_end">Data de Término:</label>
+                                                                        <label for="date_end">Data de Término: <span class="required-star">*</span></label>
                                                                         <input type="date" id="date_end"
                                                                             class="form-control"
                                                                             value="<%= schedule.date_end %>">
                                                                     </div>
                                                                     <div class="form-group">
-                                                                        <label for="time_end">Hora de Término:</label>
+                                                                        <label for="time_end">Hora de Término: <span class="required-star">*</span></label>
                                                                         <input type="time" id="time_end"
                                                                             class="form-control"
                                                                             value="<%= schedule.time_end %>">
@@ -211,7 +211,7 @@
                                                                 <%# Seção de Vagas %>
                                                                     <div class="form-group">
                                                                         <label for="qtdSubs">Limite de
-                                                                            Inscrições:</label>
+                                                                            Inscrições: <span class="required-star">*</span></label>
                                                                         <input type="number" id="qtdSubs" name="qtdSubs"
                                                                             class="form-control"
                                                                             value="<%= ev.qtdSubs || 100 %>" min="1"
@@ -235,7 +235,7 @@
                                                                 <%# Seção de Preço %>
                                                                     <h3>Preço do Evento</h3>
                                                                     <div class="form-group">
-                                                                        <label>O evento é gratuito?</label>
+                                                                        <label>O evento é gratuito? <span class="required-star">*</span></label>
                                                                         <div class="radio-group">
                                                                             <input type="radio" id="price_free_yes"
                                                                                 name="isFree" value="true"
@@ -257,7 +257,7 @@
                                                                         class="hidden-section <%= (pricing.isFree === 'false') ? '' : 'hidden' %>">
                                                                         <div class="form-group">
                                                                             <label for="event_price">Valor do Ingresso
-                                                                                (em R$):</label>
+                                                                                (em R$): <span class="required-star">*</span></label>
                                                                             <input type="number" id="event_price"
                                                                                 class="form-control"
                                                                                 placeholder="Ex: 50" min="0" step="0.01"
@@ -270,7 +270,7 @@
                                                                     <%# Seção de Comida %>
                                                                         <h3>Comida e Bebida</h3>
                                                                         <div class="form-group">
-                                                                            <label>Haverá comida/bebida?</label>
+                                                                            <label>Haverá comida/bebida? <span class="required-star">*</span></label>
                                                                             <div class="radio-group">
                                                                                 <input type="radio" id="food_yes"
                                                                                     name="hasFood" value="true"
@@ -358,7 +358,7 @@
                                                                                 <%=(attractions.palestras.length> 0) ?
                                                                             'checked' : '' %>>
                                                                             <label for="chk-palestras">Terá
-                                                                                Palestras?</label>
+                                                                                Palestras? <span class="required-star">*</span></label>
                                                                         </div>
 
                                                                         <%# Seção Escondida de Palestras %>
@@ -414,7 +414,7 @@
                                                                                         <%=(attractions.artistas.length>
                                                                                     0) ? 'checked' : '' %>>
                                                                                     <label for="chk-artistas">Terá
-                                                                                        Atrações Artísticas?</label>
+                                                                                        Atrações Artísticas? <span class="required-star">*</span></label>
                                                                                 </div>
 
                                                                                 <%# Seção Escondida de Artistas %>

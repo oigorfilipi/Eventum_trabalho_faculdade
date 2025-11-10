@@ -56,6 +56,7 @@ body {
 
 .main-content {
     flex: 1;
+    padding-top: 50px;
     /* Faz o conteúdo principal crescer */
 }
 
@@ -1585,4 +1586,51 @@ th {
 .danger-zone .btn-danger:hover {
     background-color: var(--danger-color);
     color: #ffffff;
+}
+
+/* [ COLE ISTO NO FINAL DE styles.css ]
+*/
+
+/* 17. MENSAGEM DE SUCESSO (FORMULÁRIO DE TERMOS)
+--------------------------------------------- */
+.termos-success-msg {
+    padding: 0.75rem 1.25rem;
+    background-color: var(--success-color);
+    color: #ffffff;
+    border-radius: 5px;
+    font-weight: 600;
+    text-align: center;
+}
+
+/* 18. CAMPO DE SENHA COM "OLHO"
+--------------------------------------------- */
+.password-wrapper {
+    position: relative;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    
+    /* Ajustes para o botão parecer texto */
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.25rem; /* Tamanho do emoji */
+    color: var(--text-secondary);
+    padding: 0;
+}
+
+.password-toggle:hover {
+    color: var(--accent-color);
+}
+
+/* 19. ASTERISCO DE CAMPO OBRIGATÓRIO
+--------------------------------------------- */
+.required-star {
+    color: var(--danger-color); /* Vermelho */
+    font-weight: bold;
+    margin-left: 4px;
 }

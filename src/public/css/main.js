@@ -376,6 +376,84 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     /* --- FIM: Lógica das Abas --- */
 
+    /* --- INÍCIO: Lógica do "Olhinho" da Senha --- */
+    // Pega TODOS os botões de "olho" da página
+    const allPasswordToggles = document.querySelectorAll('.password-toggle');
+
+    allPasswordToggles.forEach(toggle => {
+        toggle.addEventListener('click', () => {
+            // Encontra o input de senha que é "irmão" do wrapper
+            const passwordInput = toggle.previousElementSibling;
+
+            if (passwordInput && passwordInput.type === 'password') {
+                // Se for senha, muda para texto
+                passwordInput.type = 'text';
+                toggle.textContent = '🙈'; // Micon
+            } else if (passwordInput) {
+                // Se for texto, muda para senha
+                passwordInput.type = 'password';
+                toggle.textContent = '👁️'; // Olho
+            }
+        });
+    });
+    /* --- FIM: Lógica do "Olhinho" da Senha --- */
+
+    /* --- INÍCIO: Salvar Termos e 2FA (Minha Conta) --- */
+    const termosForm = document.getElementById('termos-form-simulado');
+
+    if (termosForm) {
+        termosForm.addEventListener('submit', async (e) => {
+            e.preventDefault(); // Impede o recarregamento da página
+
+            const termosBtn = document.getElementById('salvar-termos-btn');
+            const termosSuccess = document.getElementById('termos-success-msg');
+            const termosCheck = document.getElementById('termos-check');
+
+            // ▼▼▼ CORREÇÃO AQUI ▼▼▼
+            const check2FA = document.getElementById('2fa-check'); // Corrigido de "2faCheck"
+
+            // Pega os valores atuais
+            const aceitouTermos = termosCheck.checked;
+            // ▼▼▼ CORREÇÃO AQUI ▼▼▼
+            const usa2FA = check2FA.checked; // Corrigido de "2faCheck"
+
+            // Desabilita o botão
+            termosBtn.disabled = true;
+            termosBtn.textContent = 'Salvando...';
+
+            try {
+                // 2. Envia os dados para a nova rota do backend
+                const response = await fetch('/site/atualizar-privacidade', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        aceitou_termos: aceitouTermos,
+                        usa_2fa: usa2FA
+                    })
+                });
+
+                if (!response.ok) { throw new Error('Falha ao salvar'); }
+
+                // 3. Sucesso!
+                termosSuccess.classList.remove('hidden'); // Mostra a mensagem
+                termosBtn.classList.add('hidden');       // ESCONDE O BOTÃO (permanente)
+
+                // TRAVA OS CHECKBOXES (permanente)
+                if (termosCheck) termosCheck.disabled = true;
+                // ▼▼▼ CORREÇÃO AQUI ▼▼▼
+                if (check2FA) check2FA.disabled = true; // Corrigido de "2faCheck"
+
+            } catch (err) {
+                console.error(err);
+                alert('Erro ao salvar. Tente novamente.');
+                // Se der erro, reabilita o botão para tentar de novo
+                termosBtn.disabled = false;
+                termosBtn.textContent = 'Salvar Preferências';
+            }
+        });
+    }
+    /* --- FIM: Salvar Termos e 2FA --- */
+
     /* --- INÍCIO: Lógica de Edição "Meus Dados" --- */
     const editBtn = document.getElementById('edit-profile-btn');
     const cancelBtn = document.getElementById('cancel-profile-btn');
