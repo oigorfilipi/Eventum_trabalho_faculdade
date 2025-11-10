@@ -1,15 +1,15 @@
 const express = require('express');
-const bodyParser = require('express').json;
 const path = require('path');
 const session = require('express-session')
 const db = require('./db'); // garante inicialização do DB
 const userRoutes = require('./routes/users');
 const eventRoutes = require('./routes/events');
 const subscribeRoutes = require('./routes/subscribe');
+const bcrypt = require('bcryptjs');
 
 const app = express();
 app.use(express.urlencoded({ extended: true }));
-app.use(bodyParser());
+app.use(express.json()); // <-- SUBSTITUA PELA VERSÃO MODERNA
 
 app.use(session({
   secret: 'seu-segredo-muito-seguro-aqui', // Mude isso para uma frase aleatória
@@ -76,10 +76,7 @@ app.post('/site/eventos/novo', isAdmin, (req, res) => {
 
   // 3. Insere no banco...
   const stmt = db.prepare(
-    `INSERT INTO events (title, description, created_by, qtdSubs, 
-                         schedule_details, address_details, pricing_details, food_details, attractions, 
-                         cover_image_url)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+    `INSERT INTO events (title, description, created_by, qtdSubs, schedule_details, address_details, pricing_details, food_details, attractions, cover_image_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
   );
   stmt.run(
     title, description || null, createdBy, qtdSubs || 100,
@@ -227,8 +224,6 @@ app.get('/site/eventos', (req, res) => {
   });
 });
 
-const bcrypt = require('bcryptjs');
-
 // Rota GET para mostrar a página de login
 app.get('/site/login', (req, res) => {
   res.render('login', { error: null }); // Renderiza login.ejs
@@ -307,20 +302,31 @@ app.get('/site/minha-conta', isLoggedIn, (req, res) => {
 
   if (user.role === 'admin') {
     // LÓGICA DO ADMIN: Buscar estatísticas
-    let stats = { users: 0, events: 0, subscriptions: 0 };
+    let stats = { users: 0, events: 0, totalSubscriptions: 0, activeSubscriptions: 0 }; // <-- MUDANÇA AQUI
 
-    // Usamos callbacks aninhados para garantir que temos todos os dados
+    // Usamos callbacks aninhados...
     db.get("SELECT COUNT(*) as count FROM users", [], (err, row) => {
       if (row) stats.users = row.count;
 
       db.get("SELECT COUNT(*) as count FROM events", [], (err, row) => {
         if (row) stats.events = row.count;
 
+        // Query 1: Inscrições TOTAIS (como você definiu)
         db.get("SELECT COUNT(*) as count FROM subscriptions", [], (err, row) => {
-          if (row) stats.subscriptions = row.count;
+          if (row) stats.totalSubscriptions = row.count; // <-- MUDANÇA AQUI
 
-          // Renderiza a view passando as estatísticas
-          res.render('minha-conta', { stats: stats });
+          // Query 2: Inscrições ATIVAS (só de eventos que existem)
+          const sqlActive = `
+            SELECT COUNT(s.id) as count 
+            FROM subscriptions s
+            JOIN events e ON s.event_id = e.id
+          `;
+          db.get(sqlActive, [], (err, row) => {
+            if (row) stats.activeSubscriptions = row.count; // <-- MUDANÇA AQUI
+
+            // Renderiza a view passando as estatísticas
+            res.render('minha-conta', { stats: stats });
+          });
         });
       });
     });
@@ -421,10 +427,16 @@ app.get('/site/eventos/:id', (req, res) => {
     db.get('SELECT id FROM subscriptions WHERE event_id = ? AND user_id = ?', [eventId, userId], (err, subscription) => {
       const isSubscribed = !!subscription; // true se a inscrição existir
 
-      // 4. Renderiza a nova página de detalhes
-      res.render('evento-detalhe', {
-        event: event,
-        isSubscribed: isSubscribed
+      // 4. CORREÇÃO: Busca a contagem de inscritos para este evento
+      db.get('SELECT COUNT(*) as count FROM subscriptions WHERE event_id = ?', [eventId], (err, row) => {
+        const currentSubCount = row ? row.count : 0;
+
+        // 5. Renderiza a nova página de detalhes
+        res.render('evento-detalhe', {
+          event: event,
+          isSubscribed: isSubscribed,
+          currentSubCount: currentSubCount // <-- Passa a contagem
+        });
       });
     });
   });
@@ -450,10 +462,6 @@ app.get('/site/pagamento/:id', isLoggedIn, (req, res) => {
     res.render('pagamento', { event, price, user: req.session.user });
   });
 });
-
-
-// Rotas da API
-app.use('/users', userRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

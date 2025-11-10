@@ -37,6 +37,10 @@
     <nav class="navbar">
 
         <div class="nav-left">
+
+            <%# --- LINK "HOME" ADICIONADO --- %>
+            <a href="/site/eventos">Home</a>
+
             <%# CORREÇÃO: O link de "Eventos" agora aponta para a página do grid %>
                 <a href="/site/eventos/todos">Eventos</a>
 
@@ -63,7 +67,7 @@
                 <% } else { %>
                     <%# CORREÇÃO: Adicionada a classe "btn-secondary" %>
                         <a href="/site/login" class="btn-secondary">Login</a>
-                        <a href="/site/register" class="btn">Cadastre-se</a>
+                        <a href="/site/register" class="btn btn-secondary">Cadastre-se</a>
                         <% } %>
         </div>
     </nav>

@@ -92,6 +92,8 @@ a:hover {
 --------------------------------------------- */
 
 /* --- Navbar --- */
+/* [ CÓDIGO ATUAL EM styles.css ]
+*/
 .navbar {
     display: flex;
     justify-content: space-between;
@@ -127,6 +129,8 @@ a:hover {
     color: #2d6b2f;
 }
 
+/* [ CÓDIGO ATUAL EM styles.css ]
+*/
 .nav-center {
     flex: 1;
     text-align: center;
@@ -238,42 +242,82 @@ a:hover {
 
 /* 3. BOTÕES (Estilo principal e variações)
 --------------------------------------------- */
+/* 3. BOTÕES (Estilo principal e variações)
+--------------------------------------------- */
+
+/* A "FORMA" BASE DO BOTÃO (Tamanho, Borda, Fonte, CURSOR) */
 .btn {
     display: inline-block;
-    /* Garante o padding correto como no .btn */
-    background-color: transparent;
-    color: var(--accent-color);
-    /* CORRIGIDO: Usa a cor de destaque */
-    border: 1px solid var(--accent-color);
-    /* CORRIGIDO: Borda no tom azul */
     padding: 0.75rem 1.25rem;
-    /* Pega o padding do .btn principal */
     border-radius: 5px;
-    /* Pega o radius do .btn principal */
     text-decoration: none;
     font-weight: 600;
-    /* Pega o peso do .btn principal */
+    font-size: 1rem;
+    border: 1px solid transparent;
+    /* Borda base */
     transition: all 0.2s ease;
-    /* Anima tudo */
+    cursor: pointer;
+    /* <-- CURSOR CORRIGIDO */
+    text-align: center;
 }
 
 .btn:hover {
-    background-color: var(--accent-color);
-    /* CORRIGIDO: Fica azul no hover */
-    color: #ffffff;
-    /* CORRIGIDO: Texto fica branco (igual ao .btn) */
     transform: translateY(-2px);
-    /* Efeito "pular" (do passo anterior) */
+    /* Efeito "pular" */
     text-decoration: none;
 }
 
-/* Variação Vermelha (Excluir) */
-.btn.btn-danger {
-    background-color: var(--danger-color);
+/* O "Botão Principal" (Sólido, Azul - para Call-to-Action) */
+.btn-primary {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+    color: #ffffff;
 }
 
-.btn.btn-danger:hover {
+.btn-primary:hover {
+    background-color: var(--accent-hover);
+    border-color: var(--accent-hover);
+    color: #ffffff;
+}
+
+/* O "Botão Secundário" (Vazado, Azul - o que você gostou) */
+.btn-secondary {
+    background-color: transparent;
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+}
+
+.btn-secondary:hover {
+    background-color: var(--accent-color);
+    color: #ffffff;
+}
+
+/* O "Botão de Sucesso" (Sólido, Verde - Admin) */
+.btn-success {
+    background-color: var(--success-color);
+    border-color: var(--success-color);
+    color: #ffffff;
+}
+
+.btn-success:hover {
+    background-color: #3e8e41;
+    /* Verde mais escuro */
+    border-color: #3e8e41;
+    color: #ffffff;
+}
+
+/* O "Botão de Perigo" (Ex: Excluir) */
+.btn-danger {
+    background-color: var(--danger-color);
+    border-color: var(--danger-color);
+    color: #ffffff;
+}
+
+.btn-danger:hover {
     background-color: #c0312d;
+    /* Vermelho mais escuro */
+    border-color: #c0312d;
+    color: #ffffff;
 }
 
 /* Variação Verde (Admin) */
@@ -502,6 +546,13 @@ textarea.form-control {
     font-weight: 600;
 }
 
+.form-actions {
+    display: flex;
+    align-items: center; /* Alinha verticalmente */
+    gap: 1rem; /* Espaço de 1rem entre os botões (substitui o margin-left) */
+    flex-wrap: wrap; /* Permite quebrar a linha em telas pequenas */
+}
+
 
 /* 6. MENSAGENS FLASH (Sucesso/Erro)
 --------------------------------------------- */
@@ -562,8 +613,10 @@ textarea.form-control {
 .about-section {
     /* 1. Cria as colunas */
     display: flex;
-    align-items: center; /* Alinha o texto e a imagem pelo meio */
-    gap: 3rem;           /* Espaço entre a imagem e o texto */
+    align-items: center;
+    /* Alinha o texto e a imagem pelo meio */
+    gap: 3rem;
+    /* Espaço entre a imagem e o texto */
 
     /* 2. Dá um respiro na página */
     margin-top: 4rem;
@@ -571,32 +624,45 @@ textarea.form-control {
 }
 
 .about-image {
-    flex: 1; /* Faz a coluna da imagem ocupar 1/3 do espaço */
-    display: flex;           /* Adicionado para centralizar a imagem */
-    justify-content: center; /* Adicionado para centralizar a imagem */
-    align-items: center;     /* Adicionado para centralizar a imagem */
+    flex: 1;
+    /* Faz a coluna da imagem ocupar 1/3 do espaço */
+    display: flex;
+    /* Adicionado para centralizar a imagem */
+    justify-content: center;
+    /* Adicionado para centralizar a imagem */
+    align-items: center;
+    /* Adicionado para centralizar a imagem */
 }
 
 .about-image img {
     /* MANTENHA estas propriedades */
-    width: 80%; /* Ajustado para 80% para a logo não ser muito grande */
-    height: auto; /* Mantém proporção */
-    max-width: 300px; /* Limite máximo para a logo */
-    border-radius: 0; /* <-- REMOVIDO: Borda arredondada */
-    border: none; /* <-- REMOVIDO: Borda cinza */
+    width: 80%;
+    /* Ajustado para 80% para a logo não ser muito grande */
+    height: auto;
+    /* Mantém proporção */
+    max-width: 300px;
+    /* Limite máximo para a logo */
+    border-radius: 0;
+    /* <-- REMOVIDO: Borda arredondada */
+    border: none;
+    /* <-- REMOVIDO: Borda cinza */
 
     /* --- A MÁGICA PARA MUDAR A COR --- */
-    filter: none; /* Padrão: sem filtro (preto no modo claro) */
-    transition: filter 0.3s ease; /* Anima a mudança de cor */
+    filter: none;
+    /* Padrão: sem filtro (preto no modo claro) */
+    transition: filter 0.3s ease;
+    /* Anima a mudança de cor */
 }
 
 /* Aplica o filtro QUANDO o tema for escuro */
 html:not(.light-theme) .about-image img {
-    filter: invert(1) brightness(2); /* Inverte o preto para branco e aumenta o brilho */
+    filter: invert(1) brightness(2);
+    /* Inverte o preto para branco e aumenta o brilho */
 }
 
 .about-text {
-    flex: 2; /* Faz a coluna do texto ocupar 2/3 do espaço */
+    flex: 2;
+    /* Faz a coluna do texto ocupar 2/3 do espaço */
 }
 
 .about-text h2 {
@@ -614,12 +680,15 @@ html:not(.light-theme) .about-image img {
 /* 8. SEÇÃO FAQ (HOME PAGE)
 --------------------------------------------- */
 .faq-section {
-    max-width: 800px; /* Limita a largura do FAQ */
-    margin: 4rem auto; /* Centraliza (auto) e dá espaço (4rem) */
+    max-width: 800px;
+    /* Limita a largura do FAQ */
+    margin: 4rem auto;
+    /* Centraliza (auto) e dá espaço (4rem) */
 }
 
 .faq-section h2 {
-    text-align: center; /* Centraliza o título "Perguntas Frequentes" */
+    text-align: center;
+    /* Centraliza o título "Perguntas Frequentes" */
     font-size: 2rem;
     color: var(--text-primary);
     margin-bottom: 2rem;
@@ -631,7 +700,8 @@ html:not(.light-theme) .about-image img {
     border: 1px solid var(--border-color);
     border-radius: 8px;
     margin-bottom: 1rem;
-    overflow: hidden; /* Garante a animação suave */
+    overflow: hidden;
+    /* Garante a animação suave */
 }
 
 /* A pergunta (o título clicável) */
@@ -641,15 +711,18 @@ html:not(.light-theme) .about-image img {
     font-size: 1.1rem;
     color: var(--text-primary);
     cursor: pointer;
-    list-style: none; /* Remove o triângulo padrão */
+    list-style: none;
+    /* Remove o triângulo padrão */
     position: relative;
-    padding-right: 3.5rem; /* Espaço para o ícone '+' */
+    padding-right: 3.5rem;
+    /* Espaço para o ícone '+' */
 }
 
 /* Remove o marcador padrão (Firefox) */
 .faq-item summary::marker {
     display: none;
 }
+
 /* Remove o marcador padrão (Chrome/Safari) */
 .faq-item summary::-webkit-details-marker {
     display: none;
@@ -685,4 +758,335 @@ html:not(.light-theme) .about-image img {
 /* Para o <p> dentro da resposta não ter margem extra */
 .faq-answer p {
     margin: 0;
+}
+
+/*home..ejs*/
+
+.carousel-container {
+    /* O container "contido" que você gostou */
+    max-width: 1100px;
+    margin: 2rem auto;
+    height: 600px;
+    /* A altura maior */
+    position: relative;
+    overflow: hidden;
+    background-color: var(--card-color);
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+}
+
+.carousel-track {
+    display: flex;
+    height: 100%;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+
+.carousel-track::-webkit-scrollbar {
+    display: none;
+}
+
+.carousel-slide {
+    flex: 0 0 100%;
+    width: 100%;
+    height: 100%;
+    scroll-snap-align: start;
+    position: relative;
+    /* Base para o conteúdo */
+    overflow: hidden;
+}
+
+/* 1. A Imagem (Fundo total) */
+.slide-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.slide-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* Zoom sem distorcer */
+}
+
+/* 2. O "FADE" (A opacidade diminuída no fundo) */
+.slide-overlay-gradient {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 70%;
+    /* Cobre 70% da altura a partir de baixo */
+    /* O Gradiente: começa transparente em cima e fica escuro embaixo */
+    background: linear-gradient(to top,
+            rgba(0, 0, 0, 0.85) 20%,
+            /* Mais escuro na base */
+            rgba(0, 0, 0, 0) 100%
+            /* Transparente no topo */
+        );
+    z-index: 1;
+}
+
+/* 3. O Conteúdo (Na base, em cima do fade) */
+.slide-content-bottom {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 2;
+    /* Fica na frente do gradiente */
+    padding: 2rem 3rem;
+    /* Espaçamento do texto */
+    color: #ffffff;
+    text-align: left;
+    /* Alinha o texto à esquerda */
+}
+
+.slide-content-bottom h1 {
+    color: #ffffff;
+    font-size: 2.5rem;
+}
+
+.slide-content-bottom p {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    color: #E0E0E0;
+    /* Cor de texto mais clara */
+    max-width: 700px;
+    /* Limita a largura do texto */
+}
+
+.slide-details {
+    font-weight: 500;
+    margin-bottom: 1.5rem;
+    color: #E0E0E0;
+}
+
+/* 4. Botão do Carrossel */
+.btn-primary-carousel {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    background-color: var(--accent-color);
+    color: #ffffff;
+    border: 2px solid var(--accent-color);
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.btn-primary-carousel:hover {
+    background-color: var(--accent-hover);
+    border-color: var(--accent-hover);
+    text-decoration: none;
+}
+
+/* 5. Setas de Navegação (permanecem iguais) */
+.carousel-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 3;
+    background-color: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    font-size: 2rem;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.carousel-button:hover {
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.carousel-button.prev {
+    left: 20px;
+}
+
+.carousel-button.next {
+    right: 20px;
+}
+
+/*Events.ejs*/
+
+a.event-title-link {
+    text-decoration: none;
+    color: var(--text-primary);
+}
+
+a.event-title-link:hover h3 {
+    text-decoration: underline;
+    color: var(--accent-color);
+}
+
+/*Evento-detalhe.ejs*/
+
+.event-detail-card {
+    background-color: var(--card-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1.5rem 2rem;
+    margin-bottom: 1.5rem;
+}
+
+.event-detail-card h2 {
+    margin-bottom: 1rem;
+}
+
+.detail-item {
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    font-size: 1.1em;
+}
+
+.action-card {
+    background-color: var(--bg-color);
+}
+
+.action-card .btn,
+.action-card .btn-disabled {
+    width: 100%;
+    text-align: center;
+    font-size: 1.2rem;
+}
+
+.btn-disabled {
+    display: block;
+    background-color: var(--success-color);
+    color: #ffffff;
+    padding: 0.75rem 1.25rem;
+    border-radius: 5px;
+    font-weight: 600;
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.attraction-list {
+    list-style-type: none;
+    padding-left: 10px;
+}
+
+.attraction-list li {
+    padding: 8px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.attraction-list li:last-child {
+    border-bottom: none;
+}
+
+/*Minha-conta.ejs*/
+
+.admin-stats {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.stat-card {
+    /* CORREÇÃO: Define que o card ocupa 50% (menos o espaço do 'gap') */
+    flex-basis: calc(50% - 0.5rem);
+    flex-grow: 1; /* Permite que ele cresça se só houver 1 ou 2 */
+
+    background-color: var(--bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.stat-card h3 {
+    font-size: 2.5rem;
+    color: var(--accent-color);
+}
+
+.stat-card p {
+    color: var(--text-secondary);
+}
+
+/*event-form.ejs*/
+
+.hidden {
+    display: none !important;
+}
+
+.hidden-section {
+    background-color: var(--bg-color);
+    border: 1px dashed var(--border-color);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-top: 0.5rem;
+}
+
+.dynamic-item {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.dynamic-item input {
+    flex: 1;
+}
+
+.form-divider {
+    border: 1px solid var(--border-color);
+    margin: 2rem 0;
+}
+
+.form-row {
+    display: flex;
+    gap: 1rem;
+}
+
+.form-row .form-group {
+    flex: 1;
+}
+
+.radio-group {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+}
+
+.radio-group label,
+.checkbox-group label {
+    margin: 0;
+    font-weight: normal;
+}
+
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.warning-text {
+    font-style: italic;
+    color: var(--text-secondary);
+    font-size: 0.9em;
+}
+
+.admin-event-stats {
+    background-color: var(--card-color);
+    border: 1px solid var(--border-color);
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    text-align: center;
+    font-size: 1.2rem;
+}
+
+.admin-event-stats span {
+    font-weight: bold;
+    color: var(--accent-color);
 }

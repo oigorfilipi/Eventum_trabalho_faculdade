@@ -58,22 +58,37 @@
                                         </div>
                                         <% }) %>
                                             <% } else { %>
+
                                                 <%# Slide padrão se não houver eventos com imagem %>
                                                     <div class="carousel-slide">
+
                                                         <div class="slide-image">
+
                                                             <img src="https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?auto=format&fit=crop&q=80&w=1470"
                                                                 alt="">
+
                                                         </div>
-                                                        <div class="slide-overlay"></div>
-                                                        <div class="slide-content">
-                                                            <h1>Bem-vindo ao Eventum</h1>
-                                                            <p>Nenhum evento recente com imagem de capa encontrado. Crie
-                                                                um novo evento para vê-lo aqui!</p>
-                                                            <% if (user && user.role==='admin' ) { %>
-                                                                <a href="/site/eventos/novo"
-                                                                    class="btn-primary-carousel">Criar Evento</a>
-                                                                <% } %>
-                                                        </div>
+
+                                                        <%# CORREÇÃO: Usando a classe de gradiente %>
+                                                            <div class="slide-overlay-gradient"></div>
+
+                                                            <%# CORREÇÃO: Usando a classe de conteúdo na base %>
+                                                                <div class="slide-content-bottom">
+
+                                                                    <h1>Bem-vindo ao Eventum</h1>
+                                                                    <p>Nenhum evento recente com imagem de capa
+                                                                        encontrado.
+                                                                        Crie um novo evento para vê-lo aqui!</p>
+
+                                                                    <% if (user && user.role==='admin' ) { %>
+
+                                                                        <a href="/site/eventos/novo"
+                                                                            class="btn-primary-carousel">Criar
+                                                                            Evento</a>
+
+                                                                        <% } %>
+                                                                </div>
+
                                                     </div>
                                                     <% } %>
 
@@ -164,190 +179,29 @@
                             <textarea id="contact-message" name="message" class="form-control" rows="5"
                                 required></textarea>
                         </div>
-                        <button type-"submit" class="btn-secondary" disabled>Enviar Mensagem (Em Breve)</button>
+                        <button type="submit" class="btn-secondary" disabled>Enviar Mensagem (Em Breve)</button>
                     </form>
                 </div>
             </div>
 
+            <script>
+                // JS para os botões de seta
+                document.addEventListener('DOMContentLoaded', () => {
+                    const track = document.getElementById('carousel-track');
+                    const prevBtn = document.getElementById('carousel-prev');
+                    const nextBtn = document.getElementById('carousel-next');
 
-            <%# CSS e JS SÓ PARA O CARROSSEL (colamos aqui para não poluir os arquivos globais) %>
-                <style>
-                    .carousel-container {
-                        /* O container "contido" que você gostou */
-                        max-width: 1100px;
-                        margin: 2rem auto;
-                        height: 600px;
-                        /* A altura maior */
-                        position: relative;
-                        overflow: hidden;
-                        background-color: var(--card-color);
-                        border-radius: 10px;
-                        border: 1px solid var(--border-color);
+                    if (track && prevBtn && nextBtn) {
+                        const slideWidth = track.querySelector('.carousel-slide').clientWidth;
+
+                        prevBtn.addEventListener('click', () => {
+                            track.scrollBy({ left: -slideWidth, behavior: 'smooth' });
+                        });
+                        nextBtn.addEventListener('click', () => {
+                            track.scrollBy({ left: slideWidth, behavior: 'smooth' });
+                        });
                     }
+                });
+            </script>
 
-                    .carousel-track {
-                        display: flex;
-                        height: 100%;
-                        overflow-x: auto;
-                        scroll-snap-type: x mandatory;
-                        scroll-behavior: smooth;
-                        -webkit-overflow-scrolling: touch;
-                        scrollbar-width: none;
-                    }
-
-                    .carousel-track::-webkit-scrollbar {
-                        display: none;
-                    }
-
-                    .carousel-slide {
-                        flex: 0 0 100%;
-                        width: 100%;
-                        height: 100%;
-                        scroll-snap-align: start;
-                        position: relative;
-                        /* Base para o conteúdo */
-                        overflow: hidden;
-                    }
-
-                    /* 1. A Imagem (Fundo total) */
-                    .slide-image {
-                        position: absolute;
-                        top: 0;
-                        left: 0;
-                        width: 100%;
-                        height: 100%;
-                    }
-
-                    .slide-image img {
-                        width: 100%;
-                        height: 100%;
-                        object-fit: cover;
-                        /* Zoom sem distorcer */
-                    }
-
-                    /* 2. O "FADE" (A opacidade diminuída no fundo) */
-                    .slide-overlay-gradient {
-                        position: absolute;
-                        bottom: 0;
-                        left: 0;
-                        width: 100%;
-                        height: 70%;
-                        /* Cobre 70% da altura a partir de baixo */
-                        /* O Gradiente: começa transparente em cima e fica escuro embaixo */
-                        background: linear-gradient(to top,
-                                rgba(0, 0, 0, 0.85) 20%,
-                                /* Mais escuro na base */
-                                rgba(0, 0, 0, 0) 100%
-                                /* Transparente no topo */
-                            );
-                        z-index: 1;
-                    }
-
-                    /* 3. O Conteúdo (Na base, em cima do fade) */
-                    .slide-content-bottom {
-                        position: absolute;
-                        bottom: 0;
-                        left: 0;
-                        width: 100%;
-                        z-index: 2;
-                        /* Fica na frente do gradiente */
-                        padding: 2rem 3rem;
-                        /* Espaçamento do texto */
-                        color: #ffffff;
-                        text-align: left;
-                        /* Alinha o texto à esquerda */
-                    }
-
-                    .slide-content-bottom h1 {
-                        color: #ffffff;
-                        font-size: 2.5rem;
-                    }
-
-                    .slide-content-bottom p {
-                        font-size: 1.1rem;
-                        margin-bottom: 1rem;
-                        color: #E0E0E0;
-                        /* Cor de texto mais clara */
-                        max-width: 700px;
-                        /* Limita a largura do texto */
-                    }
-
-                    .slide-details {
-                        font-weight: 500;
-                        margin-bottom: 1.5rem;
-                        color: #E0E0E0;
-                    }
-
-                    /* 4. Botão do Carrossel */
-                    .btn-primary-carousel {
-                        display: inline-block;
-                        padding: 0.75rem 1.5rem;
-                        background-color: var(--accent-color);
-                        color: #ffffff;
-                        border: 2px solid var(--accent-color);
-                        border-radius: 5px;
-                        text-decoration: none;
-                        font-weight: 600;
-                        transition: all 0.2s ease;
-                    }
-
-                    .btn-primary-carousel:hover {
-                        background-color: var(--accent-hover);
-                        border-color: var(--accent-hover);
-                        text-decoration: none;
-                    }
-
-                    /* 5. Setas de Navegação (permanecem iguais) */
-                    .carousel-button {
-                        position: absolute;
-                        top: 50%;
-                        transform: translateY(-50%);
-                        z-index: 3;
-                        background-color: rgba(0, 0, 0, 0.3);
-                        border: 1px solid rgba(255, 255, 255, 0.2);
-                        color: white;
-                        font-size: 2rem;
-                        border-radius: 50%;
-                        width: 50px;
-                        height: 50px;
-                        cursor: pointer;
-                        transition: background-color 0.2s ease;
-                    }
-
-                    .carousel-button:hover {
-                        background-color: rgba(0, 0, 0, 0.5);
-                    }
-
-                    .carousel-button.prev {
-                        left: 20px;
-                    }
-
-                    .carousel-button.next {
-                        right: 20px;
-                    }
-                </style>
-
-                <script>
-                    // JS para os botões de seta
-                    document.addEventListener('DOMContentLoaded', () => {
-                        const track = document.getElementById('carousel-track');
-                        const prevBtn = document.getElementById('carousel-prev');
-                        const nextBtn = document.getElementById('carousel-next');
-
-                        if (track && prevBtn && nextBtn) {
-                            const slideWidth = track.querySelector('.carousel-slide').clientWidth;
-
-                            prevBtn.addEventListener('click', () => {
-                                track.scrollBy({ left: -slideWidth, behavior: 'smooth' });
-                            });
-                            nextBtn.addEventListener('click', () => {
-                                track.scrollBy({ left: slideWidth, behavior: 'smooth' });
-                            });
-                        }
-                    });
-                </script>
-
-
-
-
-                <%- include('partials/footer') %>
+            <%- include('partials/footer') %>

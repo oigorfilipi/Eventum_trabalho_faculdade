@@ -18,16 +18,6 @@ db.serialize(() => {
   `);
 
   db.run(`
-    ALTER TABLE users
-    ADD COLUMN role TEXT NOT NULL DEFAULT 'user'
-  `, (err) => {
-    // Ignora o erro se a coluna já existir (é o que queremos)
-    if (err && !err.message.includes('duplicate column name')) {
-      console.error('Erro ao adicionar coluna role:', err.message);
-    }
-  });
-
-  db.run(`
     CREATE TABLE IF NOT EXISTS events (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       title TEXT NOT NULL,
@@ -122,13 +112,6 @@ db.serialize(() => {
     if (err && !err.message.includes('duplicate column name')) {
       console.error('Erro ao adicionar coluna food_details:', err.message);
     }
-  });
-
-  db.run(`
-    ALTER TABLE events
-    ADD COLUMN food_details TEXT
-  `, (err) => {
-    // ...
   });
 
   // --- NOVA COLUNA DA CAPA ---

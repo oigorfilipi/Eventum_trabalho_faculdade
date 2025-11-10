@@ -36,34 +36,52 @@
                                         <%# --- O BOTÃO INTELIGENTE --- %>
                                             <div class="event-detail-card action-card">
                                                 <% if (!user) { %>
-                                                    <a href="/site/login" class="btn">Login para se inscrever</a>
+                                                    <a href="/site/login" class="btn btn-secondary">Login para se
+                                                        inscrever</a>
 
                                                     <% } else if (user.role==='admin' ) { %>
-                                                        <a href="/site/eventos/<%= event.id %>/editar"
-                                                            class="btn btn-success">Editar como Admin</a>
 
-                                                        <% } else if (isSubscribed) { %>
-                                                            <span class="btn-disabled">✓ Inscrito</span>
+                                                        <%# --- CONTAGEM ADICIONADA --- %>
+                                                            <div class="admin-event-stats">
+                                                                <strong>Inscritos:</strong>
+                                                                <span>
+                                                                    <%= currentSubCount %> / <%= event.qtdSubs || 'N/A'
+                                                                            %>
+                                                                </span>
+                                                            </div>
 
-                                                            <% } else if (event.pricing &&
-                                                                event.pricing.isFree==='false' ) { %>
-                                                                <%# Evento PAGO leva para a simulação %>
-                                                                    <a href="/site/pagamento/<%= event.id %>"
-                                                                        class="btn">Inscrever-se (Pagamento)</a>
+                                                            <a href="/site/eventos/<%= event.id %>/editar"
+                                                                class="btn btn-success">Editar como Admin</a>
 
-                                                                    <% } else { %>
-                                                                        <%# Evento GRATUITO usa o formulário de
-                                                                            inscrição normal %>
-                                                                            <form action="/subscribe" method="POST">
-                                                                                <input type="hidden" name="eventId"
-                                                                                    value="<%= event.id %>">
-                                                                                <input type="hidden" name="userId"
-                                                                                    value="<%= user.id %>">
-                                                                                <button type="submit"
-                                                                                    class="btn">Inscrever-se
-                                                                                    (Gratuito)</button>
-                                                                            </form>
-                                                                            <% } %>
+                                                            <a href="/site/eventos/<%= event.id %>/excluir"
+                                                                class="btn btn-danger" style="margin-top: 1rem;"
+                                                                onclick="return confirm('Tem certeza que deseja excluir este evento? Esta ação não pode ser desfeita.');">
+                                                                Excluir Evento
+                                                            </a>
+
+                                                            <% } else if (isSubscribed) { %>
+                                                                <span class="btn-disabled">✓ Inscrito</span>
+
+                                                                <% } else if (event.pricing &&
+                                                                    event.pricing.isFree==='false' ) { %>
+                                                                    <%# Evento PAGO leva para a simulação %>
+                                                                        <a href="/site/pagamento/<%= event.id %>"
+                                                                            class="btn btn-secondary">Inscrever-se
+                                                                            (Pagamento)</a>
+
+                                                                        <% } else { %>
+                                                                            <%# Evento GRATUITO usa o formulário de
+                                                                                inscrição normal %>
+                                                                                <form action="/subscribe" method="POST">
+                                                                                    <input type="hidden" name="eventId"
+                                                                                        value="<%= event.id %>">
+                                                                                    <input type="hidden" name="userId"
+                                                                                        value="<%= user.id %>">
+                                                                                    <button type="submit"
+                                                                                        class="btn btn-secondary">Inscrever-se
+                                                                                        (Gratuito)</button>
+                                                                                </form>
+                                                                                <% } %>
                                             </div>
 
                                             <%# --- Detalhes de Horário e Preço --- %>
@@ -194,61 +212,6 @@
                                     </div>
         </div>
 
-        <%# CSS para esta página %>
-            <style>
-                .event-detail-card {
-                    background-color: var(--card-color);
-                    border: 1px solid var(--border-color);
-                    border-radius: 8px;
-                    padding: 1.5rem 2rem;
-                    margin-bottom: 1.5rem;
-                }
 
-                .event-detail-card h2 {
-                    margin-bottom: 1rem;
-                }
 
-                .detail-item {
-                    color: var(--text-primary);
-                    margin-bottom: 0.5rem;
-                    font-size: 1.1em;
-                }
-
-                .action-card {
-                    background-color: var(--bg-color);
-                }
-
-                .action-card .btn,
-                .action-card .btn-disabled {
-                    width: 100%;
-                    text-align: center;
-                    font-size: 1.2rem;
-                }
-
-                .btn-disabled {
-                    display: block;
-                    background-color: var(--success-color);
-                    color: #ffffff;
-                    padding: 0.75rem 1.25rem;
-                    border-radius: 5px;
-                    font-weight: 600;
-                    opacity: 0.7;
-                    cursor: not-allowed;
-                }
-
-                .attraction-list {
-                    list-style-type: none;
-                    padding-left: 10px;
-                }
-
-                .attraction-list li {
-                    padding: 8px;
-                    border-bottom: 1px solid var(--border-color);
-                }
-
-                .attraction-list li:last-child {
-                    border-bottom: none;
-                }
-            </style>
-
-            <%- include('partials/footer') %>
+        <%- include('partials/footer') %>

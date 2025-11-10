@@ -40,18 +40,6 @@ router.post('/', (req, res) => {
   // Tenta inserir no banco
   const stmt = db.prepare('INSERT INTO subscriptions (event_id, user_id) VALUES (?, ?)');
   stmt.run(eventId, userId, function (err) {
-    if (err) {
-      if (err.message.includes('UNIQUE')) {
-        // Usuário tentou se inscrever duas vezes
-        req.session.message = { type: 'error', text: 'Você já está inscrito neste evento.' };
-      } else {
-        // Erro genérico do banco
-        req.session.message = { type: 'error', text: 'Erro interno ao processar inscrição.' };
-      }
-    } else {
-      // SUCESSO!
-      req.session.message = { type: 'success', text: 'Inscrição realizada com sucesso!' };
-    }
 
     stmt.finalize();
 
@@ -63,21 +51,21 @@ router.post('/', (req, res) => {
         req.session.message = { type: 'error', text: 'Erro interno ao processar inscrição.' };
       }
       // Se deu erro, volta para a página anterior (ex: a de pagamento)
-      return res.redirect(redirectUrl); 
-    } 
-    
+      return res.redirect(redirectUrl);
+    }
+
     // 2. LÓGICA DE SUCESSO
-    
+
     // Constrói a URL da página de DETALHES do evento
     const detailsPageUrl = `/site/eventos/${eventId}`;
 
     // Mensagem de sucesso personalizada (como você pediu)
     // Se o usuário veio da página de pagamento, mostramos "Pagamento efetuado"
     if (redirectUrl.includes('/pagamento/')) {
-        req.session.message = { type: 'success', text: 'Pagamento efetuado! Inscrição confirmada.' };
+      req.session.message = { type: 'success', text: 'Pagamento efetuado! Inscrição confirmada.' };
     } else {
-        // Se veio da inscrição gratuita
-        req.session.message = { type: 'success', text: 'Inscrição realizada com sucesso!' };
+      // Se veio da inscrição gratuita
+      req.session.message = { type: 'success', text: 'Inscrição realizada com sucesso!' };
     }
 
     // Em qualquer caso (sucesso ou erro), redireciona de volta
