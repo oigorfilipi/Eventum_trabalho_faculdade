@@ -1,0 +1,204 @@
+<%# 
+  Arquivo: src/views/home.ejs
+  A NOVA PÁGINA INICIAL COM O CARROSSEL
+%>
+
+<%- include('partials/header', { title: 'Home' }) %>
+
+<%# O container do carrossel substitui o <header class="hero"> %>
+<div class="carousel-container">
+    
+    <%# Esta é a "janela" do carrossel %>
+    <div class="carousel-track" id="carousel-track">
+
+        <%# 
+          Verifica se temos eventos. Se não tiver, mostra um slide padrão.
+        %>
+        <% if (carouselEvents && carouselEvents.length > 0) { %>
+            
+            <%# Faz um loop nos 3 eventos mais recentes %>
+            <% carouselEvents.forEach(event => { %>
+                <div class="carousel-slide">
+                    
+                    <%# Imagem de fundo %>
+                    <div class="slide-image">
+                        <img src="<%= event.cover_image_url %>" alt="">
+                    </div>
+                    <%# Overlay para escurecer a imagem %>
+                    <div class="slide-overlay"></div>
+
+                    <%# Conteúdo do slide %>
+                    <div class="slide-content">
+                        <h1><%= event.title %></h1>
+                        <p><%= event.description.substring(0, 150) %>...</p>
+                        
+                        <% if (event.schedule) { %>
+                            <div class="slide-details">
+                                🗓️ <%= new Date(event.schedule.date_start).toLocaleDateString('pt-BR', {timeZone: 'UTC'}) %>
+                                <% if (event.schedule.time_start) { %>
+                                    às <%= event.schedule.time_start %>
+                                <% } %>
+                            </div>
+                        <% } %>
+
+                        <a href="/site/eventos/<%= event.id %>" class="btn-primary-carousel">Saiba Mais</a>
+                    </div>
+                </div>
+            <% }) %>
+
+        <% } else { %>
+            <%# Slide padrão se não houver eventos com imagem %>
+            <div class="carousel-slide">
+                <div class="slide-image">
+                    <img src="https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?auto=format&fit=crop&q=80&w=1470" alt="">
+                </div>
+                <div class="slide-overlay"></div>
+                <div class="slide-content">
+                    <h1>Bem-vindo ao Eventum</h1>
+                    <p>Nenhum evento recente com imagem de capa encontrado. Crie um novo evento para vê-lo aqui!</p>
+                    <% if (user && user.role === 'admin') { %>
+                        <a href="/site/eventos/novo" class="btn-primary-carousel">Criar Evento</a>
+                    <% } %>
+                </div>
+            </div>
+        <% } %>
+
+    </div>
+
+    <%# Botões de Navegação (só aparecem se tiver mais de 1 slide) %>
+    <% if (carouselEvents && carouselEvents.length > 1) { %>
+        <button class="carousel-button prev" id="carousel-prev">❮</button>
+        <button class="carousel-button next" id="carousel-next">❯</button>
+    <% } %>
+
+</div>
+
+
+<%# CSS e JS SÓ PARA O CARROSSEL (colamos aqui para não poluir os arquivos globais) %>
+<style>
+    .carousel-container {
+        width: 100%;
+        height: 500px; /* Altura do carrossel */
+        position: relative;
+        overflow: hidden; /* Esconde slides que saem da tela */
+        background-color: var(--card-color);
+    }
+    .carousel-track {
+        display: flex;
+        height: 100%;
+        /* 1. O Scroll Snap Mágico */
+        overflow-x: auto;
+        scroll-snap-type: x mandatory; /* Eixo X, obrigatório */
+        scroll-behavior: smooth; /* Rolagem suave */
+        -webkit-overflow-scrolling: touch; /* Suaviza no iOS */
+        scrollbar-width: none; /* Esconde scrollbar (Firefox) */
+    }
+    .carousel-track::-webkit-scrollbar {
+        display: none; /* Esconde scrollbar (Chrome, Safari) */
+    }
+    .carousel-slide {
+        flex: 0 0 100%; /* Cada slide ocupa 100% da largura */
+        width: 100%;
+        height: 100%;
+        position: relative;
+        scroll-snap-align: start; /* Alinha o início do slide */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+    }
+    .slide-image {
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 100%;
+    }
+    .slide-image img {
+        width: 100%; height: 100%;
+        object-fit: cover; /* Imagem cobre o slide */
+    }
+    .slide-overlay {
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background-color: rgba(0, 0, 0, 0.6); /* Overlay escuro */
+        z-index: 1;
+    }
+    .slide-content {
+        position: relative;
+        z-index: 2; /* Conteúdo fica na frente do overlay */
+        color: #ffffff;
+        max-width: 700px;
+        padding: 2rem;
+    }
+    .slide-content h1 {
+        color: #ffffff;
+        font-size: 2.5rem;
+    }
+    .slide-content p {
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+    }
+    .slide-details {
+        font-weight: 500;
+        margin-bottom: 1.5rem;
+        opacity: 0.9;
+    }
+    /* Botão do Carrossel */
+    .btn-primary-carousel {
+        display: inline-block;
+        padding: 0.75rem 1.5rem;
+        background-color: var(--accent-color);
+        color: #ffffff;
+        border: 2px solid var(--accent-color);
+        border-radius: 5px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.2s ease;
+    }
+    .btn-primary-carousel:hover {
+        background-color: transparent;
+        border-color: #ffffff;
+        text-decoration: none;
+    }
+    /* Botões de Navegação (Setas) */
+    .carousel-button {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 3;
+        background-color: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        color: white;
+        font-size: 2rem;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+    }
+    .carousel-button:hover {
+        background-color: rgba(0, 0, 0, 0.3);
+    }
+    .carousel-button.prev { left: 20px; }
+    .carousel-button.next { right: 20px; }
+</style>
+
+<script>
+    // JS para os botões de seta
+    document.addEventListener('DOMContentLoaded', () => {
+        const track = document.getElementById('carousel-track');
+        const prevBtn = document.getElementById('carousel-prev');
+        const nextBtn = document.getElementById('carousel-next');
+
+        if (track && prevBtn && nextBtn) {
+            const slideWidth = track.querySelector('.carousel-slide').clientWidth;
+
+            prevBtn.addEventListener('click', () => {
+                track.scrollBy({ left: -slideWidth, behavior: 'smooth' });
+            });
+            nextBtn.addEventListener('click', () => {
+                track.scrollBy({ left: slideWidth, behavior: 'smooth' });
+            });
+        }
+    });
+</script>
+
+<%- include('partials/footer') %>

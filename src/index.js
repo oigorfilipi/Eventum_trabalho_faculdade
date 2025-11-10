@@ -169,7 +169,7 @@ app.use('/subscribe', subscribeRoutes);
 // Health
 app.get('/', (req, res) => res.json({ status: 'ok', service: 'eventum-api' }));
 
-app.get('/site/eventos', (req, res) => {
+app.get('/site/eventos/todos', (req, res) => {
   const sql = 'SELECT * FROM events ORDER BY date IS NULL, date ASC, created_at DESC';
 
   db.all(sql, [], (err, rows) => {
@@ -178,9 +178,9 @@ app.get('/site/eventos', (req, res) => {
       return res.status(500).send("Erro ao carregar a página de eventos.");
     }
 
+    // Processa os JSONs (como já fazia)
     const events = rows.map(event => {
       try {
-        // Tenta "parsear" os detalhes de cada evento
         if (event.schedule_details) event.schedule = JSON.parse(event.schedule_details);
         if (event.pricing_details) event.pricing = JSON.parse(event.pricing_details);
       } catch (e) {
@@ -189,7 +189,41 @@ app.get('/site/eventos', (req, res) => {
       return event;
     });
 
-    res.render('events', { events: events }); // Envia os eventos processados
+    // Renderiza a PÁGINA ANTIGA (events.ejs) com todos os eventos
+    res.render('events', { events: events });
+  });
+});
+
+app.get('/site/eventos', (req, res) => {
+  
+  // CORREÇÃO: Nova consulta SQL
+  // Busca os 3 mais recentes (created_at DESC) que TENHAM uma imagem de capa
+  const sql = `
+    SELECT * FROM events 
+    WHERE cover_image_url IS NOT NULL 
+    AND cover_image_url != ''
+    ORDER BY created_at DESC 
+    LIMIT 3
+  `;
+
+  db.all(sql, [], (err, rows) => {
+    if (err) {
+      console.error('Erro ao buscar eventos para o carrossel:', err);
+      return res.status(500).send("Erro ao carregar a home page.");
+    }
+
+    // Processa os JSONs (necessário para os detalhes no slide)
+    const carouselEvents = rows.map(event => {
+      try {
+        if (event.schedule_details) event.schedule = JSON.parse(event.schedule_details);
+      } catch (e) {
+        console.error(`Erro ao parsear JSON do evento ${event.id}:`, e);
+      }
+      return event;
+    });
+
+    // CORREÇÃO: Renderiza a NOVA PÁGINA (home.ejs)
+    res.render('home', { carouselEvents: carouselEvents }); 
   });
 });
 
