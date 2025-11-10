@@ -1,0 +1,47 @@
+<%# 
+  Arquivo: src/views/mensagens-admin.ejs
+  Nova página para o Admin ler as mensagens de contato.
+%>
+
+<%- include('partials/header', { title: 'Mensagens de Contato' }) %>
+
+<div class="container">
+    <h1>Mensagens de Contato</h1>
+
+    <% if (messages && messages.length > 0) { %>
+        <div class="message-list">
+            <% messages.forEach(msg => { %>
+                <%# Vamos reutilizar o estilo .form-container para cada mensagem %>
+                <div class="form-container" style="margin-top: 1.5rem;">
+                    
+                    <div class="message-header">
+                        <strong>De:</strong> <%= msg.name %> (<a href="mailto:<%= msg.email %>"><%= msg.email %></a>)
+                    </div>
+                    
+                    <% if (msg.phone) { %>
+                        <div class="message-subheader">
+                            <strong>Telefone:</strong> <%= msg.phone %>
+                        </div>
+                    <% } %>
+                    
+                    <hr style="margin: 1rem 0; border: 1px solid var(--border-color);">
+                    
+                    <div class="message-body">
+                        <p><%= msg.message %></p>
+                    </div>
+                    
+                    <div class="message-footer">
+                        Recebido em: <%= new Date(msg.received_at).toLocaleString('pt-BR') %>
+                    </div>
+
+                </div>
+            <% }) %>
+        </div>
+    <% } else { %>
+        <div class="form-container">
+            <p>Nenhuma mensagem de contato recebida ainda.</p>
+        </div>
+    <% } %>
+</div>
+
+<%- include('partials/footer') %>

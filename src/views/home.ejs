@@ -2,207 +2,229 @@
 
     <%- include('partials/header', { title: 'Home' }) %>
 
-        <%# O container do carrossel substitui o <header class="hero"> %>
-            <div class="carousel-container">
+        <%# --- MENSAGEM DE FEEDBACK ADICIONADA --- %>
+            <div class="container" style="margin-bottom: -2rem;">
+                <% if (message) { %>
+                    <div class="flash-message <%= message.type %>">
+                        <%= message.text %>
+                    </div>
+                    <% } %>
+            </div>
+            <%# --- FIM DA MENSAGEM --- %>
 
-                <%# Esta é a "janela" do carrossel %>
-                    <div class="carousel-track" id="carousel-track">
+                <%# O container do carrossel substitui o <header class="hero"> %>
+                    <div class="carousel-container">
 
-                        <%# Verifica se temos eventos. Se não tiver, mostra um slide padrão. %>
-                            <% if (carouselEvents && carouselEvents.length> 0) { %>
+                        <%# Esta é a "janela" do carrossel %>
+                            <div class="carousel-track" id="carousel-track">
 
-                                <%# Faz um loop nos 3 eventos mais recentes %>
-                                    <% carouselEvents.forEach(event=> { %>
-                                        <div class="carousel-slide">
+                                <%# Verifica se temos eventos. Se não tiver, mostra um slide padrão. %>
+                                    <% if (carouselEvents && carouselEvents.length> 0) { %>
 
-                                            <%# 1. A Imagem (fundo tela cheia) %>
-                                                <div class="slide-image">
-                                                    <img src="<%= event.cover_image_url %>"
-                                                        alt="Capa do evento: <%= event.title %>">
-                                                </div>
+                                        <%# Faz um loop nos 3 eventos mais recentes %>
+                                            <% carouselEvents.forEach(event=> { %>
+                                                <div class="carousel-slide">
 
-                                                <%# 2. O Overlay (que agora será um gradiente) %>
-                                                    <div class="slide-overlay-gradient"></div>
-
-                                                    <%# 3. O Conteúdo (que ficará na base) %>
-                                                        <div class="slide-content-bottom">
-                                                            <h1>
-                                                                <%= event.title %>
-                                                            </h1>
-
-                                                            <%# Limita a descrição %>
-                                                                <p>
-                                                                    <%= event.description.substring(0, 120) %>...
-                                                                </p>
-
-                                                                <% if (event.schedule && event.schedule.date_start) { %>
-                                                                    <div class="slide-details">
-                                                                        🗓️ <%= new
-                                                                            Date(event.schedule.date_start).toLocaleDateString('pt-BR',
-                                                                            {timeZone: 'UTC' }) %>
-                                                                            <% if (event.schedule.time_start) { %>
-                                                                                às <%= event.schedule.time_start %>
-                                                                                    <% } %>
-                                                                    </div>
-                                                                    <% } else { %>
-                                                                        <div class="slide-details">
-                                                                            🗓️ Data a definir
-                                                                        </div>
-                                                                        <% } %>
-
-                                                                            <a href="/site/eventos/<%= event.id %>"
-                                                                                class="btn-primary-carousel">Saiba
-                                                                                Mais</a>
-                                                        </div>
-
-                                        </div>
-                                        <% }) %>
-                                            <% } else { %>
-
-                                                <%# Slide padrão se não houver eventos com imagem %>
-                                                    <div class="carousel-slide">
-
+                                                    <%# 1. A Imagem (fundo tela cheia) %>
                                                         <div class="slide-image">
-
-                                                            <img src="https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?auto=format&fit=crop&q=80&w=1470"
-                                                                alt="">
-
+                                                            <img src="<%= event.cover_image_url %>"
+                                                                alt="Capa do evento: <%= event.title %>">
                                                         </div>
 
-                                                        <%# CORREÇÃO: Usando a classe de gradiente %>
+                                                        <%# 2. O Overlay (que agora será um gradiente) %>
                                                             <div class="slide-overlay-gradient"></div>
 
-                                                            <%# CORREÇÃO: Usando a classe de conteúdo na base %>
+                                                            <%# 3. O Conteúdo (que ficará na base) %>
                                                                 <div class="slide-content-bottom">
+                                                                    <h1>
+                                                                        <%= event.title %>
+                                                                    </h1>
 
-                                                                    <h1>Bem-vindo ao Eventum</h1>
-                                                                    <p>Nenhum evento recente com imagem de capa
-                                                                        encontrado.
-                                                                        Crie um novo evento para vê-lo aqui!</p>
+                                                                    <%# Limita a descrição %>
+                                                                        <p>
+                                                                            <%= event.description.substring(0, 120) %>
+                                                                                ...
+                                                                        </p>
 
-                                                                    <% if (user && user.role==='admin' ) { %>
+                                                                        <% if (event.schedule &&
+                                                                            event.schedule.date_start) { %>
+                                                                            <div class="slide-details">
+                                                                                🗓️ <%= new
+                                                                                    Date(event.schedule.date_start).toLocaleDateString('pt-BR',
+                                                                                    {timeZone: 'UTC' }) %>
+                                                                                    <% if (event.schedule.time_start) {
+                                                                                        %>
+                                                                                        às <%= event.schedule.time_start
+                                                                                            %>
+                                                                                            <% } %>
+                                                                            </div>
+                                                                            <% } else { %>
+                                                                                <div class="slide-details">
+                                                                                    🗓️ Data a definir
+                                                                                </div>
+                                                                                <% } %>
 
-                                                                        <a href="/site/eventos/novo"
-                                                                            class="btn-primary-carousel">Criar
-                                                                            Evento</a>
-
-                                                                        <% } %>
+                                                                                    <a href="/site/eventos/<%= event.id %>"
+                                                                                        class="btn-primary-carousel">Saiba
+                                                                                        Mais</a>
                                                                 </div>
 
-                                                    </div>
-                                                    <% } %>
+                                                </div>
+                                                <% }) %>
+                                                    <% } else { %>
 
+                                                        <%# Slide padrão se não houver eventos com imagem %>
+                                                            <div class="carousel-slide">
+
+                                                                <div class="slide-image">
+
+                                                                    <img src="https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?auto=format&fit=crop&q=80&w=1470"
+                                                                        alt="">
+
+                                                                </div>
+
+                                                                <%# CORREÇÃO: Usando a classe de gradiente %>
+                                                                    <div class="slide-overlay-gradient"></div>
+
+                                                                    <%# CORREÇÃO: Usando a classe de conteúdo na base %>
+                                                                        <div class="slide-content-bottom">
+
+                                                                            <h1>Bem-vindo ao Eventum</h1>
+                                                                            <p>Nenhum evento recente com imagem de capa
+                                                                                encontrado.
+                                                                                Crie um novo evento para vê-lo aqui!</p>
+
+                                                                            <% if (user && user.role==='admin' ) { %>
+
+                                                                                <a href="/site/eventos/novo"
+                                                                                    class="btn-primary-carousel">Criar
+                                                                                    Evento</a>
+
+                                                                                <% } %>
+                                                                        </div>
+
+                                                            </div>
+                                                            <% } %>
+
+                            </div>
+
+                            <%# Botões de Navegação (só aparecem se tiver mais de 1 slide) %>
+                                <% if (carouselEvents && carouselEvents.length> 1) { %>
+                                    <button class="carousel-button prev" id="carousel-prev">❮</button>
+                                    <button class="carousel-button next" id="carousel-next">❯</button>
+                                    <% } %>
                     </div>
 
-                    <%# Botões de Navegação (só aparecem se tiver mais de 1 slide) %>
-                        <% if (carouselEvents && carouselEvents.length> 1) { %>
-                            <button class="carousel-button prev" id="carousel-prev">❮</button>
-                            <button class="carousel-button next" id="carousel-next">❯</button>
-                            <% } %>
-            </div>
+                    <div class="container">
+                        <div class="about-section">
 
-            <div class="container">
-                <div class="about-section">
+                            <div class="about-image">
+                                <img src="/img/Logo-Eventum.png" alt="Logo Eventum">
+                            </div>
 
-                    <div class="about-image">
-                        <img src="/img/Logo-Eventum.png" alt="Logo Eventum">
+                            <div class="about-text">
+                                <h2>O que é a Eventum?</h2>
+                                <p>
+                                    A Eventum é uma plataforma moderna desenhada para simplificar o gerenciamento de
+                                    eventos
+                                    acadêmicos e corporativos.
+                                    Nossa missão é eliminar processos manuais, facilitar inscrições e automatizar a
+                                    organização.
+                                </p>
+                                <p>
+                                    Seja você um organizador de workshops, palestras ou conferências, nós fornecemos as
+                                    ferramentas para
+                                    você focar no que realmente importa: criar uma experiência incrível.
+                                </p>
+                            </div>
+
+                        </div>
                     </div>
 
-                    <div class="about-text">
-                        <h2>O que é a Eventum?</h2>
-                        <p>
-                            A Eventum é uma plataforma moderna desenhada para simplificar o gerenciamento de eventos
-                            acadêmicos e corporativos.
-                            Nossa missão é eliminar processos manuais, facilitar inscrições e automatizar a organização.
-                        </p>
-                        <p>
-                            Seja você um organizador de workshops, palestras ou conferências, nós fornecemos as
-                            ferramentas para
-                            você focar no que realmente importa: criar uma experiência incrível.
-                        </p>
+                    <div class="container">
+                        <div class="faq-section">
+                            <h2>Perguntas Frequentes (FAQ)</h2>
+
+                            <details class="faq-item">
+                                <summary>Como faço para me inscrever em um evento?</summary>
+                                <div class="faq-answer">
+                                    <p>É simples! Navegue até a página "Eventos", encontre o evento do seu interesse,
+                                        clique
+                                        nele para ver os detalhes e, em seguida, clique no botão "Inscrever-se". Se você
+                                        não
+                                        estiver logado, precisará fazer login ou se cadastrar.</p>
+                                </div>
+                            </details>
+
+                            <details class="faq-item">
+                                <summary>O evento é pago? Como funciona?</summary>
+                                <div class="faq-answer">
+                                    <p>Alguns eventos são gratuitos e outros são pagos. Essa informação está visível na
+                                        página
+                                        de detalhes do evento. Para eventos pagos, você será redirecionado para uma
+                                        página de
+                                        pagamento (atualmente simulada). Após a confirmação, sua inscrição é validada.
+                                    </p>
+                                </div>
+                            </details>
+
+                            <details class="faq-item">
+                                <summary>Como posso ver os eventos em que me inscrevi?</summary>
+                                <div class="faq-answer">
+                                    <p>Todas as suas inscrições estão disponíveis na sua página "Minha Conta". Lá você
+                                        pode ver
+                                        uma lista de todos os eventos em que está participando.</p>
+                                </div>
+                            </details>
+
+                        </div>
+                    </div>
+                    <div class="container">
+                        <div class="form-container" id="contact-form">
+                            <h2 style="text-align: center;">Entre em Contato</h2>
+
+                            <form action="/site/contato" method="POST">
+                                <div class="form-group">
+                                    <label for="contact-name">Seu Nome:</label>
+                                    <input type="text" id="contact-name" name="name" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="contact-email">Seu Email:</label>
+                                    <input type="email" id="contact-email" name="email" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="contact-phone">Seu Telefone (Opcional):</label>
+                                    <input type="tel" id="contact-phone" name="phone" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="contact-message">Sua Mensagem:</label>
+                                    <textarea id="contact-message" name="message" class="form-control" rows="5"
+                                        required></textarea>
+                                </div>
+                                <%# CORREÇÃO: Removido o 'disabled' %>
+                                    <button type="submit" class="btn btn-secondary">Enviar Mensagem</button>
+                            </form>
+                        </div>
                     </div>
 
-                </div>
-            </div>
+                    <script>
+                        // JS para os botões de seta
+                        document.addEventListener('DOMContentLoaded', () => {
+                            const track = document.getElementById('carousel-track');
+                            const prevBtn = document.getElementById('carousel-prev');
+                            const nextBtn = document.getElementById('carousel-next');
 
-            <div class="container">
-                <div class="faq-section">
-                    <h2>Perguntas Frequentes (FAQ)</h2>
+                            if (track && prevBtn && nextBtn) {
+                                const slideWidth = track.querySelector('.carousel-slide').clientWidth;
 
-                    <details class="faq-item">
-                        <summary>Como faço para me inscrever em um evento?</summary>
-                        <div class="faq-answer">
-                            <p>É simples! Navegue até a página "Eventos", encontre o evento do seu interesse, clique
-                                nele para ver os detalhes e, em seguida, clique no botão "Inscrever-se". Se você não
-                                estiver logado, precisará fazer login ou se cadastrar.</p>
-                        </div>
-                    </details>
-
-                    <details class="faq-item">
-                        <summary>O evento é pago? Como funciona?</summary>
-                        <div class="faq-answer">
-                            <p>Alguns eventos são gratuitos e outros são pagos. Essa informação está visível na página
-                                de detalhes do evento. Para eventos pagos, você será redirecionado para uma página de
-                                pagamento (atualmente simulada). Após a confirmação, sua inscrição é validada.</p>
-                        </div>
-                    </details>
-
-                    <details class="faq-item">
-                        <summary>Como posso ver os eventos em que me inscrevi?</summary>
-                        <div class="faq-answer">
-                            <p>Todas as suas inscrições estão disponíveis na sua página "Minha Conta". Lá você pode ver
-                                uma lista de todos os eventos em que está participando.</p>
-                        </div>
-                    </details>
-
-                </div>
-            </div>
-            <div class="container">
-                <div class="form-container" id="contact-form">
-                    <h2 style="text-align: center;">Entre em Contato</h2>
-
-                    <form action="/site/contato" method="POST">
-                        <div class="form-group">
-                            <label for="contact-name">Seu Nome:</label>
-                            <input type="text" id="contact-name" name="name" class="form-control" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="contact-email">Seu Email:</label>
-                            <input type="email" id="contact-email" name="email" class="form-control" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="contact-phone">Seu Telefone (Opcional):</label>
-                            <input type="tel" id="contact-phone" name="phone" class="form-control">
-                        </div>
-                        <div class="form-group">
-                            <label for="contact-message">Sua Mensagem:</label>
-                            <textarea id="contact-message" name="message" class="form-control" rows="5"
-                                required></textarea>
-                        </div>
-                        <%# CORREÇÃO: Removido o 'disabled' %>
-                            <button type="submit" class="btn btn-secondary">Enviar Mensagem</button>
-                    </form>
-                </div>
-            </div>
-
-            <script>
-                // JS para os botões de seta
-                document.addEventListener('DOMContentLoaded', () => {
-                    const track = document.getElementById('carousel-track');
-                    const prevBtn = document.getElementById('carousel-prev');
-                    const nextBtn = document.getElementById('carousel-next');
-
-                    if (track && prevBtn && nextBtn) {
-                        const slideWidth = track.querySelector('.carousel-slide').clientWidth;
-
-                        prevBtn.addEventListener('click', () => {
-                            track.scrollBy({ left: -slideWidth, behavior: 'smooth' });
+                                prevBtn.addEventListener('click', () => {
+                                    track.scrollBy({ left: -slideWidth, behavior: 'smooth' });
+                                });
+                                nextBtn.addEventListener('click', () => {
+                                    track.scrollBy({ left: slideWidth, behavior: 'smooth' });
+                                });
+                            }
                         });
-                        nextBtn.addEventListener('click', () => {
-                            track.scrollBy({ left: slideWidth, behavior: 'smooth' });
-                        });
-                    }
-                });
-            </script>
+                    </script>
 
-            <%- include('partials/footer') %>
+                    <%- include('partials/footer') %>

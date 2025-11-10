@@ -294,6 +294,23 @@ app.get('/site/relatorio-admin', isAdmin, (req, res) => {
   });
 });
 
+// --- NOVA ROTA PARA VER MENSAGENS DE CONTATO ---
+app.get('/site/admin/mensagens', isAdmin, (req, res) => {
+
+  // 1. Busca todas as mensagens, da mais nova para a mais antiga
+  const sql = "SELECT * FROM contact_messages ORDER BY received_at DESC";
+
+  db.all(sql, [], (err, messages) => {
+    if (err) {
+      console.error('Erro ao buscar mensagens:', err);
+      return res.status(500).send('Erro ao carregar mensagens.');
+    }
+
+    // 2. Renderiza a nova página de mensagens
+    res.render('mensagens-admin', { messages: messages });
+  });
+});
+
 
 // Rotas
 app.use('/users', userRoutes);
