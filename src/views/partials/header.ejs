@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        <%= title %>
+    </title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .main-content {
+            flex: 1;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background-color: var(--card-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .nav-left {
+            flex: 1;
+        }
+
+        .nav-left a {
+            color: var(--text-primary);
+            text-decoration: none;
+            margin-right: 1.5rem;
+            font-weight: 500;
+        }
+
+        .nav-center {
+            flex: 1;
+            text-align: center;
+            font-size: 1.75rem;
+            font-weight: bold;
+            color: var(--text-primary);
+        }
+
+        .nav-right {
+            flex: 1;
+            text-align: right;
+        }
+
+        .nav-right a,
+        .nav-right span {
+            color: var(--text-primary);
+            text-decoration: none;
+            margin-left: 1rem;
+        }
+
+        .nav-right a.logout-btn {
+            color: var(--accent-color);
+        }
+
+        .hero {
+            position: relative;
+            height: 300px;
+            background-color: #333;
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            text-align: center;
+        }
+
+        .hero-text {
+            font-size: 2.5rem;
+            font-weight: bold;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 1rem 2rem;
+            border-radius: 8px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            background-color: var(--card-color);
+            border-top: 1px solid var(--border-color);
+            margin-top: 2rem;
+            color: var(--text-secondary);
+        }
+
+        /* Estilos de formulário (mova para styles.css se quiser) */
+        form {
+            max-width: 500px;
+            margin: 2rem auto;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            background-color: var(--card-color);
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="/site/eventos">Eventos</a>
+
+            <% if (user) { %>
+                <a href="/site/minha-conta">Olá, <%= user.name %>!</a>
+                <% } %>
+        </div>
+
+        <div class="nav-center">
+            Eventum
+        </div>
+
+        <div class="nav-right">
+            <% if (user) { %>
+                <a href="/site/logout" class="logout-btn">Logout</a>
+                <% } else { %>
+                    <a href="/site/login">Login</a>
+                    <a href="/site/register" class="btn">Cadastre-se</a>
+                    <% } %>
+        </div>
+    </nav>
+
+    <% if (!title.includes('Login') && !title.includes('Cadastro')) { %>
+        <header class="hero">
+            <div class="hero-text">
+                Facilitando sua vida Eventual
+            </div>
+        </header>
+        <% } %>
+
+            <main class="main-content">

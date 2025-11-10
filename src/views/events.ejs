@@ -1,16 +1,4 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Eventum - Nossos Eventos</title>
-
-    <link rel="stylesheet" href="/css/styles.css">
-
-</head>
-
-<body>
+<%- include('partials/header', { title: 'Nossos Eventos' }) %>
 
     <div class="container">
         <h1>Próximos Eventos</h1>
@@ -18,33 +6,26 @@
         <div class="event-list">
 
             <% events.forEach(event=> { %>
-
                 <div class="event-card">
                     <h3>
                         <%= event.title %>
                     </h3>
-
                     <div class="date">
                         <%= event.date ? new Date(event.date).toLocaleDateString('pt-BR', {timeZone: 'UTC' })
                             : 'Data a definir' %>
                     </div>
-
                     <p>
                         <%= event.description || 'Este evento não possui descrição.' %>
                     </p>
 
                     <a href="#" class="btn">Ver Detalhes</a>
                 </div>
-
                 <% }) %>
 
                     <% if (events.length===0) { %>
                         <p>Nenhum evento cadastrado no momento.</p>
                         <% } %>
-
         </div>
     </div>
 
-</body>
-
-</html>
+    <%- include('partials/footer') %>
