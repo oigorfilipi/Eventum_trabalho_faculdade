@@ -562,11 +562,18 @@ app.post('/site/mudar-senha', isLoggedIn, (req, res) => {
   const { senhaAtual, novaSenha } = req.body;
   const userId = req.session.user.id;
 
-  // Verificação simples
+  // Validação simples
   if (!senhaAtual || !novaSenha) {
     req.session.message = { type: 'error', text: 'Todos os campos são obrigatórios.' };
     return res.redirect('/site/minha-conta');
   }
+
+  // --- NOVA VALIDAÇÃO (6 DÍGITOS) ---
+  if (novaSenha.length < 6) {
+    req.session.message = { type: 'error', text: 'A nova senha deve ter no mínimo 6 dígitos.' };
+    return res.redirect('/site/minha-conta');
+  }
+  // --- FIM DA VALIDAÇÃO ---
 
   // 1. Buscar o usuário e sua senha ATUAL no banco
   db.get('SELECT password FROM users WHERE id = ?', [userId], async (err, user) => {
@@ -603,26 +610,27 @@ app.post('/site/mudar-senha', isLoggedIn, (req, res) => {
 
 // --- NOVA ROTA PARA ATUALIZAR O NOME ---
 app.post('/site/atualizar-perfil', isLoggedIn, (req, res) => {
-  const { name } = req.body;
+  const { name, phone } = req.body; // Nome Social e Telefone
   const userId = req.session.user.id;
 
-  if (!name) {
-    req.session.message = { type: 'error', text: 'O nome não pode ficar em branco.' };
+  if (!name) { // Nome Social é obrigatório
+    req.session.message = { type: 'error', text: 'O Nome Social não pode ficar em branco.' };
     return res.redirect('/site/minha-conta');
   }
 
-  // 1. Salva o novo nome no banco
-  db.run('UPDATE users SET name = ? WHERE id = ?', [name, userId], (err) => {
+  // 1. Salva os novos dados no banco
+  db.run('UPDATE users SET name = ?, phone = ? WHERE id = ?', [name, phone || null, userId], (err) => {
     if (err) {
-      req.session.message = { type: 'error', text: 'Erro ao atualizar seu nome.' };
+      req.session.message = { type: 'error', text: 'Erro ao atualizar seu perfil.' };
       return res.redirect('/site/minha-conta');
     }
 
-    // 2. Atualiza o nome na sessão (para o header "Olá, X" mudar)
+    // 2. Atualiza a sessão
     req.session.user.name = name;
+    req.session.user.phone = phone || null;
 
     // 3. Sucesso!
-    req.session.message = { type: 'success', text: 'Seu nome foi atualizado com sucesso!' };
+    req.session.message = { type: 'success', text: 'Seu perfil foi atualizado com sucesso!' };
     res.redirect('/site/minha-conta');
   });
 });
@@ -651,7 +659,38 @@ app.post('/site/contato', (req, res) => {
   stmt.finalize();
 });
 
+// --- NOVA ROTA PARA DELETAR A CONTA (ZONA DE PERIGO) ---
+app.post('/site/deletar-conta', isLoggedIn, (req, res) => {
+  const userId = req.session.user.id;
 
+  // 1. Deleta todas as inscrições do usuário
+  db.run('DELETE FROM subscriptions WHERE user_id = ?', [userId], (err) => {
+    if (err) {
+      console.error(err);
+      req.session.message = { type: 'error', text: 'Erro ao remover suas inscrições.' };
+      return res.redirect('/site/minha-conta');
+    }
+
+    // 2. Deleta o usuário
+    db.run('DELETE FROM users WHERE id = ?', [userId], (err) => {
+      if (err) {
+        console.error(err);
+        req.session.message = { type: 'error', text: 'Erro ao deletar seu perfil.' };
+        return res.redirect('/site/minha-conta');
+      }
+
+      // 3. Destrói a sessão (Faz o logout)
+      req.session.destroy(err => {
+        if (err) {
+          // Mesmo se o logout falhar, redireciona
+          return res.redirect('/site/eventos');
+        }
+        // Redireciona para a home page como um usuário "morto"
+        res.redirect('/site/eventos');
+      });
+    });
+  });
+});
 
 
 // 1. ROTA PÁGINA DE DETALHES DO EVENTO

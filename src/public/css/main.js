@@ -356,6 +356,61 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     /* --- FIM: Validação reCAPTCHA --- */
 
+    /* --- INÍCIO: Lógica das Abas (Minha Conta) --- */
+    const tabButtons = document.querySelectorAll('.tab-button');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            // Remove 'active' de todos
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+            tabContents.forEach(content => content.classList.remove('active'));
+
+            // Adiciona 'active' no clicado
+            button.classList.add('active');
+            const targetContent = document.querySelector(button.dataset.target);
+            if (targetContent) {
+                targetContent.classList.add('active');
+            }
+        });
+    });
+    /* --- FIM: Lógica das Abas --- */
+
+    /* --- INÍCIO: Lógica de Edição "Meus Dados" --- */
+    const editBtn = document.getElementById('edit-profile-btn');
+    const cancelBtn = document.getElementById('cancel-profile-btn');
+    const viewActions = document.getElementById('profile-actions-view');
+    const editActions = document.getElementById('profile-actions-edit');
+    const nameInput = document.getElementById('name');
+    const phoneInput = document.getElementById('phone-mask'); // O ID que já usamos
+
+    if (editBtn && cancelBtn && viewActions && editActions && nameInput && phoneInput) {
+
+        const originalName = nameInput.value;
+        const originalPhone = phoneInput.value;
+
+        // Clica em "Alterar Dados"
+        editBtn.addEventListener('click', () => {
+            viewActions.classList.add('hidden');
+            editActions.classList.remove('hidden');
+            nameInput.disabled = false;
+            phoneInput.disabled = false;
+        });
+
+        // Clica em "Cancelar"
+        cancelBtn.addEventListener('click', () => {
+            viewActions.classList.remove('hidden');
+            editActions.classList.add('hidden');
+            nameInput.disabled = true;
+            phoneInput.disabled = true;
+
+            // Restaura os valores originais
+            nameInput.value = originalName;
+            phoneInput.value = originalPhone;
+        });
+    }
+    /* --- FIM: Lógica de Edição "Meus Dados" --- */
+
     /* --- INÍCIO: Lógica de Edição de Nome (Minha Conta) --- */
     const toggleBtn = document.getElementById('toggle-name-edit');
     const infoForm = document.getElementById('info-edit-form');

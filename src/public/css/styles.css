@@ -1524,3 +1524,65 @@ th {
 .recaptcha-simulated-box-large img {
     opacity: 0.7;
 }
+
+/* [ COLE ISTO NO FINAL DE styles.css ]
+*/
+
+/* 15. LAYOUT DE ABAS (MINHA CONTA)
+--------------------------------------------- */
+.tab-navigation {
+    display: flex;
+    flex-wrap: wrap; /* Permite quebrar a linha em telas pequenas */
+    border-bottom: 2px solid var(--border-color);
+    margin-bottom: 2rem;
+}
+.tab-button {
+    padding: 1rem 1.5rem;
+    cursor: pointer;
+    background: none;
+    border: none;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px; /* Puxa o botão para baixo */
+}
+.tab-button.active {
+    color: var(--accent-color);
+    border-bottom-color: var(--accent-color);
+}
+
+.tab-content {
+    display: none; /* Escondido por padrão */
+}
+.tab-content.active {
+    display: block; /* Mostra o conteúdo da aba ativa */
+}
+
+/* Caixa de simulação do 2FA */
+.two-factor-box {
+    padding: 1rem;
+    background-color: var(--bg-color);
+    border: 1px dashed var(--border-color);
+    border-radius: 8px;
+    opacity: 0.7;
+}
+.two-factor-box p {
+    color: var(--text-secondary);
+}
+
+/* Caixa de Ações de Perigo (Deletar/Desativar) */
+.danger-zone {
+    border-top: 2px solid var(--danger-color);
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+}
+.danger-zone .btn-danger {
+    background-color: transparent;
+    color: var(--danger-color);
+    border-color: var(--danger-color);
+}
+.danger-zone .btn-danger:hover {
+    background-color: var(--danger-color);
+    color: #ffffff;
+}
