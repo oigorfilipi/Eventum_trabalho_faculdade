@@ -63,7 +63,8 @@ app.post('/site/eventos/novo', isAdmin, (req, res) => {
   const { title, description, qtdSubs,
     schedule_details, address_details, pricing_details, food_details, attractions,
     cover_image_url,
-    organizer // <-- ADICIONADO
+    organizer,
+    category// <-- ADICIONADO
   } = req.body;
 
   const createdBy = req.session.user.id;
@@ -79,14 +80,15 @@ app.post('/site/eventos/novo', isAdmin, (req, res) => {
   const stmt = db.prepare(
     `INSERT INTO events (title, description, created_by, qtdSubs, 
                          schedule_details, address_details, pricing_details, food_details, attractions, 
-                         cover_image_url, organizer)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)` // <-- Aumentado para 11
+                         cover_image_url, organizer, category)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)` // <-- Aumentado para 11
   );
   stmt.run(
     title, description || null, createdBy, qtdSubs || 100,
     schedule_details || null, address_details || null, pricing_details || null, food_details || null, attractions || null,
     cover_image_url || null,
-    organizer || null, // <-- ADICIONADO
+    organizer || null,
+    category || 'indefinido', // <-- ADICIONADO
     function (err) {
       if (err) {
         console.error('Erro ao criar evento:', err);
@@ -130,14 +132,15 @@ app.post('/site/eventos/:id/editar', isAdmin, (req, res) => {
     UPDATE events
     SET title = ?, description = ?, qtdSubs = ?,
         schedule_details = ?, address_details = ?, pricing_details = ?, food_details = ?, attractions = ?,
-        cover_image_url = ?, organizer = ?
+        cover_image_url = ?, organizer = ?, category = ?
     WHERE id = ?
   `);
   stmt.run(
     title, description || null, qtdSubs || 100,
     schedule_details || null, address_details || null, pricing_details || null, food_details || null, attractions || null,
     cover_image_url || null,
-    organizer || null, // <-- ADICIONADO
+    organizer || null,
+    category || 'Indefinido', // <-- ADICIONADO
     eventId,
     function (err) {
       if (err) {

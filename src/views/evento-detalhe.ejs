@@ -118,6 +118,15 @@
                                                                             <%= event.organizer %>
                                                                         </div>
                                                                         <% } %>
+
+                                                                            <%# --- CATEGORIA ADICIONADA --- %>
+                                                                                <% if (event.category && event.category
+                                                                                    !=='Indefinido' ) { %>
+                                                                                    <div class="detail-item">
+                                                                                        <strong>Categoria:</strong>
+                                                                                        <%= event.category %>
+                                                                                    </div>
+                                                                                    <% } %>
                                                 </div>
 
                                                 <%# --- Detalhes do Endereço --- %>
