@@ -398,9 +398,9 @@ app.get('/site/eventos/:id', (req, res) => {
       const isSubscribed = !!subscription; // true se a inscrição existir
 
       // 4. Renderiza a nova página de detalhes
-      res.render('evento-detalhe', { 
-        event: event, 
-        isSubscribed: isSubscribed 
+      res.render('evento-detalhe', {
+        event: event,
+        isSubscribed: isSubscribed
       });
     });
   });
@@ -414,13 +414,13 @@ app.get('/site/pagamento/:id', isLoggedIn, (req, res) => {
   // CORREÇÃO: Adicionado 'id' ao SELECT
   db.get('SELECT id, title, pricing_details FROM events WHERE id = ?', [eventId], (err, event) => {
     if (err || !event) return res.status(404).send('Evento não encontrado');
-    
+
     let price = "Valor não definido";
     if (event.pricing_details) {
       try {
         const pricing = JSON.parse(event.pricing_details);
         price = pricing.price || "Valor não definido";
-      } catch(e) {}
+      } catch (e) { }
     }
 
     res.render('pagamento', { event, price, user: req.session.user });

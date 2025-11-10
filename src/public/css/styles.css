@@ -123,12 +123,27 @@ a:hover {
     font-weight: bold;
 }
 
+.nav-left a.admin-link:hover{
+    color: #2d6b2f;
+}
+
 .nav-center {
     flex: 1;
     text-align: center;
     font-size: 1.75rem;
     font-weight: bold;
     color: var(--text-primary);
+    text-decoration: none; /* Garante que não tenha sublinhado */
+    
+    /* CORREÇÃO: Prepara para animar a escala E a cor */
+    transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.nav-center:hover {
+    transform: scale(1.05); /* 1. Aumenta um tico */
+    color: rgb(94, 93, 93); /* 2. Muda a cor para o azul */
+    cursor: pointer; /* 3. Mostra o cursor de link */
+    text-decoration: none;
 }
 
 .nav-right {
@@ -220,22 +235,21 @@ a:hover {
 /* 3. BOTÕES (Estilo principal e variações)
 --------------------------------------------- */
 .btn {
-    display: inline-block;
-    background-color: var(--accent-color);
-    color: #ffffff;
-    padding: 0.75rem 1.25rem;
-    border: none;
-    border-radius: 5px;
+    display: inline-block; /* Garante o padding correto como no .btn */
+    background-color: transparent;
+    color: var(--accent-color); /* CORRIGIDO: Usa a cor de destaque */
+    border: 1px solid var(--accent-color); /* CORRIGIDO: Borda no tom azul */
+    padding: 0.75rem 1.25rem; /* Pega o padding do .btn principal */
+    border-radius: 5px; /* Pega o radius do .btn principal */
     text-decoration: none;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.2s ease;
+    font-weight: 600; /* Pega o peso do .btn principal */
+    transition: all 0.2s ease; /* Anima tudo */
 }
 
 .btn:hover {
-    background-color: var(--accent-hover);
-    transform: translateY(-2px);
-    color: #fff;
+    background-color: var(--accent-color); /* CORRIGIDO: Fica azul no hover */
+    color: #ffffff; /* CORRIGIDO: Texto fica branco (igual ao .btn) */
+    transform: translateY(-2px); /* Efeito "pular" (do passo anterior) */
     text-decoration: none;
 }
 
@@ -259,15 +273,22 @@ a:hover {
 
 /* Botão Secundário (Cancelar) */
 .btn-secondary {
+    display: inline-block; /* Garante o padding correto como no .btn */
     background-color: transparent;
-    color: var(--text-secondary);
-    border: 1px solid var(--border-color);
+    color: var(--accent-color); /* CORRIGIDO: Usa a cor de destaque */
+    border: 1px solid var(--accent-color); /* CORRIGIDO: Borda no tom azul */
+    padding: 0.75rem 1.25rem; /* Pega o padding do .btn principal */
+    border-radius: 5px; /* Pega o radius do .btn principal */
+    text-decoration: none;
+    font-weight: 600; /* Pega o peso do .btn principal */
+    transition: all 0.2s ease; /* Anima tudo */
 }
 
 .btn-secondary:hover {
-    background-color: var(--card-color);
-    color: var(--text-primary);
-    transform: none;
+    background-color: var(--accent-color); /* CORRIGIDO: Fica azul no hover */
+    color: #ffffff; /* CORRIGIDO: Texto fica branco (igual ao .btn) */
+    transform: translateY(-2px); /* Efeito "pular" (do passo anterior) */
+    text-decoration: none;
 }
 
 .theme-toggle {

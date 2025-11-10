@@ -49,9 +49,9 @@
                         <% } %>
         </div>
 
-        <div class="nav-center">
+        <a href="/site/eventos" class="nav-center">
             Eventum
-        </div>
+        </a>
 
         <div class="nav-right">
             <button id="theme-toggle-btn" class="theme-toggle">
@@ -61,7 +61,8 @@
                 <span>Olá, <%= user.name %>!</span>
                 <a href="/site/logout" class="logout-btn">Sair</a>
                 <% } else { %>
-                    <a href="/site/login">Login</a>
+                    <%# CORREÇÃO: Adicionada a classe "btn-secondary" %>
+                    <a href="/site/login" class="btn-secondary">Login</a>
                     <a href="/site/register" class="btn">Cadastre-se</a>
                     <% } %>
         </div>
