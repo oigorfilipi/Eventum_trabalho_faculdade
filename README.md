@@ -9,7 +9,7 @@
 [![SQLite](https://img.shields.io/badge/SQLite-003B57?style=for-the-badge&logo=sqlite&logoColor=white)]()
 [![Frontend](https://img.shields.io/badge/Frontend-EJS_&_Pure_JS-1081e3?style=for-the-badge&logo=html5&logoColor=white)]()
 
-Este projeto representa uma **transformação completa**. Partindo de um **backend REST mínimo** (com as rotas de usuários e eventos básicas) desenvolvido por um colega: desenvolvido por um colega de projeto: **Matheus** ([@zxzMatheuszxz](https://github.com/zxzMatheuszxz)),, a aplicação evoluiu para uma **Plataforma Full Stack robusta, segura e focada em UX**, com todas as camadas de frontend, segurança avançada e funcionalidades administrativas construídas por mim.
+Este projeto representa uma **transformação completa**. Partindo de um **backend REST mínimo** (com as rotas de usuários e eventos básicas) desenvolvido por um colega: desenvolvido por um colega de projeto: **Matheus** ([@Matheus-Hen](https://github.com/Matheus-Hen)),, a aplicação evoluiu para uma **Plataforma Full Stack robusta, segura e focada em UX**, com todas as camadas de frontend, segurança avançada e funcionalidades administrativas construídas por mim.
 
 O foco foi transformar um simples "serviço de dados" em um **produto coeso e funcional**.
 
