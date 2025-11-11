@@ -1,7 +1,7 @@
 # 🚀 Eventum Platform: De API Simples a Plataforma Full Stack de Eventos
 
 <p align="center">
-  <img src="assets/logo.png" alt="Logo do Eventum Platform" width="200"/>
+  <img src="assets/Logo.png" alt="Logo do Eventum Platform" width="200"/>
 </p>
 
 [![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)]()
