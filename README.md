@@ -1,7 +1,7 @@
 # 🚀 Eventum Platform: De API Simples a Plataforma Full Stack de Eventos
 
 <p align="center">
-  <img src="assets/Logo.png" alt="Logo do Eventum Platform" width="200"/>
+  <img src="assets/Logo" alt="Logo do Eventum Platform" width="200"/>
 </p>
 
 [![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)]()
@@ -54,11 +54,11 @@ O foco foi transformar um simples "serviço de dados" em um **produto coeso e fu
 
 ### Events Page
 
-![Screenshot da Home Page mostrando o carrossel de eventos](assets/screenshot-events.png)
+![Screenshot da Home Page mostrando o carrossel de eventos](assets/screenshot-events)
 
 ### Painel Home Page e Carrossel (Administrativo)
 
-![Screenshot do Painel de Admin e do formulário de evento Stepper](assets/screenshot-admin.png)
+![Screenshot do Painel de Admin e do formulário de evento Stepper](assets/screenshot-admin)
 
 ---
 
