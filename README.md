@@ -1,80 +1,85 @@
-# Eventum API
+# 🚀 Eventum Platform: De API Simples a Plataforma Full Stack de Eventos
 
-API simples para gerenciar eventos acadêmicos. Objetivo: eliminar processos manuais, facilitar inscrições e automatizar emissão de certificados.
+<p align="center">
+  <img src="assets/Logo.png" alt="Logo do Eventum Platform" width="200"/>
+</p>
 
-Funcionalidades principais
-- RF01: Permitir cadastro de usuários (POST /users)
-- RF02: Permitir a criação de eventos (POST /events)
-- RF03: Listar os eventos disponíveis (GET /events)
-- RF04: Permitir inscrições em eventos (POST /subscribe)
-- RF05: Listar inscrições (GET /subscribe)
+[![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)]()
+[![Express.js](https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white)]()
+[![SQLite](https://img.shields.io/badge/SQLite-003B57?style=for-the-badge&logo=sqlite&logoColor=white)]()
+[![Frontend](https://img.shields.io/badge/Frontend-EJS_&_Pure_JS-1081e3?style=for-the-badge&logo=html5&logoColor=white)]()
 
-Requisitos
-- Node.js 16+ (ou compatível)
-- npm
+Este projeto representa uma **transformação completa**. Partindo de um **backend REST mínimo** (com as rotas de usuários e eventos básicas) desenvolvido por um colega, a aplicação evoluiu para uma **Plataforma Full Stack robusta, segura e focada em UX**, com todas as camadas de frontend, segurança avançada e funcionalidades administrativas construídas por mim.
 
-Instalação
-1. Clone o repositório ou copie os arquivos para uma pasta local.
-2. No diretório do projeto execute:
-   npm install
+O foco foi transformar um simples "serviço de dados" em um **produto coeso e funcional**.
 
-Configuração
-- O servidor respeita a variável de ambiente PORT (ex.: PORT=3000).
-- O banco usado é SQLite e o arquivo fica na raiz do projeto com o nome `eventum.db` (gerado automaticamente pela aplicação).
-  Observação: a implementação atual não lê `DB_PATH` de `.env`; se quiser usar outro caminho, ajuste `src/db.js`.
+---
 
-Ignorar arquivos
-- Verifique o arquivo `.gitignore` já incluído para não versionar node_modules, banco local e arquivos temporários.
+## 📈 A Engenharia de Valor Agregado
 
-Execução
-- Em desenvolvimento:
-  npm start
+| Área | API Base (Trabalho Anterior) | Plataforma Final (Minha Contribuição) |
+| :--- | :--- | :--- |
+| **Arquitetura** | Apenas Express e SQLite. | **Stack Full Stack (Express + EJS)**, com organização de rotas (Site/Admin) e middlewares de segurança. |
+| **Interface & UX** | Sem interface (Apenas cURL). | **Interface Web Completa** (HTML/CSS/JS, Tema Claro/Escuro, Carrossel, Abas, Chat). |
+| **Segurança** | Sem autenticação ou autorização. | **Autenticação Completa** (bcrypt/Sessão) e **Autorização Admin/User**. |
+| **Dados** | CRUD simples e campos limitados. | **Expansão do DB** com 10 novos campos/JSONs complexos (Atrações, Cronograma, Endereço). |
+| **Funcionalidades** | Apenas listar/cadastrar. | **Geração de Certificados em PDF**, **Upload de Mídia (Multer)**, Relatórios Gerenciais e Formulário de 5 Etapas. |
 
-Pontos de entrada (endpoints)
-- Health:
-  GET /            -> retorna { status: 'ok', service: 'eventum-api' }
+---
 
-- Usuários:
-  POST /users      -> cadastrar usuário
-    Body JSON: { "name": "Nome", "email": "a@b.com", "password": "senha" }
+## 💎 Recursos de Destaque da Plataforma
 
-- Eventos:
-  POST /events     -> criar evento
-    Body JSON: { "title": "Título", "description": "Descrição", "date": "YYYY-MM-DD", "createdBy": 1, "qtdSubs": 100 }
-    - campo qtdSubs é opcional; padrão 100.
-    - Resposta inclui o campo qtdSubs no JSON de criação.
-  GET  /events     -> lista eventos
-    - Retorna: id, title, description, date, createdBy, createdAt.
-    - Ordenação: eventos com data definida primeiro por date ASC, depois por created_at DESC; eventos sem data são listados por último.
+### 1. 👑 Área Administrativa (Gerencial e Automação)
 
-- Inscrições:
-  POST /subscribe  -> criar inscrição
-    Body JSON: { "eventId": 1, "userId": 2 }
-    - Valida se o evento existe e se ainda há vagas (com base em qtdSubs).
-  GET  /subscribe  -> lista todas as inscrições
-    - Retorna: id, eventId, userId, createdAt.
+* **Relatórios e PDF:** Implementação do **PDFKit** para gerar **Certificados de Participação** por evento e relatórios gerenciais de Receita Estimada e Estatísticas.
+* **Gestão de Conteúdo Profissional:** Integração do **Multer** para *upload* de imagens de capa, oferecendo ao Admin total controle sobre a mídia do evento.
+* **Formulário Stepper:** Criação de um formulário de evento dividido em 5 etapas, utilizando lógica JavaScript para serializar dados dinâmicos (Palestrantes/Artistas) em JSON antes de salvar no banco.
 
-Exemplos com curl
-- Criar usuário:
-  curl -X POST http://localhost:3000/users -H "Content-Type: application/json" -d '{"name":"Ana","email":"ana@example.com","password":"123456"}'
+### 2. 🔐 Segurança e User Experience (UX)
 
-- Criar evento:
-  curl -X POST http://localhost:3000/events -H "Content-Type: application/json" -d '{"title":"Seminário","description":"Tema X","date":"2025-10-20","createdBy":1,"qtdSubs":50}'
+* **Controle de Sessão e Acesso:** Uso de middlewares para proteger rotas (`isAdmin`, `isLoggedIn`), garantindo que apenas usuários logados (e com a *role* correta) possam acessar recursos.
+* **Privacidade do Usuário:** Implementação de recursos cruciais como troca de senha segura e a **rota de Deleção de Conta** completa.
+* **Design e Interação:**
+    * Design **Tema Escuro/Claro** persistente no navegador.
+    * Máscaras de input (CPF) e campos de perfil detalhados (Nome Completo, Gênero).
 
-- Listar eventos:
-  curl http://localhost:3000/events
+### 3. 💸 Lógica de Inscrição Avançada
 
-- Inscrever usuário em evento:
-  curl -X POST http://localhost:3000/subscribe -H "Content-Type: application/json" -d '{"eventId":1,"userId":2}'
+* **Validação Robusta:** Lógica aprimorada para lidar com eventos lotados e impedir inscrições duplicadas (`UNIQUE`).
+* **Suporte a Pagamentos:** Simulação de fluxo de pagamento para eventos pagos, ajustando a mensagem de sucesso para refletir a confirmação da transação.
 
-- Listar inscrições:
-  curl http://localhost:3000/subscribe
+---
 
-Observações
-- A aplicação usa SQLite por padrão (arquivo `eventum.db` na raiz do projeto).
-- Ao inicializar, o código tenta criar a coluna `qtdSubs` na tabela `events` (com padrão 100). Erros por coluna duplicada são ignorados.
-- Atualmente não há autenticação; para produção, proteja variáveis sensíveis, adicione autenticação/autorização e migrações reais de banco.
-- As rotas de inscrição foram ajustadas para usar `/subscribe` (POST para criar, GET para listar).
+## 📸 Visuais do Projeto
 
-Licença
-- Arquivo de exemplo — adapte conforme necessidade.
+### Home Page e Carrossel (Administrativo)
+
+![Screenshot da Home Page mostrando o carrossel de eventos](assets/screenshot-admin.png)
+
+### Painel Eventos
+
+![Screenshot do Painel de Admin e do formulário de evento Stepper](assets/screenshot-events.png)
+
+---
+
+## ⚙️ Como Rodar o Projeto
+
+### Pré-requisitos
+
+* Node.js 16+
+* npm
+
+### Instalação
+
+1.  Clone o repositório.
+2.  Instale as dependências:
+    ```bash
+    npm install
+    ```
+
+### Execução
+
+Utilize o script `dev` para um início rápido em ambiente de desenvolvimento:
+
+```bash
+npm run dev
