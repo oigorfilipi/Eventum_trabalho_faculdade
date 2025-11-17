@@ -250,7 +250,8 @@ document.addEventListener('DOMContentLoaded', () => {
             // 4.3 Pricing JSON
             const pricing = {
                 isFree: document.querySelector('input[name="isFree"]:checked').value,
-                price: document.getElementById('event_price').value
+                price: document.getElementById('event_price').value,
+                qtdSubs: document.getElementById('qtdSubs').value
             };
             document.getElementById('pricing-json').value = JSON.stringify(pricing);
 

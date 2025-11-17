@@ -1,4 +1,4 @@
-// src/routes/subscribe.js
+// src/routes/subscribe.js (VERSÃO CORRIGIDA E LIMPA)
 const express = require('express');
 const db = require('../db');
 
@@ -9,9 +9,8 @@ router.post('/', (req, res) => {
   const redirectUrl = req.headers.referer || '/site/eventos';
   const { eventId, userId } = req.body || {};
 
-  // Validação de segurança básica
+  // 1. Validação de segurança básica
   if (!req.session.user || req.session.user.id.toString() !== userId) {
-    // Impede que um usuário logado tente inscrever outro usuário
     req.session.message = { type: 'error', text: 'Erro de autenticação.' };
     return res.redirect(redirectUrl);
   }
@@ -21,7 +20,7 @@ router.post('/', (req, res) => {
     return res.redirect(redirectUrl);
   }
 
-  // --- Lógica de Validação (que você já tinha) ---
+  // 2. Busca o evento
   const event = db.prepare('SELECT id, qtdSubs FROM events WHERE id = ?').get(eventId);
 
   if (!event) {
@@ -29,12 +28,13 @@ router.post('/', (req, res) => {
     return res.redirect(redirectUrl);
   }
 
+  // 3. Busca a contagem ATUAL de inscritos
   const currentSubs = db.prepare('SELECT COUNT(*) as count FROM subscriptions WHERE event_id = ?').get(eventId).count;
 
-  // CORREÇÃO 1: Trata o NULL (se for nulo, usa 100)
+  // 4. Define o limite (usando 100 como padrão se 'qtdSubs' for nulo)
   const eventLimit = event.qtdSubs || 100;
 
-  // CORREÇÃO 2: Adicionado o IF/ELSE
+  // 5. LÓGICA DE VALIDAÇÃO ÚNICA E CORRETA
   if (currentSubs >= eventLimit) {
 
     // SE ESTIVER LOTADO:
@@ -46,50 +46,31 @@ router.post('/', (req, res) => {
     // SE TIVER VAGA: Tenta inserir no banco
     const stmt = db.prepare('INSERT INTO subscriptions (event_id, user_id) VALUES (?, ?)');
     stmt.run(eventId, userId, function (err) {
-      // ... (resto da sua lógica de sucesso/erro) ...
-    });
-  } // <-- Fim do ELSE
 
-  if (currentSubs >= event.qtdSubs) {
-    req.session.message = { type: 'error', text: 'Inscrição falhou: O evento está lotado.' };
-    return res.redirect(redirectUrl);
-  }
-  // --- Fim da Validação ---
+      stmt.finalize(); // Finaliza o statement
 
-  // Tenta inserir no banco
-  const stmt = db.prepare('INSERT INTO subscriptions (event_id, user_id) VALUES (?, ?)');
-  stmt.run(eventId, userId, function (err) {
-
-    stmt.finalize();
-
-    // 1. LÓGICA DE ERRO
-    if (err) {
-      if (err.message.includes('UNIQUE')) {
-        req.session.message = { type: 'error', text: 'Você já está inscrito neste evento.' };
-      } else {
-        req.session.message = { type: 'error', text: 'Erro interno ao processar inscrição.' };
+      // 5.1. LÓGICA DE ERRO (ex: já inscrito)
+      if (err) {
+        if (err.message.includes('UNIQUE')) {
+          req.session.message = { type: 'error', text: 'Você já está inscrito neste evento.' };
+        } else {
+          req.session.message = { type: 'error', text: 'Erro interno ao processar inscrição.' };
+        }
+        return res.redirect(redirectUrl);
       }
-      // Se deu erro, volta para a página anterior (ex: a de pagamento)
-      return res.redirect(redirectUrl);
-    }
 
-    // 2. LÓGICA DE SUCESSO
+      // 5.2. LÓGICA DE SUCESSO
+      const detailsPageUrl = `/site/eventos/${eventId}`;
 
-    // Constrói a URL da página de DETALHES do evento
-    const detailsPageUrl = `/site/eventos/${eventId}`;
+      if (redirectUrl.includes('/pagamento/')) {
+        req.session.message = { type: 'success', text: 'Pagamento efetuado! Inscrição confirmada.' };
+      } else {
+        req.session.message = { type: 'success', text: 'Inscrição realizada com sucesso!' };
+      }
 
-    // Mensagem de sucesso personalizada (como você pediu)
-    // Se o usuário veio da página de pagamento, mostramos "Pagamento efetuado"
-    if (redirectUrl.includes('/pagamento/')) {
-      req.session.message = { type: 'success', text: 'Pagamento efetuado! Inscrição confirmada.' };
-    } else {
-      // Se veio da inscrição gratuita
-      req.session.message = { type: 'success', text: 'Inscrição realizada com sucesso!' };
-    }
-
-    // Em qualquer caso (sucesso ou erro), redireciona de volta
-    return res.redirect(detailsPageUrl);
-  });
+      return res.redirect(detailsPageUrl);
+    });
+  }
 });
 
 // A rota GET /subscribe (que lista TUDO) continua a mesma

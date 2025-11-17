@@ -948,6 +948,10 @@ a.event-title-link:hover h3 {
     margin-bottom: 1rem;
 }
 
+.event-detail-card h4 {
+    color: white;
+}
+
 .detail-item {
     color: var(--text-primary);
     margin-bottom: 0.5rem;
@@ -984,6 +988,7 @@ a.event-title-link:hover h3 {
 .attraction-list li {
     padding: 8px;
     border-bottom: 1px solid var(--border-color);
+    color: white;
 }
 
 .attraction-list li:last-child {
@@ -1397,6 +1402,11 @@ th {
     border: 1px solid var(--border-color);
     border-radius: 5px;
 }
+
+.certificate-item a {
+    max-width: 300px;
+}
+
 
 .certificate-item span {
     font-weight: 500;

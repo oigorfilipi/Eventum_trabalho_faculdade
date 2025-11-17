@@ -157,7 +157,7 @@ router.get('/site/eventos/novo', isAdmin, (req, res) => {
 router.post('/site/eventos/novo', isAdmin, upload.single('cover_image_upload'), (req, res) => {
 
     // Os campos de texto vêm em 'req.body'
-    const { title, description, qtdSubs,
+    const { title, description,
         schedule_details, address_details, pricing_details, food_details, attractions,
         cover_image_url, // O campo de URL
         organizer,
@@ -225,7 +225,8 @@ router.post('/site/eventos/novo', isAdmin, upload.single('cover_image_upload'), 
      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
     );
     stmt.run(
-        title, description || null, createdBy, qtdSubs || 100,
+        title, description || null, createdBy,
+        (JSON.parse(pricing_details || '{}').qtdSubs) || 100,
         schedule_details || null, address_details || null, pricing_details || null, food_details || null, attractions || null,
         finalImageUrl, // <-- CORREÇÃO: Usa a URL final
         organizer || null,
@@ -261,7 +262,7 @@ router.get('/site/eventos/:id/editar', isAdmin, (req, res) => {
 router.post('/site/eventos/:id/editar', isAdmin, upload.single('cover_image_upload'), (req, res) => {
     const eventId = req.params.id;
 
-    const { title, description, qtdSubs,
+    const { title, description,
         schedule_details, address_details, pricing_details, food_details, attractions,
         cover_image_url, organizer, category
     } = req.body;
@@ -287,7 +288,8 @@ router.post('/site/eventos/:id/editar', isAdmin, upload.single('cover_image_uplo
     WHERE id = ?
   `);
     stmtUpdateText.run(
-        title, description || null, qtdSubs || 100,
+        title, description || null,
+        (JSON.parse(pricing_details || '{}').qtdSubs) || 100,
         schedule_details || null, address_details || null, pricing_details || null, food_details || null, attractions || null,
         organizer || null, category || 'Indefinido', is_hidden, eventId,
         function (err) {
@@ -439,15 +441,51 @@ router.get('/site/admin/mensagens', isAdmin, (req, res) => {
 
 
 
-// --- ROTA "CAÓTICA" PARA GERAR CERTIFICADOS ---
+// --- ROTA "CAÓTICA" PARA GERAR CERTIFICADOS (VERSÃO MELHORADA) ---
 router.get('/site/certificados/:id', isAdmin, (req, res) => {
     const eventId = req.params.id;
 
-    // 1. Busca os detalhes do evento (precisamos do título)
-    db.get('SELECT title FROM events WHERE id = ?', [eventId], (err, event) => {
+    // 1. Busca os detalhes do evento (AGORA COM SCHEDULE_DETAILS)
+    db.get('SELECT title, schedule_details FROM events WHERE id = ?', [eventId], (err, event) => {
         if (err || !event) {
             return res.status(404).send('Evento não encontrado');
         }
+
+        // --- INÍCIO DO NOVO CÁLCULO DE DURAÇÃO ---
+        let totalHours = 0;
+        let totalDays = 0;
+        let schedule = {};
+
+        try {
+            if (event.schedule_details) {
+                schedule = JSON.parse(event.schedule_details);
+            }
+        
+            if (schedule.date_start && schedule.time_start && schedule.date_end && schedule.time_end) {
+                const start = new Date(`${schedule.date_start}T${schedule.time_start}:00`);
+                const end = new Date(`${schedule.date_end}T${schedule.time_end}:00`);
+
+                if (!isNaN(start.getTime()) && !isNaN(end.getTime()) && end > start) {
+                    // Cálculo de Horas Totais (com 1 casa decimal)
+                    const diffMs = end.getTime() - start.getTime();
+                    totalHours = Math.round((diffMs / (1000 * 60 * 60)) * 10) / 10;
+
+                    // Cálculo de Dias de Calendário
+                    const dayStart = new Date(schedule.date_start);
+                    dayStart.setHours(0, 0, 0, 0); // Zera a hora
+                    const dayEnd = new Date(schedule.date_end);
+                    dayEnd.setHours(0, 0, 0, 0); // Zera a hora
+
+                    const dayDiffMs = dayEnd.getTime() - dayStart.getTime();
+                    totalDays = Math.round(dayDiffMs / (1000 * 60 * 60 * 24)) + 1; // +1 (um evento de 1 dia dura '1 dia')
+                }
+            }
+        } catch (e) {
+            console.error("Erro ao calcular datas:", e);
+            // Continua mesmo se o cálculo falhar (horas/dias ficarão 0)
+        }
+        // --- FIM DO NOVO CÁLCULO DE DURAÇÃO ---
+
 
         // 2. Busca TODOS os usuários inscritos nesse evento
         const sql = `
@@ -460,34 +498,32 @@ router.get('/site/certificados/:id', isAdmin, (req, res) => {
 
         db.all(sql, [eventId], (err, users) => {
             if (err) {
+                // (Opcional) Você também pode mudar este:
+                // return res.status(500).render('error', { title: 'Erro de Servidor', message: 'Erro ao buscar inscritos.' });
                 return res.status(500).send('Erro ao buscar inscritos');
             }
-
             if (users.length === 0) {
-                return res.status(404).send('Nenhum inscrito neste evento para gerar certificados.');
+                // ▼▼▼ ESTA É A MUDANÇA ▼▼▼
+                return res.status(404).render('error', { 
+                    title: 'Nenhum Inscrito', 
+                    message: 'Não há nenhum usuário inscrito neste evento para gerar certificados.' 
+                });
+                // ▲▲▲ FIM DA MUDANÇA ▲▲▲
             }
 
             // 3. --- MÁGICA DO PDFKIT COMEÇA AQUI ---
-
-            // Cria um novo documento PDF na memória
             const doc = new PDFDocument({
-                layout: 'landscape', // Formato paisagem (deitado)
+                layout: 'landscape',
                 size: 'A4',
                 margin: 50
             });
 
-            // Configura o cabeçalho da resposta para o navegador
-            // Isso diz ao navegador: "Abra isso como um PDF"
             res.setHeader('Content-Type', 'application/pdf');
             res.setHeader('Content-Disposition', `inline; filename="certificados_${event.title.replace(/\s/g, '_')}.pdf"`);
-
-            // "Canaliza" o PDF sendo criado DIRETAMENTE para a resposta
             doc.pipe(res);
 
             // 4. Loop: Cria uma página para cada usuário
             users.forEach((user, index) => {
-
-                // Desenha o certificado
                 doc.fontSize(28)
                     .font('Helvetica-Bold')
                     .text('CERTIFICADO DE PARTICIPAÇÃO', { align: 'center' });
@@ -502,7 +538,7 @@ router.get('/site/certificados/:id', isAdmin, (req, res) => {
 
                 doc.fontSize(26)
                     .font('Helvetica-Bold')
-                    .fillColor('blue') // Cor de destaque (pode ser var(--accent-color) em CSS, mas aqui é string)
+                    .fillColor('blue')
                     .text(user.name.toUpperCase(), { align: 'center' });
 
                 doc.moveDown(1);
@@ -517,6 +553,30 @@ router.get('/site/certificados/:id', isAdmin, (req, res) => {
                 doc.fontSize(22)
                     .font('Helvetica-Bold')
                     .text(`"${event.title}"`, { align: 'center' });
+
+                
+                // --- ▼▼▼ LINHAS ADICIONADAS (REQUISITO 1 e 2) ▼▼▼ ---
+                doc.moveDown(1.5);
+                doc.fontSize(16)
+                    .font('Helvetica')
+                    .text(
+                        `Realizado de ${schedule.date_start ? new Date(schedule.date_start).toLocaleDateString('pt-BR', {timeZone: 'UTC'}) : ''}` +
+                        ` a ${schedule.date_end ? new Date(schedule.date_end).toLocaleDateString('pt-BR', {timeZone: 'UTC'}) : ''}.`,
+                        { align: 'center' }
+                    );
+                
+                if (totalHours > 0) {
+                    doc.moveDown(0.5);
+                    doc.fontSize(16)
+                        .font('Helvetica-Bold')
+                        .text(
+                            `Carga horária total: ${totalHours} horas.` +
+                            (totalDays > 1 ? ` (${totalDays} dias)` : ''),
+                            { align: 'center' }
+                        );
+                }
+                // --- ▲▲▲ FIM DAS LINHAS ADICIONADAS ▲▲▲ ---
+
 
                 doc.moveDown(2);
 
@@ -539,7 +599,6 @@ router.get('/site/certificados/:id', isAdmin, (req, res) => {
                         x: doc.page.width / 2 - 150
                     });
 
-                // Adiciona uma nova página (exceto para o último usuário)
                 if (index < users.length - 1) {
                     doc.addPage();
                 }

@@ -1,0 +1,17 @@
+<%- include('partials/header', { title: title || 'Erro' }) %>
+
+<div class="container">
+    <div class="form-container" style="text-align: center;">
+        
+        <h1 style="color: var(--danger-color); font-size: 2.5rem;"><%= title || 'Ocorreu um Erro' %></h1>
+        
+        <p style="font-size: 1.2rem; margin-bottom: 2rem;">
+            <%= message %>
+        </p>
+
+        <a href="/site/minha-conta" class="btn btn-secondary">Voltar</a>
+        <a href="/site/eventos" class="btn btn-secondary" style="margin-top: 1rem;">Ir para a Home</a>
+    </div>
+</div>
+
+<%- include('partials/footer') %>

@@ -3,6 +3,7 @@ const express = require('express');
 const db = require('../db');
 const bcrypt = require('bcryptjs');
 const { isLoggedIn } = require('../middleware'); // Puxa o middleware
+const PDFDocument = require('pdfkit');
 
 const router = express.Router();
 
@@ -413,5 +414,186 @@ router.get('/site/pagamento/:id', isLoggedIn, (req, res) => {
     });
 });
 
+//
+// ROTA PARA O USUÁRIO GERAR O PRÓPRIO CERTIFICADO
+//
+router.get('/site/meu-certificado/:id', isLoggedIn, (req, res) => {
+    const eventId = req.params.id;
+    const userId = req.session.user.id;
+    const userName = req.session.user.name;
+
+    // 1. Verifica se o usuário está REALMENTE inscrito
+    db.get('SELECT id FROM subscriptions WHERE event_id = ? AND user_id = ?', [eventId, userId], (err, subscription) => {
+        if (err || !subscription) {
+            return res.status(403).render('error', {
+                title: 'Acesso Negado',
+                message: 'Você não está (ou não esteve) inscrito neste evento, portanto não podemos gerar seu certificado.'
+            });
+        }
+
+        // 2. Se estiver inscrito, busca os dados do evento (com schedule)
+        db.get('SELECT title, schedule_details FROM events WHERE id = ?', [eventId], (err, event) => {
+            if (err || !event) {
+                return res.status(404).render('error', {
+                    title: 'Erro 404',
+                    message: 'O evento que você está procurando não foi encontrado.'
+                });
+            }
+
+            // --- INÍCIO CÁLCULO DE DURAÇÃO (Igual ao do Admin) ---
+            let totalHours = 0;
+            let totalDays = 0;
+            let schedule = {};
+
+            try {
+                if (event.schedule_details) {
+                    schedule = JSON.parse(event.schedule_details);
+                }
+
+                if (schedule.date_start && schedule.time_start && schedule.date_end && schedule.time_end) {
+                    const start = new Date(`${schedule.date_start}T${schedule.time_start}:00`);
+                    const end = new Date(`${schedule.date_end}T${schedule.time_end}:00`);
+
+                    if (!isNaN(start.getTime()) && !isNaN(end.getTime()) && end > start) {
+                        const diffMs = end.getTime() - start.getTime();
+                        totalHours = Math.round((diffMs / (1000 * 60 * 60)) * 10) / 10;
+
+                        const dayStart = new Date(schedule.date_start);
+                        dayStart.setHours(0, 0, 0, 0);
+                        const dayEnd = new Date(schedule.date_end);
+                        dayEnd.setHours(0, 0, 0, 0);
+
+                        const dayDiffMs = dayEnd.getTime() - dayStart.getTime();
+                        totalDays = Math.round(dayDiffMs / (1000 * 60 * 60 * 24)) + 1;
+                    }
+                }
+            } catch (e) {
+                console.error("Erro ao calcular datas:", e);
+            }
+            // --- FIM CÁLCULO DE DURAÇÃO ---
+
+
+            // 3. Gera o PDF (para UMA pessoa)
+            const doc = new PDFDocument({
+                layout: 'landscape',
+                size: 'A4',
+                margin: 50
+            });
+
+            res.setHeader('Content-Type', 'application/pdf');
+            res.setHeader('Content-Disposition', `inline; filename="certificado_${event.title.replace(/\s/g, '_')}.pdf"`);
+            doc.pipe(res);
+
+            // Desenha o certificado (sem loop)
+            doc.fontSize(28)
+                .font('Helvetica-Bold')
+                .text('CERTIFICADO DE PARTICIPAÇÃO', { align: 'center' });
+
+            doc.moveDown(2);
+            doc.fontSize(18).font('Helvetica').text('Certificamos que', { align: 'center' });
+            doc.moveDown(1);
+
+            doc.fontSize(26).font('Helvetica-Bold').fillColor('blue').text(userName.toUpperCase(), { align: 'center' });
+
+            doc.moveDown(1);
+            doc.fontSize(18).font('Helvetica').fillColor('black').text('participou do evento:', { align: 'center' });
+            doc.moveDown(0.5);
+
+            doc.fontSize(22).font('Helvetica-Bold').text(`"${event.title}"`, { align: 'center' });
+
+            // --- As novas linhas de Duração/Dias ---
+            doc.moveDown(1.5);
+            doc.fontSize(16)
+                .font('Helvetica')
+                .text(
+                    `Realizado de ${schedule.date_start ? new Date(schedule.date_start).toLocaleDateString('pt-BR', { timeZone: 'UTC' }) : ''}` +
+                    ` a ${schedule.date_end ? new Date(schedule.date_end).toLocaleDateString('pt-BR', { timeZone: 'UTC' }) : ''}.`,
+                    { align: 'center' }
+                );
+
+            if (totalHours > 0) {
+                doc.moveDown(0.5);
+                doc.fontSize(16)
+                    .font('Helvetica-Bold')
+                    .text(
+                        `Carga horária total: ${totalHours} horas.` +
+                        (totalDays > 1 ? ` (${totalDays} dias)` : ''),
+                        { align: 'center' }
+                    );
+            }
+            // --- Fim das novas linhas ---
+
+            doc.moveDown(2);
+            doc.fontSize(12).font('Helvetica').text(`Gerado em: ${new Date().toLocaleDateString('pt-BR')}`, { align: 'center' });
+
+            doc.strokeColor('black')
+                .lineWidth(1)
+                .moveTo(doc.page.width / 2 - 150, doc.page.height - 100)
+                .lineTo(doc.page.width / 2 + 150, doc.page.height - 100)
+                .stroke();
+
+            doc.fontSize(12).font('Helvetica-Bold').text('Eventum Admin', {
+                align: 'center',
+                width: 300,
+                x: doc.page.width / 2 - 150
+            });
+
+            // 4. Finaliza o PDF
+            doc.end();
+        });
+    });
+});
+
+//
+// ROTA PARA O USUÁRIO CANCELAR UMA INSCRIÇÃO
+//
+router.post('/site/cancelar-inscricao', isLoggedIn, (req, res) => {
+    const { eventId } = req.body;
+    const userId = req.session.user.id;
+
+    if (!eventId) {
+        req.session.message = { type: 'error', text: 'Evento não especificado.' };
+        return res.redirect('/site/minha-conta');
+    }
+
+    // 1. Verifica se o evento é pago ANTES de deletar
+    db.get('SELECT pricing_details FROM events WHERE id = ?', [eventId], (err, event) => {
+        let isPaid = false;
+        if (!err && event && event.pricing_details) {
+            try {
+                // Lê o JSON de preço [cite: 110]
+                const pricing = JSON.parse(event.pricing_details);
+                if (pricing.isFree === 'false') {
+                    isPaid = true;
+                }
+            } catch (e) { /* ignora erro de parse */ }
+        }
+
+        // 2. Deleta a inscrição do banco
+        db.run('DELETE FROM subscriptions WHERE event_id = ? AND user_id = ?', [eventId, userId], function (err) {
+            if (err) {
+                req.session.message = { type: 'error', text: 'Erro ao cancelar inscrição.' };
+                return res.redirect('/site/minha-conta');
+            }
+
+            // this.changes > 0 significa que a linha foi de fato deletada
+            if (this.changes > 0) {
+                // 3. Define a mensagem de sucesso com base no preço
+                if (isPaid) {
+                    // MENSAGEM DE REEMBOLSO (Sua solicitação)
+                    req.session.message = { type: 'success', text: 'Inscrição cancelada! O reembolso será processado em até 24 horas.' };
+                } else {
+                    // Mensagem padrão
+                    req.session.message = { type: 'success', text: 'Inscrição cancelada com sucesso.' };
+                }
+            } else {
+                req.session.message = { type: 'error', text: 'Inscrição não encontrada.' };
+            }
+
+            // 4. Redireciona de volta para a página "Minha Conta"
+            return res.redirect('/site/minha-conta');
+        });
+    });
+});
 
 module.exports = router;

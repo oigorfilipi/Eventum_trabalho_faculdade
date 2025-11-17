@@ -57,8 +57,9 @@
                                                     style="text-align: center;">+ Criar Novo Evento</a>
                                                 <a href="/site/eventos/todos" class="btn btn-secondary"
                                                     style="text-align: center;">Gerenciar Eventos Existentes</a>
-                                                <a href="/site/relatorio-admin" target="_blank" class="btn btn-secondary"
-                                                    style="text-align: center;">Imprimir Relatório Geral</a>
+                                                <a href="/site/relatorio-admin" target="_blank"
+                                                    class="btn btn-secondary" style="text-align: center;">Imprimir
+                                                    Relatório Geral</a>
                                                 <a href="/site/admin/mensagens" class="btn btn-secondary"
                                                     style="text-align: center;">Ver Mensagens de Contato</a>
                                             </div>
@@ -387,8 +388,8 @@
                                                                                                                         class="event-card-image-novo">
                                                                                                                 </a>
                                                                                                                 <% } %>
-                                                                                                                    <div
-                                                                                                                        class="event-card-content">
+                                                                                                                    <div class="event-card-content"
+                                                                                                                        style="display: flex; flex-direction: column; flex-grow: 1;">
                                                                                                                         <a href="/site/eventos/<%= event.id %>"
                                                                                                                             class="event-title-link">
                                                                                                                             <h3>
@@ -401,6 +402,37 @@
                                                                                                                             ✓
                                                                                                                             Inscrito
                                                                                                                         </p>
+
+                                                                                                                        <div class="form-actions"
+                                                                                                                            style="margin-top: 1rem; width: 100%; justify-content: space-between; gap: 0.5rem;">
+
+                                                                                                                            <a href="/site/meu-certificado/<%= event.id %>"
+                                                                                                                                class="btn btn-secondary"
+                                                                                                                                target="_blank"
+                                                                                                                                style="flex-grow: 1; margin: 0;">
+                                                                                                                                Certificado
+                                                                                                                            </a>
+
+                                                                                                                            <form
+                                                                                                                                action="/site/cancelar-inscricao"
+                                                                                                                                method="POST"
+                                                                                                                                onsubmit="return confirm('Tem certeza que deseja cancelar sua inscrição neste evento?');"
+                                                                                                                                style="flex-grow: 1; margin: 0;">
+
+                                                                                                                                <input
+                                                                                                                                    type="hidden"
+                                                                                                                                    name="eventId"
+                                                                                                                                    value="<%= event.id %>">
+
+                                                                                                                                <button
+                                                                                                                                    type="submit"
+                                                                                                                                    class="btn btn-danger"
+                                                                                                                                    style="width: 100%;">
+                                                                                                                                    Cancelar
+                                                                                                                                </button>
+                                                                                                                            </form>
+
+                                                                                                                        </div>
                                                                                                                     </div>
                                                                                                         </div>
                                                                                                         <% }) %>
