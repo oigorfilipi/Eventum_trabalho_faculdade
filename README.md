@@ -83,3 +83,17 @@ Utilize o script `dev` para um início rápido em ambiente de desenvolvimento:
 
 ```bash
 npm run dev
+```
+
+### 🖥️ Como criar o admin (Passo a passo)
+
+Para qualquer pessoa que clonar seu projeto, basta seguir estes passos:
+
+* Rodar npm install para instalar as dependências.
+* Iniciar o servidor (ex: npm run dev).
+* Abrir o site no navegador e ir para a Página de Cadastro (/site/register).
+* Preencher todos os campos do formulário (Nome, CPF, etc.).
+* No campo Email, usar exatamente: admin@eventum.com
+* Completar o cadastro.
+
+Automaticamente, essa conta terá acesso ao painel de administrador, poderá criar eventos e ver os relatórios.
